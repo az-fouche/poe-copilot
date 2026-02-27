@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:poe.ninja)",
+      "WebSearch",
+      "Bash(python:*)"
+    ]
+  }
+}
