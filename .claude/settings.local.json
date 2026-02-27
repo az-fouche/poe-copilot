@@ -3,7 +3,11 @@
     "allow": [
       "WebFetch(domain:poe.ninja)",
       "WebSearch",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.poewiki.net)",
+      "Bash(uv pip:*)",
+      "Bash(.venv/Scripts/python:*)"
     ]
   }
 }

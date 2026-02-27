@@ -14,6 +14,7 @@ class PoeAgent:
     ):
         self.client = anthropic.Anthropic()
         self.model = model
+        self.settings = settings
         self.messages: list[dict] = []
         self.system_prompt = build_system_prompt(settings)
 
@@ -53,7 +54,7 @@ class PoeAgent:
             # Execute each tool call and collect results
             tool_results = []
             for tool_use in tool_uses:
-                result = execute_tool(tool_use.name, tool_use.input)
+                result = execute_tool(tool_use.name, tool_use.input, self.settings)
                 tool_results.append(
                     {
                         "type": "tool_result",

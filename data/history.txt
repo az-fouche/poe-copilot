@@ -1,0 +1,7 @@
+2024-07-26 — 3.25 Settlers of Kalguur league launched. Town-building in Kingsmarch: collect Gold from enemies, hire workers, send shipments for rewards, Runesmithing (rune enchants on weapons), Currency Exchange Market. Melee totem skills removed; melee skills broadly buffed. 6th Map Device slot added.
+
+2025-06-13 — 3.26 Mercenaries league launched. Recruit lawless Trarthan veterans as allies, equip them with crafted items, track down noble mercenaries for Infamous modifiers and Trarthan gems (unique skill variants). Betrayal reworked: Mastermind separated from Safehouses, crafting bench recipes now unlocked through Atlas maps. Settlers added to core game.
+
+2025-10-31 — 3.27 Keepers league launched. Fight Hiveborn (mutated Breach monsters) through stabilized rifts, Genesis Tree for passive rewards, Grafts (Breach-themed skill items), Implants, Wombgifts. Bloodline Classes introduced (secondary Ascendancies unlocked via boss kills). Spell Suppression nerfed to 40% (from 50%). HC death now sends character to softcore challenge league instead of Standard.
+
+2026-03-06 — 3.28 Mirage league launched. Astral-realm Mirages that replicate past league mechanics with variations. Assist Sekhema Varashta with Wishes to enhance rewards, collect tainted Maraketh uniques for restoration, use Coins to corrupt skill gems with built-in support effects. Atlas restructured: choose any map and select which area to run. Exceptional Support Gems introduced, replacing Awakened Support Gems.

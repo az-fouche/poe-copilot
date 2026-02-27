@@ -1,12 +1,6 @@
-import os
-
 import httpx
 
 BASE_URL = "https://poe.ninja/api/data"
-
-
-def _default_league() -> str:
-    return os.environ.get("POE_LEAGUE", "Standard")
 
 CURRENCY_TYPES = ["Currency", "Fragment"]
 ITEM_TYPES = [
@@ -99,8 +93,8 @@ def _fetch(endpoint: str, params: dict) -> dict:
         return resp.json()
 
 
-def handle_poe_ninja_tool(name: str, params: dict):
-    league = params.get("league", _default_league())
+def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
+    league = params.get("league") or settings.get("league", "Standard")
     item_type = params["type"]
 
     try:
