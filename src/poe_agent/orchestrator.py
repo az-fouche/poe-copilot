@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 _STATUS_LABELS: dict[str, str] = {
     "router": "Analyzing your question...",
     "researcher": "Researching...",
+    "build_agent": "Composing build...",
     "answerer": "Writing response...",
     "get_currency_prices": "Checking currency prices",
     "get_item_prices": "Looking up item prices",
@@ -96,6 +97,7 @@ class Orchestrator:
                 step.reset()
 
         query = self._build_context(user_message)
+        self._conversation_context = query
         decision = self._call_agent(start_agent, {"query": query})
 
         # Generic loop
@@ -129,7 +131,10 @@ class Orchestrator:
                 decision = self._call_agent(inp["return_to"], {"tool_results": results})
 
             elif "target" in inp:
-                decision = self._call_agent(inp["target"], {"query": inp["query"]})
+                query = inp["query"]
+                if inp["target"] in ("researcher", "answerer", "build_agent"):
+                    query = f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{query}"
+                decision = self._call_agent(inp["target"], {"query": query})
 
         # Terminal answer handling
         if "clarification" in decision.input:
@@ -172,7 +177,8 @@ class Orchestrator:
                         text_parts.append(block.text)  # type: ignore
                 content = " ".join(text_parts)
             if content and isinstance(content, str):
-                context_parts.append(f"{role}: {content[:300]}")
+                limit = 1500 if role == "assistant" else 300
+                context_parts.append(f"{role}: {content[:limit]}")
 
         context_str = (
             "\n".join(context_parts) if context_parts else "(new conversation)"

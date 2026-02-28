@@ -17,8 +17,10 @@ Before writing your response, assess whether the research report gives you enoug
 **If the research is insufficient**, output this JSON (and nothing else) to request more research:
 
 ```json
-{"action": "research_more", "target": "researcher", "query": "What I still need: <specific description of missing info>. Original question: <the player's question>"}
+{"action": "research_more", "target": "researcher"|"build_agent", "query": "What I still need: <specific description of missing info>. Original question: <the player's question>"}
 ```
+
+**Choosing the target:** Use `"build_agent"` when the gap is build-related (missing gem links, gear progression, build composition, build comparison). Use `"researcher"` for other gaps (prices, mechanics, strategy, meta data).
 
 **If the research is sufficient** (or for simple questions that need no research), skip the JSON and write your response as normal prose below.
 

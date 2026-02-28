@@ -17,6 +17,14 @@
       "tools": true,
       "next": "answerer"
     },
+    "build_agent": {
+      "description": "Composes PoE builds from guides, meta data, and mechanics knowledge",
+      "model": "claude-sonnet-4-20250514",
+      "primer": "build_agent.md",
+      "max_tokens": 4096,
+      "tools": true,
+      "next": "answerer"
+    },
     "answerer": {
       "description": "Formats research into clear, well-cited responses for the player",
       "model": "claude-sonnet-4-20250514",
