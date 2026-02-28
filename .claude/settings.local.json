@@ -10,7 +10,8 @@
       "Bash(.venv/Scripts/python:*)",
       "Bash(xargs ls:*)",
       "Bash(wc:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }

@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 from dotenv import load_dotenv
 from InquirerPy import inquirer
@@ -9,8 +10,29 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 from rich.spinner import Spinner
 
-from .agent import ClarificationRequest, PoeAgent
+from .orchestrator import ClarificationRequest, Orchestrator
 from .onboarding import load_settings, run_onboarding
+
+
+class TimedSpinner:
+    """Spinner that shows elapsed time alongside status text."""
+
+    def __init__(self, text="Working..."):
+        self._spinner = Spinner("dots")
+        self._text = text
+        self._start = time.monotonic()
+
+    def update(self, text):
+        self._text = text
+
+    def __rich_console__(self, console, options):
+        elapsed = int(time.monotonic() - self._start)
+        if elapsed >= 60:
+            time_str = f"{elapsed // 60}m {elapsed % 60:02d}s"
+        else:
+            time_str = f"{elapsed}s"
+        self._spinner.update(text=f"{self._text}  [dim]{time_str}[/dim]")
+        yield from self._spinner.__rich_console__(console, options)
 
 
 def _ask_clarifying_questions(
@@ -25,13 +47,13 @@ def _ask_clarifying_questions(
         if not any(o.lower().startswith("other") for o in options):
             options.append("Other (type your answer)")
 
-        choice = inquirer.select(
+        choice = inquirer.select(  # type: ignore
             message=q.question,
             choices=options,
         ).execute()
 
         if choice and choice.lower().startswith("other"):
-            choice = Prompt.ask(f"  [dim]Your answer[/dim]")
+            choice = Prompt.ask("  [dim]Your answer[/dim]")
 
         answers.append(f"{q.question} {choice}")
 
@@ -40,7 +62,7 @@ def _ask_clarifying_questions(
 
 def main():
     load_dotenv()
-    console = Console()
+    console = Console(width=80)
 
     force_setup = "--setup" in sys.argv
 
@@ -48,9 +70,7 @@ def main():
     if settings is None or force_setup:
         settings = run_onboarding()
 
-    console.print(
-        "\n[bold cyan]PoE Chat[/bold cyan] — your Path of Exile companion"
-    )
+    console.print("\n[bold cyan]PoE Chat[/bold cyan] — your Path of Exile companion")
     console.print(
         f"[dim]{settings['league']} · {settings['mode']} · {settings['experience']}[/dim]"
     )
@@ -60,7 +80,7 @@ def main():
         "[bold]/setup[/bold] to reconfigure\n"
     )
 
-    agent = PoeAgent(settings=settings)
+    agent = Orchestrator(settings=settings)
 
     while True:
         try:
@@ -80,35 +100,39 @@ def main():
             continue
         if stripped == "/setup":
             settings = run_onboarding()
-            agent = PoeAgent(settings=settings)
+            agent = Orchestrator(settings=settings)
             console.print("[dim]Agent reloaded with new settings.[/dim]\n")
             continue
         if not stripped:
             continue
 
+        console.print()
+
         try:
             # First pass — may return clarification or answer
-            spinner = Spinner("dots", text="Analyzing your question...")
+            spinner = TimedSpinner("Analyzing your question...")
             with Live(spinner, console=console, transient=True):
-                def update_status(text: str):
-                    spinner.update(text=text)
 
-                result = agent.chat(user_input, on_status=update_status)
+                def update_status(text: str):
+                    spinner.update(text)
+
+                result = agent.run(user_input, on_status=update_status)
 
             # Handle clarification loop
             if isinstance(result, ClarificationRequest):
                 answers_text = _ask_clarifying_questions(console, result)
                 # Re-send original question with clarification answers
                 enriched_input = f"{user_input}\n\n(My answers: {answers_text})"
-                spinner = Spinner("dots", text="Researching...")
+                spinner = TimedSpinner("Researching...")
                 with Live(spinner, console=console, transient=True):
-                    def update_status_2(text: str):
-                        spinner.update(text=text)
 
-                    result = agent.chat(
+                    def update_status_2(text: str):
+                        spinner.update(text)
+
+                    result = agent.run(
                         enriched_input,
                         on_status=update_status_2,
-                        skip_router=True,
+                        start_agent="researcher",
                     )
 
             # At this point result should be a string
@@ -118,7 +142,9 @@ def main():
                 console.print()
             else:
                 # Shouldn't happen, but handle gracefully
-                console.print("\n[dim]Could not generate a response. Please try again.[/dim]\n")
+                console.print(
+                    "\n[dim]Could not generate a response. Please try again.[/dim]\n"
+                )
 
         except Exception as e:
             console.print(f"\n[bold red]Error:[/bold red] {e}\n")

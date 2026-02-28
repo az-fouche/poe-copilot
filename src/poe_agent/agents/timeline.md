@@ -1,0 +1,12 @@
+2024-07-26 — 3.25 Settlers of Kalguur league launch. Town-building in Kingsmarch: collect Gold from enemies, hire workers, send shipments for rewards, Runesmithing (rune enchants on weapons), Currency Exchange Market. Melee totem skills removed; melee skills broadly buffed. Kalguur has been added to the core game.
+
+2025-06-13 — 3.26 Mercenaries league launch. Recruit lawless Trarthan veterans as allies, equip them with crafted items, track down noble mercenaries for Infamous modifiers and Trarthan gems (unique skill variants). Betrayal reworked: Mastermind separated from Safehouses, crafting bench recipes now unlocked through Atlas maps. Settlers added to core game.
+
+2025-10-31 — 3.27 Keepers league launch. Fight Hiveborn (mutated Breach monsters) through stabilized rifts, Genesis Tree for passive rewards, Grafts (Breach-themed skill items), Implants, Wombgifts. Bloodline Classes introduced (secondary Ascendancies unlocked via boss kills). Spell Suppression nerfed to 40% (from 50%). HC death now sends character to softcore challenge league instead of Standard. Automatic exchange market for items added.
+
+2026-03-06 — 3.28 Mirage league launch. Astral-realm Mirages that replicate past league mechanics with variations. Assist Sekhema Varashta with Wishes to enhance rewards, collect tainted Maraketh uniques for restoration, use Coins to corrupt skill gems with built-in support effects. Atlas restructured: choose any map and select which area to run. Exceptional Support Gems introduced, replacing Awakened Support Gems.
+
+Important changes from your pretraining data:
+- Divine orbs have replaced the exalted orbs: now metacrafting takes divine orbs and there is no more 6-link recipe for divines. As a result, divine orbs are now the golden standard for high-end trading. 1ex ~ 15c / 1div ~ 100c (see poe ninja for exact rates).
+- There is now a global atlas tree where players can specialize into mechanics on an atlas-wide level.
+- Skill gems now have transfigured versions that can be farmed in the lab (replaces alternative qualities). These gems deeply change the skill mechanics, and should absolutely not be confused with one another -- one version can be meta while another complete garbage.

@@ -1,0 +1,36 @@
+{
+  "agents": {
+    "router": {
+      "description": "Classifies user questions and decides what research is needed before answering",
+      "model": "claude-haiku-4-5-20251001",
+      "primer": "router.md",
+      "max_tokens": 1024,
+      "tools": false,
+      "next": "researcher",
+      "output_format": "decision_json"
+    },
+    "researcher": {
+      "description": "Investigates questions using tools and produces research reports",
+      "model": "claude-sonnet-4-20250514",
+      "primer": "researcher.md",
+      "max_tokens": 4096,
+      "tools": true,
+      "next": "answerer"
+    },
+    "answerer": {
+      "description": "Formats research into clear, well-cited responses for the player",
+      "model": "claude-sonnet-4-20250514",
+      "primer": "answerer.md",
+      "max_tokens": 4096,
+      "tools": false,
+      "output_format": "decision_json"
+    }
+  },
+  "tools": {
+    "get_currency_prices": "Currency exchange rates from poe.ninja (supports include_trends)",
+    "get_item_prices": "Item prices from poe.ninja (supports include_trends)",
+    "get_build_meta": "Build meta statistics from poe.ninja (ascendancies, skills, uniques)",
+    "poe_web_search": "Search the web for PoE information",
+    "read_webpage": "Fetch and read webpage content"
+  }
+}

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
+import sys
 import httpx
 from bs4 import BeautifulSoup, Tag
 from ddgs import DDGS
@@ -79,10 +81,17 @@ def _search(query: str) -> list[dict]:
 
     try:
         # Suppress noisy "Impersonate 'chrome_xxx' does not exist" warnings
-        # from curl_cffi used internally by ddgs
-        logging.getLogger("curl_cffi").setLevel(logging.ERROR)
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=MAX_RESULTS))
+        # printed to stderr by the native primp library used internally by ddgs
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        old_stderr = os.dup(2)
+        os.dup2(devnull, 2)
+        try:
+            with DDGS() as ddgs:
+                results = list(ddgs.text(query, max_results=MAX_RESULTS))
+        finally:
+            os.dup2(old_stderr, 2)
+            os.close(old_stderr)
+            os.close(devnull)
         return [
             {
                 "title": r.get("title", ""),
