@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import logging
+import re
 import httpx
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from ddgs import DDGS
 
 MAX_CONTENT_CHARS = 6000
+MAX_INTRO_CHARS = 2000
 MAX_RESULTS = 8
 
 # Tags whose content is noise rather than article text
@@ -13,6 +15,8 @@ _STRIP_TAGS = {
     "script", "style", "nav", "footer", "header", "aside",
     "noscript", "iframe", "svg", "form",
 }
+
+_HEADING_TAGS = {"h1", "h2", "h3", "h4"}
 
 WEB_TOOLS = [
     {
@@ -41,9 +45,10 @@ WEB_TOOLS = [
     {
         "name": "read_webpage",
         "description": (
-            "Fetch and read the text content of a webpage. Use to get full details "
-            "from a promising search result. Don't read every result — pick the 1-2 "
-            "most relevant. Content is truncated to avoid blowing context."
+            "Fetch a webpage. Without a section parameter, returns the page outline "
+            "(heading list + intro text). With a section parameter, returns the full "
+            "content of that specific section. Use the outline first to find the right "
+            "section, then fetch it."
         ),
         "input_schema": {
             "type": "object",
@@ -51,6 +56,13 @@ WEB_TOOLS = [
                 "url": {
                     "type": "string",
                     "description": "The full URL of the page to read.",
+                },
+                "section": {
+                    "type": "string",
+                    "description": (
+                        "Heading text to extract (e.g. 'Drop sources', 'Mechanics'). "
+                        "Case-insensitive substring match. Omit to get the page outline."
+                    ),
                 },
             },
             "required": ["url"],
@@ -83,29 +95,76 @@ def _search(query: str) -> list[dict]:
         return [{"error": f"Search failed: {e}"}]
 
 
-def _extract_text(html: str) -> tuple[str, str]:
-    """Extract readable text from HTML. Returns (title, body_text)."""
-    soup = BeautifulSoup(html, "html.parser")
-
-    title = soup.title.string.strip() if soup.title and soup.title.string else ""
-
-    # Remove noisy elements
+def _clean_soup(soup: BeautifulSoup) -> None:
+    """Remove noisy elements from soup in-place."""
     for tag in soup.find_all(_STRIP_TAGS):
         tag.decompose()
 
-    # Get text, collapse whitespace
+
+def _extract_toc(soup: BeautifulSoup) -> list[dict]:
+    """Walk h1-h4 tags and return a list of {"level": int, "text": str}."""
+    toc = []
+    for tag in soup.find_all(_HEADING_TAGS):
+        level = int(tag.name[1])
+        text = tag.get_text(strip=True)
+        if text:
+            toc.append({"level": level, "text": text})
+    return toc
+
+
+def _extract_section(soup: BeautifulSoup, section_query: str) -> str | None:
+    """Extract content under a heading matching section_query (case-insensitive substring).
+
+    Collects all content from the matched heading until the next heading of the same
+    or higher level. Returns None if no matching heading is found.
+    """
+    query_lower = section_query.lower()
+
+    # Find the first heading whose text contains the query
+    target = None
+    for tag in soup.find_all(_HEADING_TAGS):
+        if query_lower in tag.get_text(strip=True).lower():
+            target = tag
+            break
+
+    if target is None:
+        return None
+
+    target_level = int(target.name[1])
+    parts = [target.get_text(strip=True)]
+
+    # Collect everything after target until a same-or-higher-level heading
+    for sibling in target.find_next_siblings():
+        if isinstance(sibling, Tag) and sibling.name in _HEADING_TAGS:
+            sibling_level = int(sibling.name[1])
+            if sibling_level <= target_level:
+                break
+            # Sub-heading within the section — include it
+            parts.append(f"\n{'#' * sibling_level} {sibling.get_text(strip=True)}")
+            continue
+        text = sibling.get_text(separator="\n", strip=True) if isinstance(sibling, Tag) else str(sibling).strip()
+        if text:
+            parts.append(text)
+
+    content = "\n".join(parts)
+    if len(content) > MAX_CONTENT_CHARS:
+        content = content[:MAX_CONTENT_CHARS] + "\n\n[... content truncated]"
+    return content
+
+
+def _get_body_text(soup: BeautifulSoup) -> str:
+    """Get full body text, collapsed whitespace."""
     text = soup.get_text(separator="\n")
     lines = [line.strip() for line in text.splitlines()]
-    text = "\n".join(line for line in lines if line)
-
-    if len(text) > MAX_CONTENT_CHARS:
-        text = text[:MAX_CONTENT_CHARS] + "\n\n[... content truncated]"
-
-    return title, text
+    return "\n".join(line for line in lines if line)
 
 
-def _read_page(url: str) -> dict:
-    """Fetch a webpage and return its text content."""
+def _read_page(url: str, section: str | None = None) -> dict:
+    """Fetch a webpage and return its content.
+
+    Without section: returns page outline (TOC + intro).
+    With section: returns targeted section content.
+    """
     try:
         with httpx.Client(
             timeout=15,
@@ -121,8 +180,45 @@ def _read_page(url: str) -> dict:
             resp = client.get(url)
             resp.raise_for_status()
 
-        title, content = _extract_text(resp.text)
-        return {"url": url, "title": title, "content": content}
+        soup = BeautifulSoup(resp.text, "html.parser")
+        title = soup.title.string.strip() if soup.title and soup.title.string else ""
+        _clean_soup(soup)
+
+        if section:
+            # Targeted section mode
+            content = _extract_section(soup, section)
+            if content is None:
+                # Fallback: return available sections so the agent can retry
+                toc = _extract_toc(soup)
+                section_names = [h["text"] for h in toc]
+                return {
+                    "url": url,
+                    "title": title,
+                    "error": f"Section '{section}' not found.",
+                    "available_sections": section_names,
+                }
+            return {
+                "url": url,
+                "title": title,
+                "section": section,
+                "content": content,
+            }
+        else:
+            # Overview mode: TOC + intro
+            toc = _extract_toc(soup)
+            section_names = [h["text"] for h in toc]
+
+            body = _get_body_text(soup)
+            intro = body[:MAX_INTRO_CHARS]
+            if len(body) > MAX_INTRO_CHARS:
+                intro += "\n\n[... use section parameter to read specific sections]"
+
+            return {
+                "url": url,
+                "title": title,
+                "sections": section_names,
+                "intro": intro,
+            }
 
     except httpx.HTTPStatusError as e:
         return {"url": url, "error": f"HTTP {e.response.status_code}"}
@@ -142,6 +238,7 @@ def handle_web_tool(name: str, params: dict, settings: dict) -> dict:
         url = params.get("url", "")
         if not url:
             return {"error": "Missing required parameter: url"}
-        return _read_page(url)
+        section = params.get("section")
+        return _read_page(url, section=section)
 
     return {"error": f"Unknown web tool: {name}"}

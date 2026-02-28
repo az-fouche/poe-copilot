@@ -8,7 +8,9 @@
       "WebFetch(domain:www.poewiki.net)",
       "Bash(uv pip:*)",
       "Bash(.venv/Scripts/python:*)",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "Bash(wc:*)",
+      "Bash(rm:*)"
     ]
   }
 }

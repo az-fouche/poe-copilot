@@ -9,7 +9,6 @@ _HANDLERS = {
     "get_item_prices": handle_poe_ninja_tool,
     "poe_web_search": handle_web_tool,
     "read_webpage": handle_web_tool,
-    "load_knowledge": handle_knowledge_tool,
     "load_patch_notes": handle_knowledge_tool,
 }
 
