@@ -1,9 +1,20 @@
 import json
+from typing import Callable, Optional
 
 import anthropic
 
 from .primer import build_system_prompt
 from .tools import TOOL_DEFINITIONS, execute_tool
+
+# Friendly labels for each tool so the spinner feels human
+_TOOL_LABELS: dict[str, str] = {
+    "get_currency_prices": "Checking currency prices",
+    "get_item_prices": "Looking up item prices",
+    "poe_web_search": "Searching the web",
+    "read_webpage": "Reading a webpage",
+    "load_knowledge": "Pulling up game knowledge",
+    "load_patch_notes": "Reviewing patch notes",
+}
 
 
 class PoeAgent:
@@ -18,11 +29,27 @@ class PoeAgent:
         self.messages: list[dict] = []
         self.system_prompt = build_system_prompt(settings)
 
-    def chat(self, user_message: str) -> str:
+    def chat(
+        self,
+        user_message: str,
+        on_status: Optional[Callable[[str], None]] = None,
+    ) -> str:
         self.messages.append({"role": "user", "content": user_message})
+
+        def _status(text: str):
+            if on_status:
+                on_status(text)
+
+        loop_count = 0
 
         # Agentic loop: keep going until we get a final text response
         while True:
+            loop_count += 1
+            if loop_count == 1:
+                _status("Understanding your question…")
+            else:
+                _status("Thinking it through…")
+
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=4096,
@@ -45,6 +72,7 @@ class PoeAgent:
             tool_uses = [b for b in response.content if b.type == "tool_use"]
 
             if not tool_uses:
+                _status("Wrapping up…")
                 # Final response — extract text
                 text_parts = [
                     b.text for b in response.content if b.type == "text"
@@ -54,6 +82,8 @@ class PoeAgent:
             # Execute each tool call and collect results
             tool_results = []
             for tool_use in tool_uses:
+                label = _TOOL_LABELS.get(tool_use.name, f"Using {tool_use.name}")
+                _status(label)
                 result = execute_tool(tool_use.name, tool_use.input, self.settings)
                 tool_results.append(
                     {

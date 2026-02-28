@@ -59,12 +59,12 @@ def main():
             continue
 
         try:
-            with Live(
-                Spinner("dots", text="Thinking..."),
-                console=console,
-                transient=True,
-            ):
-                response = agent.chat(user_input)
+            spinner = Spinner("dots", text="Understanding your question…")
+            with Live(spinner, console=console, transient=True):
+                def update_status(text: str):
+                    spinner.update(text=text)
+
+                response = agent.chat(user_input, on_status=update_status)
 
             console.print()
             console.print(Markdown(response))
