@@ -85,6 +85,43 @@ def _ask_clarifying_questions(
     return "; ".join(answers)
 
 
+def _handle_interrupt(console: Console, agent) -> str | None:
+    """Handle Ctrl+C during agent.run() — offer menu to salvage partial results."""
+    count = len(agent._accumulated_research)
+    console.print(
+        f"\n[bold yellow]Interrupted[/bold yellow] — {count} research result(s) gathered so far."
+    )
+
+    try:
+        choice = inquirer.select(  # type: ignore
+            message="What would you like to do?",
+            choices=[
+                "Add more context and get answer",
+                "Get answer with current data",
+                "Cancel",
+            ],
+        ).execute()
+    except KeyboardInterrupt:
+        return None
+
+    if choice == "Cancel":
+        return None
+
+    extra_context = ""
+    if choice == "Add more context and get answer":
+        try:
+            extra_context = Prompt.ask("[dim]Additional context[/dim]")
+        except KeyboardInterrupt:
+            return None
+
+    try:
+        spinner = TimedSpinner("Writing response...")
+        with Live(spinner, console=console, transient=True):
+            return agent.force_answer(extra_context=extra_context)
+    except KeyboardInterrupt:
+        return None
+
+
 def main():
     load_dotenv()
     setup_logging()
@@ -104,7 +141,10 @@ def main():
     console.print(
         "Type [bold]/quit[/bold] to exit, "
         "[bold]/clear[/bold] to clear history, "
-        "[bold]/setup[/bold] to reconfigure\n"
+        "[bold]/setup[/bold] to reconfigure"
+    )
+    console.print(
+        "Press [bold]Ctrl+C[/bold] to interrupt and take control\n"
     )
 
     agent = Orchestrator(settings=settings)
@@ -141,16 +181,24 @@ def main():
 
             # First pass — may return clarification or answer
             spinner = TimedSpinner("Analyzing your question...")
-            with Live(spinner, console=console, transient=True):
+            try:
+                with Live(spinner, console=console, transient=True):
 
-                def update_status(text: str):
-                    spinner.update(text)
+                    def update_status(text: str):
+                        spinner.update(text)
 
-                result = agent.run(
-                    user_input,
-                    on_status=update_status,
-                    on_message=show_message,
-                )
+                    result = agent.run(
+                        user_input,
+                        on_status=update_status,
+                        on_message=show_message,
+                    )
+            except KeyboardInterrupt:
+                result = _handle_interrupt(console, agent)
+                if result is None:
+                    if agent.messages and agent.messages[-1].get("role") == "user":
+                        agent.messages.pop()
+                    console.print("[dim]Cancelled.[/dim]\n")
+                    continue
 
             # Handle clarification loop (max 2 rounds)
             max_clarification_rounds = 2
@@ -160,25 +208,33 @@ def main():
                 answers_text = _ask_clarifying_questions(console, result)
                 enriched_input = f"{user_input}\n\n(My answers: {answers_text})"
                 spinner = TimedSpinner("Researching...")
-                with Live(spinner, console=console, transient=True):
+                try:
+                    with Live(spinner, console=console, transient=True):
 
-                    def _make_status_cb(s):
-                        return lambda text: s.update(text)
+                        def _make_status_cb(s):
+                            return lambda text: s.update(text)
 
-                    result = agent.run(
-                        enriched_input,
-                        on_status=_make_status_cb(spinner),
-                        on_message=show_message,
-                        start_agent="router",
-                        clarification_round=clarification_round,
-                    )
+                        result = agent.run(
+                            enriched_input,
+                            on_status=_make_status_cb(spinner),
+                            on_message=show_message,
+                            start_agent="router",
+                            clarification_round=clarification_round,
+                        )
+                except KeyboardInterrupt:
+                    result = _handle_interrupt(console, agent)
+                    if result is None:
+                        if agent.messages and agent.messages[-1].get("role") == "user":
+                            agent.messages.pop()
+                        console.print("[dim]Cancelled.[/dim]\n")
+                        break
 
             # At this point result should be a string
             if isinstance(result, str):
                 console.print()
                 console.print(Markdown(result))
                 console.print()
-            else:
+            elif result is not None:
                 # Shouldn't happen, but handle gracefully
                 console.print(
                     "\n[dim]Could not generate a response. Please try again.[/dim]\n"

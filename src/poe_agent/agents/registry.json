@@ -6,8 +6,15 @@
       "primer": "router.md",
       "max_tokens": 1024,
       "tools": false,
-      "next": "researcher",
       "output_format": "decision_json"
+    },
+    "planner": {
+      "description": "Decomposes complex questions and delegates to specialist agents",
+      "model": "claude-sonnet-4-20250514",
+      "primer": "planner.md",
+      "max_tokens": 4096,
+      "tools": "delegation",
+      "next": "answerer"
     },
     "researcher": {
       "description": "Investigates questions using tools and produces research reports",
@@ -24,6 +31,13 @@
       "max_tokens": 4096,
       "tools": true,
       "next": "answerer"
+    },
+    "fact_checker": {
+      "description": "Verifies research accuracy — catches gem confusion, outdated info, contradictions",
+      "model": "claude-sonnet-4-20250514",
+      "primer": "fact_checker.md",
+      "max_tokens": 4096,
+      "tools": false
     },
     "answerer": {
       "description": "Formats research into clear, well-cited responses for the player",
