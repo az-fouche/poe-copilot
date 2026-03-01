@@ -1,0 +1,615 @@
+Content Update 3.28.0 — Path of Exile: Mirage
+
+For more information about this expansion, check out pathofexile.com/mirage
+The Mirage Challenge League
+
+Take on a rogue sect of the Faridun as they sap the energies of captured Djinn for nefarious ends, and help a legendary Maraketh Sekhema put an end to an ancient war once and for all.
+The Afarud, the most depraved and twisted of the Faridun, have formed a pact with Saresh, a powerful necromancer who built an army of undead to seek revenge on the Maraketh.
+Deny their twisted efforts towards dominion by joining forces with Varashta and freeing the spirits of Djinn before the Afarud can accomplish their goals.
+You will encounter the physical form of trapped Djinn, imprisoned and tortured by Afarud Warlocks. After successfully defeating them, you will be asked by Varashta to enter The Astral Realm, a Mirage containing an imperfect copy of the world around you.
+Varashta can augment the magic of the Mirage she allows you to enter, giving you the option to choose one of three Wishes before you do so. These Wishes modify the Mirage in powerful and potent ways, transforming the copy within and causing monsters slain to drop powerful loot, currency for enhancing your equipment and gems, special caches, or even strange mysterious coins.
+Fight your way through the monsters, astral hazards, and Afarud mages to the tether holding the Djinn. Shatter this chain to free the Djinn, step by step weaking whatever dark plans the Afarud may have for Wraeclast.
+With 3.28.0, there are Standard, Hardcore and Solo Self-Found variations of the Mirage challenge league available. They have the same core mechanics and items. You can create private league versions of these leagues, with mods that make the game harder.
+The Hardcore variations of Mirage are parented to their Standard Mirage equivalent, meaning if you die in Hardcore Mirage you can continue on in Standard Mirage League.
+The new Mirage challenge league includes a set of 40 new challenges, and 8 new challenges in Ruthless Mirage. Earn pieces of the Orb Regalia Armour Set when you complete 12, 20, 28 and 36 challenges in Mirage, or 2, 4, 6 and 8 challenges in Ruthless Mirage. These challenge rewards are only obtainable in this league.
+From the 19th challenge onwards and for every third challenge after that, you will receive pieces of the Mirage Totem Pole decoration to display in your hideout. The Totem Pole permanently showcases how many of the Mirage challenges you completed during the league.
+
+Return to top
+New Content and Features
+
+Added the new Reliquarian Ascendancy Class for the Scion. Notable Passive Skills for the Reliquarian borrow from the powers of Unique items found throughout Wraeclast, and will change with each League. For this reason, these Notables will not be available as outcomes for the Forbidden Flame and Forbidden Flesh Unique Jewels.
+Introduced Exceptional Support Gems, a new and improved version of Awakened Support Gems, which are being phased out. There are over 40 Exceptional Support Gems, which can be found in the Endgame.
+Introduced the Coin of Knowledge, which Corrupts a level 20 Skill Gem, Imbuing it with a random valid Intelligence Support effect.
+Introduced the Coin of Power, which Corrupts a level 20 Skill Gem, Imbuing it with a random valid Strength Support effect.
+Introduced the Coin of Skill, which Corrupts a level 20 Skill Gem, Imbuing it with a random valid Dexterity Support effect.
+Added a new Strength/Intelligence Skill Gem, Divine Blast: Project a beam of holy light from your shield to a targeted location, causing an implosion of holy energy. This energy then lingers for a short duration, before blasting outwards in a larger and more damaging explosion.
+Added a new Strength/Intelligence Skill Gem, Holy Hammers: Slam the ground ahead of you, calling down a Holy Hammer from above. On hitting an enemy, another Hammer will cascade forward, repeating if further enemies are hit, up to a cap. A Power Charge can be expended to call down additional Hammers to either side of the initial slam. Requires a Mace or Staff.
+Added a new Strength/Intelligence Skill Gem, Holy Strike: Infuse your weapon with holy energy and swing. Successfully hitting an enemy will summon forth a Holy Armament, which copies your main hand weapon stats to determine its own. These Holy Armaments are undamageable minions, and will attack the enemies you target with Holy Strike. Requires a Mace, Sceptre or Staff.
+Added a new Strength/Intelligence Skill Gem, Shield of Light: Retaliate against a blocked hit with a sweep of your Shield, unleashing a wave of light in a cone in front of you. Additional waves also emanate from allies in a radius around the first target struck, towards that target.
+Added a new Strength Transfigured Skill Gem, Shockwave Totem of Authority: Summons a totem that shakes the earth around you, damaging enemies.
+Added a new Strength/Intelligence Transfigured Skill Gem, Static Strike of Gathering Lightning: Attack with a melee weapon, gaining a Gathering Lightning buff for a duration if you hit an enemy. While you have Gathering Lightning, attacks with this skill will cause chaining beams of lightning, which chain farther the more Gathering Lightning you have.
+Added a new Dexterity Transfigured Skill Gem, Charged Dash of Projection: Channel to project an illusion which you steer. You gain stages while it moves, until it stops at a maximum total distance. Waves of area damage frequently pulse along its path, based on your attack speed. Stop channelling to release the illusion, dealing a final wave of damage. Requires a Melee Weapon.
+Added a new Dexterity/Intelligence Transfigured Skill Gem, Flamethrower Trap of Stability: Throws a trap that releases a number of flames in different directions around it when triggered. The flames last for a duration repeatedly dealing damage.
+Added a new Intelligence Transfigured Skill Gem, Kinetic Fusillade of Detonation: Wave your wand to create multiple hovering kinetic projectiles. After a short duration, the projectiles explode, dealing area damage. Using this attack again will reset the duration for all hovering projectiles. Cannot be directly used by traps or mines.
+Added a new Intelligence Transfigured Skill Gem, Orb of Storms of Squalls: Creates an electrical orb that will strike enemies in its area of effect with beams of lightning when placed, as well as when you use a lightning skill while within its area. These beams of lightning can then split to hit more enemies. When striking enemies, this orb will teleport to a random enemy struck. Casting this skill again will replace the previous orb.
+Added a new Intelligence Transfigured Skill Gem, Shock Nova of Procession: Casts a ring of Lightning around you, followed by a larger Lightning nova. Each effect hits enemies caught in their area with Lightning Damage. This then repeats, with each repeat offset from the previous in the direction of your target.
+Added a new Intelligence/Strength Transfigured Skill Gem, Storm Burst of Repulsion: Unleash orbs of energy while you channel that repeatedly jump away from the targeted location until their duration expires, dealing damage in a small area after each jump. When you stop channelling, all remaining orbs explode, dealing higher damage in a larger area.
+Added a new Intelligence/Dexterity Transfigured Skill Gem, Siphoning Trap of Pain: Throws a trap that applies debuff beams to a number of nearby enemies for a duration. The beams chill enemies and deal cold damage over time.
+Added a new Strength/Intelligence Support Gem, Blessed Call Support: Supports Warcry skills, causing them to create Consecrated Ground. Supported Warcries have lowered Area of Effect and Cooldown Recovery Rate. Cannot support triggered Warcries.
+Added a new Strength/Intelligence Support Gem, Excommunicate: Supports melee attacks, causing them to gain a percentage of physical damage as extra fire and lightning damage, and excommunicate enemies on melee hit. Does not modify skills used by minions.
+Added a new Intelligence Support Gem, Exemplar Support: Supports Minion skills, causing your minions to have increased Critical Strike Chance and Critical Strike Multiplier for each of your own recent Critical Strikes.
+Added a new Strength/Intelligence Support Gem, Hallow: Supports melee attacks you use yourself, causing them to inflict Hallowing Flame on melee hit. Does not modify skills used by minions.
+Added 10 new Runegrafts that can be found by shipping to ports in Kingsmarch: Runegraft of the Agile, Runegraft of Connection, Runegraft of Consecration, Runegraft of Fury, Runegraft of the Imbued, Runegraft of Rallying, Runegraft of Resurgence, Runegraft of Rotblood, Runegraft of the Spellbound, and Runegraft of Suffering.
+Added 13 new Unique Items.
+Added 8 new Divination Cards.
+The "Exotic" sub-stash of the Currency Stash has been split into two new sub-stashes "Atlas" and "League".
+Continued to incrementally improve the sound, art, effects and environments.
+
+Return to top
+Endgame Changes
+
+Extensive changes have been made to the Atlas and how you engage with Maps, without interfering with the beloved core experience. Some of the more frustrating aspects have also been streamlined or removed.
+Map items are no longer associated with a specific Map Area. As an example, instead of having a Tier 10 Mesa Map, you will now find a Tier 10 Map. To open a Mesa Map, you now locate and select Mesa on your Atlas, put in your Map item, and activate the Map Device.
+That Mesa Map may drop a Tier 11 Map. You can then place this into your Map Device, which defaults to the last Map run, and either run Mesa again or choose a new Map Area to use it on.
+The structure of the Atlas has also changed, you now begin your exploration at the centre of the Atlas, with each corner housing one of four Voidstone slots.
+All content accessed using the Map Device is now physically present on the Atlas, allowing you to see everything available in the Endgame as you reveal the fog of war.
+All Unique Maps are now present on the Atlas, including some old favourites that are appearing for the first time.
+You now gain 1 Atlas Skill Point per Unique Map completed on your Atlas, up to a maximum of 10. There are around 20 Unique Maps available, so you only need to complete the half you want (not looking at you, Hall of Grandmasters).
+The remaining Atlas Skill Points have been moved to other places, and you can now get more total Atlas Skill Points than before.
+Eagon now has a new goal and is determined to stop Zana traversing the threads that weave the Atlas together and severing them. He has made use of a new mysterious discovery, Arcane Astrolabes, but by using them to trace her movement they cause dangerous side effects.
+Using an Astrolabe on a Map on the Atlas manifests a Shaped Region in that quadrant of the Atlas, affecting many of the Maps within it. There are many types of Astrolabes, and they apply different types of Shaped Regions.
+Completing the content added by the Astrolabe will remove the Shaped Region's influence from that Map. Upon doing so, every other Map remaining in the Shaped Region will gain an additional modifier.
+Once you have successfully rid the Atlas of the Shaped Region, Eagon will take you to one of the four Memory Vaults, where there are powerful rewards to be had.
+Each Vault is associated with a specific quadrant on the Atlas, so you're able to target a certain vault if you're wanting to try to get a specific type of reward.
+Interacting with the Map Device now opens the Atlas screen. Clicking locations on the Atlas will allow you to use a Map (and any fragments) to open portals to that specific location.
+Certain locations will require special map items to access, such as Unique Maps, Shaper Guardian Maps, Nightmare Maps, Vaal Temple and locations requiring Map Fragments rather than Map Items.
+As you can now run any Map with a Map Item, the Favoured Map system has been removed.
+Memory Skills have been removed from Originator Influenced areas. You can still collect Petals in these areas, which now instead grant a higher chance to find items with Memory Strands.
+Several of the effects from the removed Memory Skills have been moved to new bonus modifiers on Altars at the end of Maps within Memory Threads. For example, Killing a Rare Monster consumes 30 Petals if possible to revive the Monster once.
+The Decayed Voidstone is now obtained from killing both the Shaper and the Elder. It can also still be obtained from defeating Uber Elder.
+You now receive a Voidstone from killing both the Searing Exarch and the Eater of Worlds (instead of one from each).
+The extra Voidstone that this leaves is now obtained from killing the Incarnation of Dread.
+Introduced the Memory of Loneliness, which adds a Memory Thread to a quadrant of the Atlas leading to the Incarnation of Neglect.
+Introduced the Memory of Trauma, which adds a Memory Thread to a quadrant of the Atlas leading to the Incarnation of Fear.
+Introduced the Memory of Reverence, which adds a Memory Thread to a quadrant of the Atlas leading to the Incarnation of Dread.
+The Threads of the Originator Quest line now awards a skill book granting 2 Atlas Passive Skill Points and 2 Atlas Passive Respec Points for defeating each Incarnation boss.
+Tier 17 Maps have undergone significant changes, and are now Nightmare Maps.
+Completing each Nightmare Map now awards 1 Atlas Skill Points (5 total).
+Slightly increased the reward values of Originator-influenced and Nightmare Map modifiers that granted Increased Pack Size or Item Rarity.
+Slightly reduced the reward values of Originator-influenced and Nightmare Map modifiers that granted More Currency, Maps or Scarabs.
+After obtaining the Voidstone from killing the Incarnation of Dread, items with Memory Strands will now be able to drop from all maps ran on the atlas. More Memory Strand affected items will still come from Originator maps, to retain them being the best source.
+Items that drop with Memory Strands will now more often be higher tier bases.
+Items that drop with Memory Strands will have more Memory Strands on average.
+Memory Strands will have a larger influence on the tier of Modifiers present on the item than previously.
+Atlas Bonus Objectives now additionally grant +1% to Map Item Quantity for every 4 Bonus Objectives completed.
+Uber Bosses now only require 4 Fragments to access (previously 5).
+All Maven Invitations are now accessed through Kirac, rather than some of them being quest items you place into your Map Device.
+Sacrifice and Mortal Fragments can no longer be used in a Map Device to open a random Vaal Side Area directly. Instead, they can be used alongside Maps to add a Vaal Side Area to the opened Map, while still applying their current Map Item Quantity bonus.
+Sacrifice and Mortal Fragments now explicitly state the Map Item Quantity bonus they apply to areas.
+Elder Guardian, Shaper Guardian and Conqueror Maps always generate on Tier 16 Maps. As a result, Divination Cards for these items no longer explicitly state the Map Tier.
+Blessed Orbs are now able to reroll the specific Conqueror inhabiting Conqueror Maps, or the specific Elder Guardian inhabiting Elder Guardian Maps. This change does not affect pre-existing Conqueror Maps or Elder Guardian Maps.
+Kirac no longer offers Atlas Missions, and defeating Map Bossess no longer has a chance to grant Kirac Missions. As a result, the Planar Tactician, Solidarity, Expert Reconnaissance, Commissioned Officer and Expect the Unexpected Notable Atlas Passives and associated small Passives have been removed.
+Scouting Reports can no longer be obtained, and existing items no longer function.
+The Side Quest Divination Card has been temporarily disabled, and existing copies of this card cannot be traded in.
+Cartographer's Chisels can no longer be obtained, though existing items will still function, and Map Device crafting options have been removed. The loss of content and loot here has been compensated in other areas.
+The Cartographer Divination Card has been temporarily disabled, and existing copies of this card cannot be traded in.
+Temple Architects now drop additional Scarabs instead of additional Map Currency while you have an Atlas of Worlds room in the Temple.
+Reduced the chances for Quality Currency to drop from Synthesised Monsters in Synthesised Maps.
+Removed all Vendor Recipes that could grant Cartographer's Chisels.
+The effect of 20% Quality on Maps has been reduced. Cartographer's Chisels in Standard Leagues now provide +10% Item Quantity at 20% Quality (previously +20%).
+Maven's Chisel of Procurement now provides +40% Item Rarity at 20% Quality (previously +60%).
+Maven's Chisel of Proliferation now provides +10% Monster Pack Size at 20% Quality (previously +20%).
+Maven's Chisel of Divination now provide +50% more Divination Cards at 20% Quality (previously +100%).
+Maven's Chisel of Scarabs now provides +50% more Scarabs at 20% Quality (previously +100%).
+Maven's Chisel of Avarice now provides +50% more Currency at 20% Quality (previously +100%).
+Quality applies to Pack Size instead of Item Quantity can no longer appear as a Corruption Implicit Modifier on Maps
+Chisels now always apply +20% Quality to Maps.
+Cartographer Strongboxes can no longer roll the modifier granting Contained Items additional Quality.
+The Empyrean Apparatus Unique Strongbox no longer has a modifier granting Contained Items additional Quality.
+Eldritch Altars Influenced by the Searing Exarch can now grant Orbs of Scouring, and Eldritch Altars Influenced by the Eater of Worlds can no longer grant Orbs of Scouring.
+Greatly reduced the amount of items dropped from explosive barrels in the Fortress Map. These barrels will now drop a comparable number of items to barrels in other maps.
+Resonating Shrine no longer grants a bonus per power, frenzy and endurance charge, instead now granting an additional maximum power, frenzy and endurance charge. This shrine still grants random charge generation on hit and on kill.
+The efficacy of the Ambush Scarab of Discernment has been reduced.
+Lowered the bonus Reward granted by the Blight Scarab of Invigoration by 20%.
+Blight Scarab of Blooming no longer adds additional non-Boss waves of monsters to each Blight Portal.
+Blight Scarab of the Blightheart no longer doubles the number of waves spawned in Blight encounters. It now guarantees each portal has 2 additional waves, with chances for a 3rd and 4th wave to occur.
+The Horned Scarab of Awakening now grants Tier 16+ Areas contain the Bosses from a random Maven Invitation.
+Introduced the Abyss Scarab of Descending, which Guarantees an Abyssal Depths in an area.
+Introduced the Anarchy Scarab of the Exceptional, which adds an additional Exceptional Rogue Exile to the area.
+Introduced the Betrayal Scarab of Unbreaking, which gives a chance for Syndicate Members to not lose Ranks when they are Interrogated.
+Introduced the Expedition Scarab of Infusion, which makes Logbooks dropped in areas always drop with 4 implicit modifiers, and causes Expedition monsters to gain increased difficulty and reward for each Remnant detonated.
+Introduced the Kalguuran Scarab of Enriching, which increases the amount of Ore gained from Ore Deposits and the Difficulty and Reward of monsters guarding Ore Deposits for every completed Ore Deposit in the area.
+Introduced The Ritual Scarab of Corpses, which causes Rituals in the area to contain an additional Rare Itemised Corpse monster that will appear in the Favour window after being defeated.
+The Beyond Scarab of Resurgence no longer enrages Beyond Bosses on Low Life, and instead summons the Beyond Bosses of other factions when a Beyond Boss is summoned.
+The Delirium Scarab of Neuroses now also grants Delirium Reward Types gain +1 to count on defeating Unique Delirium Bosses.
+The Domination Scarab of Apparitions can now also spawn Pantheon Shrines in addition to Conqueror ones.
+The Influencing Scarab of Conversion has been renamed to the Influencing Scarab of Interference. It no longer grants a chance for maps to drop as Shaper Guardian, Elder Guardian, Conqueror or Unique Synthesised Maps, and now instead spawns a Conqueror, Elder or Shaper Guardian or Synthesis boss to accompany the Map boss. This additional boss is guaranteed to drop a Shaper Guardian, Elder Guardian, Conqueror or Unique Synthesised Map.
+The Legion Scarab of Command has been renamed to the Legion Scarab of Treasures, and now grants chests that are broken out a chance for the chests rewards to be applied to the monsters it breaks out, while also making those monsters more difficult and rewarding
+The Ritual Scarab of Selectiveness now allows for rerolling 2 additional times instead of 1.
+The Torment Scarab now grants a chance for Tormenting Spirits that have Possessed monsters to be released when that monster is killed. The Spirit then immediately dives into the ground, resurfacing with a new rare monster which they again Possess.
+The Scarab of Hunted Traitors can no longer be obtained.
+The Scarab of Bisection has been split into 2 separate Scarabs, The Scarab of the Sinistral, which grants 100% increased effect of Area Prefix Modifiers, and Area Suffix Modifiers have no effect, and the Scarab of the Dextral, which grants 100% increased effect of Area Suffix Modifiers, and Area Prefix Modifiers have no effect.
+The Kalguuran Scarab now grants Area contains 2 additional Ore Deposits (previously 1, Ruthless is unaffected).
+The Torment Scarab now grants Area is haunted by 4 additional Tormented Spirits (previously 3).
+The Essence Scarab now grants Area contains 3 additional Imprisoned Monsters (previously 2, Ruthless is unaffected).
+The Domination Scarab now grants Area contains 3 additional Shrines (previously 2, Ruthless is unaffected).
+The Anarchy Scarab now grants Area contains 5 additional Rogue Exiles (previously 4, Ruthless is unaffected).
+The Ambush Scarab now grants Area contains 4 additional Strongboxes (previously 3, Ruthless is unaffected).
+Added 5 new Map Modifiers that can roll on Originator-influenced and Nightmare Maps.
+The following Maps have been added back to the Atlas: Shrine, Fungal Hollow, Pen, Carcass, Lair, Bog, Terrace, Siege, Dungeon, Relic Chambers, Cold River, Coral Ruins, Wharf, Fields, Plaza, Cage, Spider Lair, Courthouse, Graveyard, Gardens, Haunted Mansion, Reef, Dry Sea, Foundry, Dig.
+The following Maps have been removed from the Atlas: Arachnid Nest, Colosseum, Waste Pool, Thicket, Academy, Infested Valley, Cells, Desert, Bone Crypt, Toxic Sewer, Precinct, Shore, Spider Forest, Estuary, Channel, Bazaar, Glacier, Villa, Ramparts, Museum, Desert Spring, Temple, Underground River, Plateau, Phantasmagoria.
+Drowning Orbs no longer move towards players if there are no other enemies in range of the player.
+The following Map Modifiers can no longer roll:
+Players and their Minions deal no Damage for 3 out of every 10 seconds.
+Area contains Petrification Statues.
+Players have reduced Action Speed for each time they've used a Skill Recently.
+Players are Marked for Death after killing a Rare or Unique monster.
+Rare and Unique Monsters remove Life, Mana and Energy Shield from Players or their Minions on Hit.
+When a fifth Impale is inflicted on a Player, Impales are removed to Reflect their Physical Damage multiplied by their remaining Hits to that Player and their Allies within 1.8 metres.
+Area has patches of Awakeners' Desolation.
+Player Skills which Throw Traps throw fewer Traps.
+Players' Minions have less Movement/Attack/Cast Speed.
+Damage Players' Totems take from Hits is taken from their Summoner's Life instead.
+
+Return to top
+Atlas Passive Tree Changes
+
+The Shadow Shaping, Bold Undertakings, and Singular Focus Atlas Keystone Passives have been removed.
+Added a new Atlas Keystone Passive, The Paths Not Taken, which grants Divination Cards found in your Maps are from two random other Maps instead of the one you’re in.
+Added a new Atlas Keystone Synthesised Stability, which grants Completing a Map Objective within a Shaped Region instead collapses a different Map within the Shaped Region.
+The Overloaded Circuits Atlas Keystone now grants "Your Maps are opened with 5 additional random Unallocated Notable Atlas Passives".
+The Refiner's Bargain Atlas Keystone now has Lifeforce found in your Maps is granted as a random Crop instead at 250% of the value (previously 150%), and Sulphite found in your Maps is granted as a random Ore instead at 10% of the value (previously 15%).
+The Ancient Conflict Atlas Passive now grants Abyssal Troves and Stygian Spires a 10% chance to drop an Abyss Scarab (previously 3%).
+The Ancient Decay Atlas Passive now has one less small node to reach the notable, and each small node now grants 25% slower Expedition Detonation speed (previously 5%).
+Two new small Passives leading to Ancient Decay have also been added, which grant 25% faster Expedition Detonation Speed, for those that would like a change of pace.
+The Chiselled Perfection Atlas Passive has been renamed to "Multiplying Modifiers" and now grants "3% increased effect of Explicit Modifiers on your Maps per Fragment used with Map".
+The Deadly Prey Atlas Passive now has Beasts in your Maps have Bestial Rage and Defeating Beasts grants a stack of Hunter's Cunning (previously this passive granted Beasts have 50% chance to break free and gain a stack of Bestial Rage and Defeating Beasts grants a stack of Hunter's Cunning per stack of Bestial Rage).
+The For Love of the Queen Atlas Passive now grants a 25% chance for Vaal Side Areas in your Maps to be Alluring Vaal Side areas (previously 20%) as well as Your Maps have a +6% chance to contain a Vaal Side Area (previously +4%).
+The small Passives leading to the For Love of the Queen Atlas Passive now grant Your Maps have a +3% chance to contain a Vaal Side Area (previously +2%).
+The Immune Response Atlas Passive now has Blight Monsters in your Maps spawn 150% faster (previously 100%) and no longer has Blight Encounters in your Maps spawn 50% more Non-Unique Monsters.
+The small Passives near Immune Response that granted Blight Encounters in your Maps spawn more Non-Unique Monsters now instead grant increased Quantity of Items dropped from Blighted Monsters in your Maps.
+The Pillage and Plunder Atlas Passive now has Veiled Items dropped by Defeated Syndicate Members in your Maps have a 5% chance to drop with a Fractured Veiled Modifier and no longer has 25% increased Rarity of Items from Defeated Syndicate Members in your Maps per Equipment Item they have.
+The Sulphite Infusion Atlas Passive now grants 400 Sulphite on Completing a White Tier map (previously 200), 700 Sulphite on Completing a Yellow Tier Map (previously 350) and 1000 Sulphite on Completing a Red Tier Map (previously 500).
+Small Passives that grant increased Sulphite gain from Sulphite Veins and Chests in your Maps now grant 6% (previously 3%).
+The Secret Stash Atlas Passive now grants Your Maps have +30% chance to contain a Smuggler's Cache (previously +12%).
+Small Passives that grant a chance for your Maps to contain a Smuggler's Cache now grant +10% chance each (previously +4%).
+The Shaping the Mountains Atlas Passive no longer has 10% chance on Completing your Maps to gain a free use of a random Map Crafting option. It now has 10% increased number of Rare Monsters in your Maps.
+The Shaping the Skies Atlas Passive no longer has 3% chance on Completing your Maps to gain a free use of a special Map Crafting option. It now has 10% increased number of Magic Monsters in your Maps.
+The Straight and Narrow Atlas Passive has been reinstated in the Atlas Passive Tree for Standard Leagues.
+The Trial of Glory Atlas Passive now grants a 25% chance for Labyrinth Trials in your Maps to award an Improved Offering to the Goddess (previously 20%), as well as Your Maps have a +6% chance to contain a Trial of Ascendancy (previously +4%).
+The small Passives leading to the Trial of Glory Atlas Passive now grant Your Maps have a +3% chance to contain a Trial of Ascendancy (previously +2%).
+The Two-Hearted Hunt Atlas Passive now has Red Beasts Captured in your Maps have a 100% chance to gain a Modifier that provides a chance to not be consumed when sacrificed at the Blood Altar (previously 50%). These types of modifiers now only give up to a 20% chance for the Beast to not be consumed (previously up to 40%).
+The Unimaginable Horrors Atlas Passive now grants Vaal Side Areas in your Maps have a 25% chance for Rewards from Vaal Vessels to be Duplicated (previously 20%).
+The small Passives leading to the Friends in High Places Atlas Passive now grant the following instead of Heist Contract Level Chance: Heist Contracts found in your Maps are 100% more likely to require Lockpicking, Brute Force or Perception, Heist Contracts found in your Maps are 100% more likely to require Demolition, Counter-Thaumaturgy or Trap Disarmament, or Heist Contracts found in your Maps are 100% more likely to require Agility, Deception or Engineering.
+The small Passives leading to the No Honour Among Thieves Atlas Passive now grant Your Maps that contain Smuggler's Caches have a 20% chance to contain an additional Smuggler's Cache (previously 10%).
+The No Honour Among Thieves Atlas Passive now has Your Maps that contain Smuggler's Caches have a 15% chance to contain 6 additional Smuggler's Caches (previously 5% chance). Unchanged in Ruthless.
+The small Passives prior to the Backup Cache Notable Atlas Passive now also grant Strongboxes in your Maps have 30% increased chance to be an Artisan's Strongbox (this is a 25% increased chance in Ruthless Leagues).
+
+Return to top
+Keepers of the Flame as a Core League
+
+Thanks to your help, Ailith and the Order of the Keepers of the Flame have managed to curb the onslaught of the Breachlords, but the fight is not yet over. Ailith and the Order have solidified their position, and will continue to offer assistance and rewards as you drive back the Hiveborn across Wraeclast.
+You now encounter Ailith for the first time at the Mud Flats entrance in the Coast in Act 6, where she will enlist your aid in the fight against the Hiveborn.
+Breach Hives and Unstable Breaches now spawn in areas from Act 6 Mud Flats onwards.
+Multiple Unstable Breaches can spawn in areas. However, Breach Hives and Unstable Breaches cannot both be present in areas. Areas also cannot contain more than one Breach Hive.
+Breach Hives in areas have approximately 30% less radius.
+Reduced the visual size of walls and other objects within Breach Hive encounters.
+Walls within Breach Hives can now be instantly destroyed by damage from players and their allies. This can only be done while the encounter is not in progress.
+Added a new currency, Flesh of Xesht: transforms a Breach Unique to its alternate version.
+Breachstones are now non-functional. They can be traded to a vendor in exchange for a Hivebrain Gland (and not asking too many questions).
+The following items have been removed, and existing items will be deleted upon logging in: Fleshgraft, Growing Wombgift, Augmentation Implant, Exalted Implant, Regal Implant, Unstable Implant, Draining Eshgraft, Jolting Eshgraft, Replicating Eshgraft, Storming Eshgraft, Aegis Tulgraft, Freezing Tulgraft, Squalling Tulgraft, Summoning Tulgraft, Battering Uulgraft, Hardening Uulgraft, Impaling Uulgraft, Spiking Uulgraft, Erupting Xophgraft, Flamecaller Xophgraft, Molten Xophgraft, and Stoking Xophgraft.
+Hivebrain Glands now directly open portals to a Hive Colony, rather than being used alongside a Map to add an entrance to a Hive Colony within that area.
+The Genesis Tree is now fully grown by default, meaning all wombs will be accessible from the start - you will still need to work with Ailith to unlock points to allocate and use each branch to its full potential.
+Graftblood has been renamed to Hiveblood.
+Grafts can no longer be grown from the Genesis Tree. The corresponding branch has been pruned.
+The Graft Locker no longer stores Graft Items and has been renamed to "Wombgift Locker" as a result.
+Provisioning Wombgifts can no longer grow Weapon or Quiver items on the Genesis Tree.
+Generally reduced the total number of points you can earn in each Genesis Tree subtree.
+Several passives on the Genesis Tree have been rebalanced to make the rewards more appropriate for a core league.
+There is now more variance at endgame for the Item Level of items generated from growing Equipment Wombs on the Genesis Tree, and removed most sources of guaranted additional Item Levels.
+The Breachlord Achievement now requires you to kill It That Was Tul and It That Was Esh.
+Ailith no longer sells Fleshgrafts.
+Hiveblood no longer requires Grafts to store, and has a maximum capacity of 100,000. Hiveblood is shared across all characters within a League.
+Added several Breach clusters to the Atlas Passive Tree.
+Added a new Atlas Keystone, Dimensional Foothold, which grants Breach encounters in your Maps are always Hives.
+Added a new Atlas Keystone, Enemy at the Gates, which grants Breach encounters in your Maps are always unstable Breaches.
+Existing Valdo Maps with "Area contains the Hidden" instead now grant "Area contains the Remembered".
+Existing Valdo Maps with "Area contains a Breachlord and Area contains additional Breaches" instead now have "Area contains additional Unstable Breaches". All Unstable Breaches must be Stabilised and Closed in order to claim the reward from the area.
+All Breach Scarabs have been reworked, the Breach Scarab has been renamed to Breach Scarab of the Hive and has Area contains a Breach Hive.
+Breach Scarab of Snares has been renamed to Breach Scarab of Instability and has Area contains 2 additional Unstable Breaches.
+Breach Scarab of Lordship has been renamed to Breach Scarab of the Marshal and has Unstable Breaches in Area contain a Boss, and Breach Hives in Area lead to a Hive Fortress.
+Breach Scarab of Splintering has been renamed to Breach Scarab of the Incensed Swarm and has Ailith's skills in Area instead enrage the Hive, increasing the Difficulty and Reward of subsequent waves.
+Breach Scarab of Resonant Cascade now has Unstable Breaches in Areas are 10% faster for each Unstable Breach already opened, and Monsters from Unstable Breaches in Areas have increased Difficulty and Reward for each Unstable Breach already opened.
+All Breach Scarabs have a limit of 1, except for Breach Scarab of the Instability which has a limit of 2.
+The Breach sub-stash in the Fragment Stash Tab is now Remove-Only.
+The following Divination Cards have been temporarily disabled: The Bargain, The Eye of Terror, The Obscured, and The Puzzle. Existing Divination Cards cannot be turned in currently.
+Foulborn Berek's Respite can no longer roll Ignited Enemies you Kill Explode, dealing 5% of their Life as Fire Damage which cannot Ignite.
+Foulborn The Embalmer can no longer roll on Killing a Poisoned Enemy, nearby Enemies are Poisoned.
+Foulborn Reverberation Rod now has Socketed Gems are Supported by Level 1 Greater Spell Cascade (instead of Awakened Spell Cascade).
+The below changes can be applied to existing items with a Divine Orb and a side of regret.
+Foulborn Tulborn now has +2-3 to Level of all Cold Spell Skill Gems (previously +2-4)
+Foulborn The Red Dream now has Passives granting Fire Resistance or all Elemental Resistances in Radius also grant increased Maximum Life at 50% of its value (previously 75%).
+Foulborn The Green Dream now has Passives granting Cold Resistance or all Elemental Resistances in Radius also grant increased Maximum Mana at 75% of its value (previously 100%).
+Foulborn The Blue Dream now has Passives granting Lightning Resistance or all Elemental Resistances in Radius also grant increased Maximum Energy Shield at 75% of its value (previously 100%).
+Foulborn Hand of Thought and Motion now has 3% increased Accuracy Rating per 25 Intelligence (previously 5% increased Accuracy Rating).
+Foulborn Choir of the Storm now has Mana is increased by 1% per 4% Overcapped Lightning Resistance (previously 50% of Overcapped Lightning Resistance, or in other words 1% per 2%).
+Foulborn Deidbell now has 20-35% increased Warcry Buff Effect (previously 25-50%).
+Foulborn Ghostwrithe has your Maximum Energy Shield is equal to 40% of your Maximum Life (previously 50%).
+Foulborn Doon Cuebiyari now has 1% increased maximum Energy Shield per 25 Strength when in Off Hand (previously per 16 Strength).
+Foulborn Doon Cuebiyari now has 1% increased maximum Mana per 18 Strength when in Main Hand (previously per 12 Strength).
+
+Return to top
+Harbinger Removed as a Core League
+
+As turmoil grips the Atlas, the Harbingers appear to have departed Wraeclast, leaving behind only a cryptic message:  While the Beachhead lies quiet for now, perhaps one day they will return…
+Fracturing Orbs and Ancient Orbs are now able to drop as part of the core drop pool.
+Engineer's Orbs, Harbinger's Orbs, and Orbs of Horizons can no longer be obtained. Existing items will no longer function.
+Ancient Shards, Binding Shards, Engineer's Shards, Harbinger's Shards, and Horizon Shards can no longer be obtained. Existing items will be deleted upon logging in.
+The following Currency can no longer be obtained: Deregulation Scroll, Electroshock Scroll, Fragmentation Scroll, Haemocombustion Scroll, Specularity Scroll, and Time-light Scroll.
+The following Divination Cards have been temporarily disabled: The Journey, The Messenger and The Landing. Existing Divination Cards cannot be turned in currently.
+The following Unique Fragments can no longer be obtained: First Piece of Arcane, Second Piece of Arcane, Third Piece of Arcane, First Piece of Brutality, Second Piece of Brutality, Third Piece of Brutality, First Piece of Directions, Second Piece of Directions, Third Piece of Directions, First Piece of Focus, Second Piece of Focus, Third Piece of Focus, Fourth Piece of Focus, First Piece of Storms, Second Piece of Storms, Third Piece of Storms, First Piece of Time, and Second Piece of Time.
+The following Uniques can no longer be obtained: The Beachhead, Infused Beachhead, The Enmity Divine, The Flow Untethered, The Fracturing Spinner, The Rippling Thoughts, The Tempest's Binding, and The Unshattered Will.
+The following Uniques have been added to the core drop pool: The Immortal Will, The Shattered Divinity, The Surging Thoughts, The Tempest's Liberation, The Torrent's Reclamation, and The Yielding Mortality.
+All Harbinger related Atlas Passives have been removed.
+The Harbinger Scarab, Harbinger Scarab of Obelisks, Harbinger Scarab of Regency and Harbinger Scarab of Warhoards can no longer drop. These Scarabs will be converted to Veiled Scarabs upon logging in after the launch of 3.28.0.
+The Harrowing Carapaces Atlas Notable now grants Scarabs dropped in your Maps have 100% increased chance to be Divination Scarabs (instead of increased chance for Harbinger Scarabs).
+Added a new Atlas tree cluster Unexpected Stranger which causes your Maps to be inhabited by an additional Rogue Exile.
+Maps that had implicit modifiers for containing additional Harbingers instead now contain additional Tormented Spirits.
+Valdo Maps that added a Regal Harbinger to the area instead now add a Bismuth Ore Deposit to the area.
+Obscured Delirium Orbs and Foreboding Delirium Orbs can no longer be obtained. Existing Obscured Delirium Orbs will drop Breach Rings. Existing Foreboding Delirium Orbs have been converted to Fine Delirium Orbs.
+Foreboding Incubators no longer drop. Preexisting ones will instead grant drop Currency Items.
+Blueprints that had Harbinger Rewards now instead have Gold Rewards.
+Trinkets that had a chance to receive additional Harbinger items when opening a Reward Chest in a Heist instead now grant a chance to receive additional Gold.
+Runed Cavern Delve nodes no longer appear, existing nodes have been converted to Underground Stashes.
+Removed most cases of Currency Shards dropping throughout the game. Vendor recipes for Currency Shards are unchanged.
+
+Return to top
+League Changes
+
+Settlers of Kalguur
+Kingsmarch has opened a shipping trade route to a new Karui port: Mota Aro.
+Shipping ores and bars in Kingsmarch will now return Currency items, while shipping crops will return Equipment items.
+Favoured Resources can now be rerolled at Ports for 15,000 Gold.
+Shipments from Kingsmarch to Karui and Kalguuran ports will now grant specific Tattoos or specific Runegrafts. For example, shipments to Ngakanu will now only reward Tattoos that replace Strength passives.
+Ports no longer have a bias towards a specific type of currency while shipping.
+The guild of Kingsmarch smelters have devised new technologies for more efficient smelting. As a result they can smelt ores into bars twice as fast, but will charge more Gold for their services
+Due to reduced global demand for crops, Kingsmarch farmer's Gold wage costs have decreased by 50%.
+Due to heightening danger within the Atlas, Kingsmarch mapper's Gold wage costs have increased by 25%.
+Kingsmarch Mappers can no longer return Cluster Jewels over item level 83.
+
+Bestiary
+The Beastcrafting recipe for a Stack of 3 Orbs of Horizons instead now grants a Stack of 3 Orbs of Unmaking.
+The Beastcrafting recipe for gaining Five Kirac Missions instead now grants a Nightmare Map.
+The Beastcrafting recipe for gaining a free use of each Map Crafting Option instead now grants a valuable Scarab.
+The Beastcrafting recipe to increase the level of non-Corrupted Awakened Gem by 1 now adds 500m Experience to an Exceptional Support Gem.
+The Beastcrafting recipe to Reroll an Awakened Support Gem now sacrifices an Exceptional Support Gem for 3 high Level, high Quality Support Gems.
+
+Betrayal
+Some Syndicate members are seeking to capitalise on the shifting forces in the Atlas, and now offer different rewards:
+It That Fled in Transportation now offers a trapped stash with Foulborn Unique items (previously Corrupted Maps with additional Breaches).
+It That Fled in Fortification now offers a crafting spree with a random Breach Ring that you can use Foulborn Currency on (previously Map crafting options for Breachstones).
+Rin in Transportation now offers chests containing Originator influenced Maps (previously chests containing Scouting Reports and other Map Currency).
+Rin in Research now offers a trapped stash with Scarabs (previously a bench to craft a Map with Map Currency).
+Vagan in Transportation now offers chests containing Incubators (previously chests with Harbinger Scarabs).
+Tora in Intervention now offers chests containing Cartography Scarabs (previously chests with Harbinger Scarabs).
+
+Delve
+The Sulphite Scarab no longer has Map Owner gains 150% more Sulphite.
+The amount of Sulphite gained from Sulphite Veins and Chests in Maps has been increased, scaling to being roughly doubled at the highest level.
+Changed the way Sulphite Veins in Maps scale with Map Item Dropped Quantity to be similar to how Settler's Ores scale with Map Item Dropped Quantity.
+
+Expedition
+Tujen no longer sells Cluster Jewels or Abyss Jewels in his shop.
+
+Legion
+Possessed Legion Monsters can no longer release Tormented Spirits when being broken out. They can still release Tormented Spirits once broken out.
+
+Ultimatum
+Added a modifier to Ultimatums that prevents players being able to Block.
+
+Return to top
+Player Changes
+
+The Templar now wakes on the Twilight Strand more in touch with his faith: the starting skill gem for Templar is now Holy Strike, and the starting support gem for Templar is now Hallow Support.
+Totem Placement speed now also scales the speed at which Totems emerge. Ranged Attack Totems now have a base placement speed of 0.5 seconds (previously 0.35).
+Channelling Spells such as Lightning Tendrils of Escalation and Blight will now channel towards enemies from further away when used by Totems.
+Intelligence now inherently grants 1% increased Maximum Energy Shield per 10 Intelligence (previously per 5 Intelligence).
+All sources of reduced Reflected Damage Taken have been replaced with a percentage of Damage cannot be Reflected. Some legacy items will still have the old stats however.
+
+Return to top
+Skill Gem Changes
+
+The Holy Slam skill used by Herald of Purity Minions and Dominating Blow Minions now has 32% more Area of Effect.
+Absolution and Absolution of Inspiring: Now have a base debuff duration of 3 seconds (previously 1), and a base Minion duration of 15 seconds (previously 10). Sentinels of Absolution now have 44% more Area of Effect with their Empowered Lightning Blast Skill, and it now deals 40% more Damage.
+Animate Guardian of Smiting: Now has Minion deals 0-76% more Damage (previously 0-38%). The Smite Attack now has an impact radius of 2.1 metres (previously 1.5 metres).
+Charged Dash: The description has been updated to clarify that the more Damage while Channelling if Illusion has finished moving only applies to Damage with Hits. This is not a functional change.
+Consecrated Path: Now has 273-468% Effectiveness of Base and Added Damage at gem levels 1-20 (previously 227-417%). Quality now provides Deals +0-15% more Damage with Hits to closer targets (previously +0-10%).
+Consecrated Path of Endurance: Quality now provides Deals +0-15% more Damage with Hits to closer targets (previously +0-10%).
+Detonate Dead of Scavenging now has 70% less Damage with Ailments (previously 60%).
+Dominating Blow: The chance to summon a Normal Sentinel on Hitting a Unique Monster now also applies when Hitting Rare Monsters. Debuff Duration is now 3 seconds (previously 1), and Sentinel Duration is now 30 seconds (previously 20).
+Dominating Blow of Inspiring: Debuff Duration is now 3 seconds (previously 1), and Sentinel Duration is now 30 seconds (previously 20).
+Earthshatter: Now has an Effectiveness of Added Damage of 158%-329% at gem levels 1-20 (previously 171%-393%).
+Energy Blade: Quality now provides Buff grants 0-10% increased Attack Speed (replacing Buff grants 0-5% more Maximum Energy Shield).
+Holy Flame Totem: Now fires 3-6 Projectiles at gem levels 1-20 (previously 3 at all levels). Now has the AoE gem tag.
+Holy Flame Totem of Ire: Now deals 20% more Damage at all Levels and has an Effectiveness of Added Damage of 40% (previously 35%). Now has the AoE gem tag.
+Orb of Storms: Can now be supported by Spell Echo.
+Penance Brand: Now deals 10% more Damage at all gem levels. Now has an Effectiveness of Added Damage of 520-630% at gem levels 1-20 (previously 470-570%). No longer has 30% less Damage with Ailments. Quality now provides Deals +0-15% more Damage with Hits against Branded Enemy (previously +0-10%).
+Penance Brand of Conduction: Now activates every 0.1 seconds while Attached (previously 0.15). Quality now provides Deals +0-30% more Damage with Hits against Branded Enemy (previously +0-15%).
+Penance Brand of Dissipation: Now activates every 1 second while Attached (previously 0.75), and now has Pulses deal 20% more Damage with Hits and Ailments per Energy after the first (previously 30%). Quality now provides Deals +0-15% more Damage with Hits against Branded Enemy (previously +0-10%).
+Portal: No longer has its casting interrupted by self-damage.
+Purifying Flame of Revelations: Now has a Mana cost of 5-20 at gem levels 1-20 (previously 6-25), and now has a base cast time of 0.6 seconds (previously 0.7). Shockwave now deals 150% more Damage (previously 110%).
+Raised Spectres: No longer gain a hidden more Elemental Damage bonus when converting their Physical Damage to Elemental. They also now scale up their monster level more at gem levels past 20, a gem level 30 Raised Spectre is now level 85 (previously 81).
+Static Strike: Now has a base enemy zap range of 2.5 metres (previously 2), a base duration of 4 seconds (previously 3), and Beams now deal 30% less Damage (previously 40%).
+Storm Brand: Now Deals 3-10 Lightning Damage at gem level 1 (previously 3-8), scaling to 150-449 Lightning Damage at gem level 20 (previously 92-277). Storm Brand's Effectiveness of Added Damage is now 45-55% at gem levels 1-20 (previously 30% at all gem levels). Storm Brand now deals 80% more Damage with Hits against Branded Enemy at all levels (previously 80-130%).
+Storm Brand of Indecision: Quality now provides Deals +0-15% more Damage with Hits against Branded Enemy (previously +0-10%).
+Storm Burst: Now places an orb immediately on casting, rather than the first orb being placed one cast into the process of channelling.
+Summon Holy Relic: Holy Relic's Nova Skill now grants 9-985 Life regenerated per second to Minions at gem levels 1-20 (previously 9-464).
+Sweep: Has been reworked, and is now called Holy Sweep. Holy Sweep swings a two handed mace or a staff in a circle, calling down Holy Hammers to land randomly on a number of enemies struck. Hits from these Holy Hammers cannot be evaded.
+Thunderstorm: The explosion now deals 300% more Damage with Hits and Ailments. This was previously described as simply more Damage, but was only applying to Damage from Hits.
+Viper Strike of the Mamba: Now has 30% less Attack Speed if Dual Wielding and Each Weapon Hits separately if Dual Wielding, dealing 20% less Damage (matching regular Viper Strike). It also now has Cannot inflict multiple Poisons in the same Hit.
+Winter Orb: Projectile Speed modifiers now affect the time it takes for projectiles to impact the ground (previously projectile speed had no effect on Winter Orb).
+
+Return to top
+Vaal Gem Changes
+
+Vaal Domination: Ascended Sentinels now gain +2 radius per stage with their Sunder ability (previously +1), and now deal 300% more Damage (previously 200%).
+Vaal Absolution: Ascended Sentinels of Absolution now deal 300% more Damage (previously 200%), and have a base duration of 20 seconds (previously 15). Ascended Sentinels of Absolution now have 44% more Area of Effect with their Lightning Blast cascade Skill.
+
+Return to top
+Support Gem Changes
+
+All Awakened Support Gems can no longer be obtained, except for Awakened Empower, Awakened Enlighten and Awakened Enhance.
+The following Divination Cards have been temporarily disabled: The Cheater and the Desecrated Virtue. Existing Divination Cards cannot be turned in currently.
+Chain Support has a Cost & Reservation Multiplier of 140% (previously 150%)
+The Labyrinth Gem craft outcome to exchange a Support Gem for its Awakened version has been removed.
+The Labyrinth Gem craft outcome to exchange a Support Gem for a random Exceptional Support Gem, instead now states you will receive a random Empower, Enlighten or Enhance Support Gem.
+Greater versions of Supports no longer work alongside their non-Greater version, in a similar way to how Awakened Supports did not work with the corresponding non-Awakened version of the Support. In the case both versions of a Support are socketed, the Greater one takes priority.
+Existing Supports affected by this change include: Multiple Projectiles and Greater Multiple Projectiles, Volley and Greater Volley, Spell Echo and Greater Spell Echo.
+Lesser Multiple Projectiles Support has been renamed to Multiple Projectiles Support.
+Autoexertion now has a Mana Reservation of 20% (previously 15%).
+Overexertion now grants Supported Attacks deal 7-10% more Damage for each Warcry Exerting them (previously 12-18%), and Supported Attacks deal 10-14% more Damage if Exerted (previously 10% at all gem levels). No longer displays as supporting Triggered Attack skills which cannot be Exerted, such as Shockwave Support.
+
+Return to top
+Ascendancy Changes
+
+Chieftain
+The Hinekora, Death's Fury Notable now has Enemies you or your Totems Kill have 10% chance to Explode (from 5), dealing 250% of their maximum Life as Fire Damage (from 500).
+
+Guardian
+The Guardian's Sentinel of Radiance Minion no longer has duration (it is a permanent minion) and has approximately 36% more Movement Speed. Note the Sentinel still doesn't persist between areas.
+Effects that grant random Shrine buffs such as Guardian's Harmony of Purpose Notable or The Golden Charlatan Unique Sword instead now grant Greater Shocking, Freezing and Skeletal Shrine (instead of the regular versions of these Shrines).
+The Time of Need Notable now has Every 4 seconds, remove Curses and Ailments from you (previously removed Curses and Elemental Ailments).
+The Guardian now has an additional 2-point Ascendancy Notable: Marshal of Divinity. This Notable grants Inflict Hallowing Flame on Melee Hit, You can inflict +1 Hallowing Flame on Enemies, and Gain 10% of Physical Damage as Extra Lightning Damage for each of your Hallowing Flames that have been removed by an allied hit recently, up to 80%.
+
+Warden
+The Lesson of the Seasons Notable now grants -25 Damage taken of each Damage Type from Spell Hits per Bark (previously -15 Fire, Cold and Lightning Damage taken).
+The Avatar of the Wilds now grants 100% more Elemental Damage while Unbound (previously 80%).
+
+Assassin
+The Opportunistic Notable now provides Damage cannot be Reflected (previously Damage from your Critical Strikes cannot be Reflected).
+
+Saboteur
+The Perfect Crime Notable now has 30% less Damage with Triggered Spells (previously 35%).
+The Like Clockwork Notable has 50% increased Cooldown Recovery Rate (previously 40%).
+The Calculated Risk Notable now has Damage of Enemies Hitting you is Unlucky.
+
+Elementalist
+The Liege of the Primordial Notable no longer has 50% increased Effect of Buffs granted by your Golems.
+
+Ascendant
+The Assassin Notable now provides Damage Cannot be Reflected (previously Damage from your Critical Strikes cannot be Reflected).
+
+Return to top
+Bloodline Changes
+Aul
+The King's Might, The King's Heritage, and The King's Contempt Bloodline Passive Skills now grant their respective Aura effect while you have minimum Frenzy, Endurance, or Power Charges respectively (previously no Frenzy, Endurance, or Power Charges).
+
+Breachlord
+The Otherworldly Appendages notable on the Breachlord Bloodline has been renamed to Cryogenesis and now grants:
+If Intelligence is your single highest Attribute, all added Damage is treated as added Lighting Damage
+If Dexterity is your single highest Attribute, all added Damage is treated as added Cold Damage
+
+Catarina
+The Prolonged Servitude Bloodline Passive Skill now has Minions deal 20% more Damage while they are on low Life (previously 15%).
+
+Delirious
+The Misty Reflection Skill granted by the It wasn't me! Bloodline Passive Skill now has a base Duration of 3 seconds (previously 2), and now has 5% of your maximum Life (previously 10%).
+
+Farrul
+The Primal Roar Bloodline Passive Skill now provides 4% increased Attack Speed per Minion, up to a maximum of 80% (previously 2% per Minion).
+Summoned Spectral Tigers from the Huntleader Bloodline Passive Skill now have 50% less maximum Life, but deal slightly more damage and have increased attack speed. They now also display their maximum life in the Character panel.
+
+Lycia
+The Sinner Saint Bloodline Passive Skill now converts 67% of Fire, Cold, And Lightning Damage to Chaos Damage (previously 50%).
+
+Nameless
+The Unlight Silhouette Bloodline Passive Skill now has Skills gain Added Chaos Damage equal to 25% of Life Cost, if Life Cost is not higher than the maximum you could spend (previously 20%).
+
+Olroth
+The Boon of the Mountain Bloodline Passive Skill now grants 50% less Damage Taken from Damage over Time while you have Unbroken Ward (previously 30%).
+The Boon of the Sun Bloodline Passive Skill now grants 30% faster Restoration of Ward per Enemy Hit taken Recently (previously 20%).
+The Enhanced Starlight Bloodline Passive Skill now grants 70% increased Ward from Equipped Armour Items (previously 40%).
+Ward Shatter triggered by the Volatile Runes Bloodline Passive Skill now has 200% more Damage if Ward has not broken in the past 2 seconds (previously 80%). It now deals 160% to 240% of Ward as Base Spell Physical Damage (previously 250% to 300%), and has a Cooldown of 0.15 seconds (previously 0.5). Ward Shatter can no longer apply the Enervation Debuff to player characters.
+
+Oshabi
+The Vivid Cat Bloodline Passive Skill now provides 50% increased effect of Marks while you have Elusive, instead of 50% increased Stealth while Elusive.
+
+Return to top
+Passive Skill Tree Changes
+
+Added two new clusters to the west of the Templar starting area: one granting Accuracy and Effect of Consecrated Ground, the other granting Accuracy and Attack Area of Effect.
+Added a new Protection Mastery that provides 50% of Damage from your Hits cannot be Reflected (replacing the Mastery that granted 65% reduced effect of Wither on You).
+The Defiled Forces Notable Passive no longer refreshes the Duration of Ignite on Enemies you Curse, and instead has Curse Skills have 15% increased Cast Speed.
+The Evasion and Energy Shield Mastery now has 1% increased Evasion Rating per 10 Intelligence (previously per 5 Intelligence).
+The Fire Mastery that granted 50% chance to refresh Ignite Duration on Critical Strike has been replaced with a Mastery granting +12% to Fire Damage over Time Multiplier and 50% increased Ignite Duration on You.
+
+Return to top
+Unique Item Changes
+
+Bino's Kitchen Knife Unique Dagger now has on Killing a Poisoned Enemy, Enemies within 3 metres are Poisoned (previously 1.5 metres) and nearby Allies Regenerate 400 Life per second (previously 200 Life per second). Existing items are affected by this change.
+Bino's Kitchen Knife Unique Dagger has +17-27% to Chaos Resistance (previously 8-12). Existing items can be updated to the new values with a Divine Orb.
+Descriptions for Poison spreading now explicitly state the spread radius, instead of just stating nearby.
+The Bloodnotch Unique Jewel now has 20-30% of Damage taken from Stunning Hits is Recovered as Life (previously 40-60%). Existing items can be made worse with a Divine Orb.
+The Bloodseeker Unique Claw now has 200-250% increased Physical Damage (previously 200-220%). Existing items can be updated to the new values with a Divine Orb.
+Bloodseeker Unique Claw no longer has 5% increased Attack Speed or 5% increased Movement Speed. Bloodseeker now has 15-25% increased Life Reservation Efficiency of Skills and 5-10% increased maximum Recovery per Life Leech for each 5% of Life Reserved. These changes do not affect existing items.
+Essentia Sanguis Unique Claw now has Adds 1 to 650-850 Lightning Damage (previously 600-700) and +200-300 to maximum Energy Shield (previously 30 to 40). A Divine Orb can update these modifiers to the new values.
+Essentia Sanguis no longer has +8% Chance to Block Attack Damage while Dual Wielding Claws and now has Maximum Recovery per Energy Shield Leech is Doubled. The implicit modifier is now 2% of Attack Damage Leeched as Life (from 2% of Physical Attack Damage Leeched as Life). These changes do not affect existing versions of the unique item.
+Hand of Heresy Unique Gloves now has Melee Attacks have +0.8-1.6% to Critical Strike Chance against Excommunicated Enemies. Existing versions of this item are unaffected by this change.
+The Marohi Erqi Unique Mace now has 40-50% increased Area of Effect. This change does not affect existing versions of the item.
+Lioneye's Glare Unique Bow now has Attacks you use yourself Repeat an additional time and Attacks you use yourself have 50% more Attack Speed. The implicit modifier is now 20-24% increased Global Physical Damage (previously 20-24% increased Elemental Damage with Attack Skills). It no longer has 10-20% increased Attack Speed. These changes do not affect existing versions of the item.
+The Pledge of Hands Unique Staff now has Socketed Gems are Supported by Level 1 Greater Spell Echo (previously level 30). This change affects existing versions of the item. This staff now also has 50-100% increased maximum Mana (previously 50%), and existing items can be updated to these new values using a Divine Orb.
+Added a new Replica Unique, Replica Gifts from Above.
+The Shaper's Touch Unique Gloves now have +2 Accuracy Rating per 2 Intelligence (previously +4). Existing items can be made worse with a Divine Orb.
+The Sibyl's Lament Unique Ring now grants 100% of Elemental Hit Damage from you and your Minions cannot be Reflected in the Left Ring Slot (previously 80%), and 100% of Physical Hit Damage from you and your Minions cannot be Reflected in the Right Ring Slot (previously 80%) Existing items can be updated to the new values with a Divine Orb.
+Soul Taker Unique Axe now has Eat 2-4 Souls when you Kill a Rare or Unique Enemy with this Weapon. Existing versions of this item are unaffected by this change.
+The Supreme Truth Unique Sceptre no longer grants 20% increased Elemental Damage, and instead now grants Attacks with this Weapon inflict Hallowing Flame on Hit.
+The Unseen Hue Unique Ring now drops from regular Incarnation of Fear.
+Voltaxic Rift Unique Bow now has Treats Enemy Monster Chaos Resistance values as inverted and no longer has Hits with this Weapon Shock Enemies as though dealing 300% more Damage. Existing versions of this item are unaffected by this change.
+The Woespike Unique Ring now has 40-50% less Impale Duration (previously 25-40% reduced Impale Duration), and 20-30% chance on Melee Hit for the Strongest Impale on target to last for 1 additional Hit (from 45-60%). Woespike now drops from the Uber Incarnation of Fear.
+The contains an additional Unique Item modifier on Strongboxes will now drop a Unique Item matching the types of item dropped from the Strongbox if possible.
+
+Return to top
+Item Changes
+
+Currency Items now account for a significantly larger portion of dropped items. This change is to allow currency rewards from slaying of enemies to be more competitive with other sources of it in the game.
+This change does not affect the number of Scrolls of Wisdom or Portal Scrolls that drop. Non-Unique Equipment items are approximately 6% less common as a result of this change. These changes do not affect Ruthless.
+Lowered how much Modifier Tier Rating is granted to Rare items generated from Kingsmarch Shipping, Kingsmarch Mapping, Gambling and the Genesis Tree.
+Relative rarities of several currencies have been adjusted. Most notably, Exalted and Regal Orbs will now be comparatively more common.
+Increased the penalty to Gold and Map drops on Breach and Blight monsters.
+Essence of Insanity on Rings now grants 60% of Hit Damage from you and your Minions cannot be Reflected (previously 40%).
+Synthesis Implicits on Rings and Quivers now grant up to 30% of Damage from your Hits cannot be Reflected (previously 15%).
+Influenced Modifiers on Rings now grant up to 75% of Elemental or Physical Hit Damage from you and your Minions cannot be Reflected (previously 55%).
+Watcher's Eye Modifiers now grant up to 75% of Damage from your Hits cannot be Reflected, for specific Damage types, while affected by Specific Auras (previously 50%).
+The Justified Ambition Divination Card can once more reward the Cortex.
+The Primordial Bond Cluster Jewel Notable now has 20% increased Effect of Buffs granted by your Golems (previously 40%).
+The Low Tolerance Cluster Jewel Notable now has Poisons you inflict on non-Poisoned Enemies deal 200% increased Damage (previously 300%).
+Small Attack Block Cluster Jewels can now roll the the new Notable: Fiery Aegis.
+Medium Exerted Attack Cluster Jewels can now roll the new Notable: Holy Word.
+Runegraft of Refraction no longer has Skills chain an additional time, and now has Projectiles chain an additional time.
+Removed all crafts that Enchant Flasks from the Horticrafting Bench. Existing items with these Enchantments are unaffected.
+The Beastcrafting recipe to apply a Hinekora's Lock to a Magic Item can no longer be used on Corrupted Items.
+All Essences now have a maximum stack size of 10 (previously 9).
+The Follow-Through Notable Cluster Jewel Passive now grants Projectiles deal 20% increased Damage with Hits and Ailments for each remaining Chain, up to 100% (previously 15% increased with no cap)
+Clarified some descriptions on Cluster Jewel Notables such as Purposeful Harbinger and Follow-Through to make it clearer that the caps are global. This is purely a descriptive change.
+All Unique Maps now have a fee of around 2000 Gold when purchasing from a Merchant Tab.
+Itemised Beasts have vastly lower Gold fees, and their Gold fees no longer depend on the modifiers on the Itemised Beasts.
+
+Return to top
+Ruthless-specific Changes
+
+The Quickstep skill now has 200% increased Cooldown Recovery Rate if used while no Enemies are in your Presence.
+The Paths Not Taken Atlas Keystone grants Maps have an extra random Prefix and Suffix while six Gateways are Allocated.
+
+Return to top
+Monster Changes
+
+Reduced the damage dealt by Rusty Crusher's shock rifle ability by ~50%.
+
+Return to top
+Quest Reward Changes
+
+Holy Strike can now be purchased from Nessa by the Scion upon completing Enemy at the Gate.
+Hallow Support can now be purchased from Nessa by the Templar upon completing Enemy at the Gate, and by the Marauder, Witch, and Scion upon completing Mercy Mission.
+Elemental Proliferation Support is now offered to the Templar by Nessa for completing the Mercy Mission quest.
+Shield of Light is now offered to the Templar for completing Intruders in Black, and can be purchased from Yeena by the Scion.
+Exemplar Support is now offered to the Templar for completing Sharp and Cruel, and can be purchased from Yeena by the Witch and Scion.
+Divine Blast is now offered to the Templar for completing Sever the Right Hand, and can be purchased from Clarissa by the Marauder and Scion.
+Blessed Call Support is now offered to the Templar for completing A Fixture of Fate, and can be purchased from Clarissa by the Marauder and Scion.
+Excommunicate Support is now offered to the Templar for completing A Fixture of Fate, and can be purchased from Clarissa by the Marauder and Scion.
+
+Return to top
+User Interface and Quality of Life Changes
+
+Completing the final Ritual Altar in an area will now display a notification and highlight the Ritual Rewards button as a reminder to spend Tribute before leaving.
+Items in the Sales History log for Merchant Tabs now show the full details of the item when hovering over the name. Existing Sales History in Permanent Leagues will be deleted as part of this change.
+You can now create Favorite trades on the Currency Exchange.
+Added a button to the Currency Exchange that toggles between having your Stash or your Inventory panel open.
+On PC, opening the "I Want" or "I Have" currency selection window at the Currency Exchange will now immediately set focus to the search input field.
+The Labyrinth craft to transform a non-Transfigured Skill Gem to a Transfigured version now allows you to select the Transfigured version you desire most in cases where multiple Transfigured versions of that gem exist.
+Heist Display cases at the end of a Blueprint are no longer targetable once Lockdown begins, as you could no longer interact with them anyways.
+The list of Modifiers affecting excavated Monsters and Chests in an Expedition will now split into multiple columns to display all text if there are sufficient Modifiers that it would otherwise go offscreen.
+Added quick-use Currency buttons to Ritual Shrines. These buttons will only be visible if you have the relevant currency items in your inventory.
+Ctrl + Clicking Divination Cards into the Divination Window will now automatically turn them in. Any item already present in the window will be moved to your inventory when moving a new stack of Divination Cards into it with Ctrl + Click.
+Forbidden Tomes now display the area level of the Forbidden Sanctum on their inventory icon.
+Added a buff icon for easier tracking of dead Orb Spectres.
+Made Shrines easier to highlight, even when surrounded by enemies
+The Aiding an Archivist quest no longer shows on the Quest Tracker when not in Act 10.
+The Exploring Kingsmarch and Kingsmarch Prospecting quests no longer show on the Quest Tracker in towns outside of the Karui Shores.
+Eternal Orbs can now be traded via the Currency Exchange in Standard Leagues.
+Hovering an item while applying a Divine Orb or a Blessed Orb now highlights the specific modifier values that will be rerolled.
+Added UI feedback for when a Mythic Orb destroys the target item.
+The keybind for hot-swapping the currently selected currency when repeatedly applying currency to items can now be customised via the options menu.
+Map items are no longer required to set Guild tags. The "/reclaim_guild_tag_items" chat command can be used to reclaim items from the old guild tag inventory if required.
+The arrows at the edges of the Lycia Bloodline Ascendancy class artwork are now 100% aligned with the chevrons of the Witch, Duelist, and Scion starting locations (previously 0% aligned).
+Added reminder text for Fleeing, granted for example by Chance to Flee Support.
+When using a controller, the Atlas Passive Tree will now display a confirmation prompt if attempting to close it with pending changes.
+Added the ability to filter-out offline guild members when using a controller.
+Right Shoulder/R1 can now be used to take reward items out of the Divination Window when using a controller.
+Added an alternate behaviour to Raise Zombie that allows you to target the spell in front of you when using a controller.
+Added navigational inputs for Currency and Fragment substashes when using a controller.
+
+Return to top
+Microtransaction Updates
+Enabled The Last of the Druids Mystery Box and its microtransaction contents for use in Path of Exile.
+Enabled the Blood Moon Level-up Extra Effect microtransaction for use in Path of Exile.
+
+Return to top
+Bug Fixes
+
+Fixed a bug where allied Hiveborn monsters could incorrectly be raised as Spectres.
+Fixed a bug where the Locus Mine Support and Runegraft of Refraction did not correctly interact with Kinetic Blast of Clustering's number of explosions, nor Spectral Helix's number of bounces.
+Fixed a bug where Triggered skills such as Kinetic Flux (from Kinetic Instability Support) were able to cause Poets Pen to trigger socketed spells.
+Fixed a bug where skills supported by Living Lightning support could then become supported by certain normally restricted supports. An example being Shield Charge being supportable by Multistrike support.
+Fixed a bug where orbs that jumped towards terrain from Storm Burst could sometimes get stuck, resulting in them not jumping any further or dealing any further damage until the skill was released.
+Fixed a bug where the Dream within a Dream Achievement could not be completed.
+Fixed a bug where the Incarnation of Dread's Lightning Tendrils skill could persist after death.
+Fixed a bug where have multiple Evolving Shrine buffs ignored the reduced chance for monsters to upgrade rarity every time a monster upgrades rarity.
+Fixed a bug where Spectral Shield Throw and Spectral Shield Throw of Shattering could pierce, even though they stated that they could not.
+Fixed a bug where Static Strike beams could target chests it could not open.
+Fixed a bug where you could gain the Static Strike buff from hitting a chest.
+Fixed the visuals of the Shockwave Totem nova being slightly larger than the actual damage area.
+Fixed a bug where the visual area of Orb of Storms was slightly smaller than its damage area.
+Fixed a bug where Chance to Bleed Support would display as Supporting Spells despite having no effect on them.
+Fixed a bug where Rupture Support would display as Supporting Spells, despite having no effect on them.
+Fixed a bug where Vaal Skills used by Totems would continue to apply new soul gain prevention whenever the Totem used the Skill and not just when the Totem is placed.
+Fixed a bug where the Torment Scarab stated it granted the Area 3 additional Tormented Spirits in Ruthless, when it only granted 2.
+Fixed a bug with the Champion Ascendancy where you could count as gaining Fortification while you had "you have your maximum Fortification" from the Fortitude Ascendancy Notable. This will prevent triggering effects like losing Endurances Charges when you gain Fortification on the Replica Badge of the Brotherhood Unique Amulet.
+Fixed a bug where "Your Hits cannot Penetrate or ignore Elemental Resistances" from the Abhorrent Interrogation Unique Gloves was preventing you from penetrating Chaos Resistance as well as Elemental.
+Fixed an issue where the buff granted by the Unique Steelworm quiver was unintentionally persisting through weapon swaps and scaling from modifiers to Buff Expiration Speed.
+Fixed a bug where the level requirement of the Taming Unique Ring could be removed if you removed the Implicit Modifier via Corruption.
+Fixed a bug where the "10% of Leech is Instant per Equipped Claw" Claw Passive Skill Mastery did not specify that this only applied to Life Leech. This is not a functional change, purely a correction of a description error.
+Fixed a bug where increased Quantity of Gold Dropped by Slain Enemies was only applied to enemies you killed with hits, rather than any kill attributed to you.
+Fixed a bug where Incarnation of Dread's Roses could reappear as uninteractable objects if you died and re-entered the arena just after completing a Rose phase.
+Fixed a bug where Trarthan Gems could sometimes drop from Expedition Gem Chests instead of only dropping from Heist Gem Chests.
+Fixed a bug where the Price of Protection Divination Card was not correctly creating Corrupted Maps with Implicit Modifiers.
+Fixed a bug where The Herald of the Hive skill granted by Lost Unity Unique Ring was unable to breaks pots and other destructible objects with its pulse.
+Fixed a bug where Critical Strikes dealing Cold Damage could not Stun targets immune to Freeze or targets that had Critical Strikes against you do not inherently inflict Elemental Ailments.
+Fixed a bug where changing areas with Weapon Set 2 active could cause players to need to hit weapon swap twice in order to swap to Weapon Set 1.
+Fixed a rare bug where capturing Beasts could sometimes fail to add them to your Menagerie.
+Fixed a bug where certain monsters could grant an unintended amount of Ritual Tribute.
+Fixed a rare bug where the King of the Mists wouldn't phase into tree form.
+Fixed a bug where Defiance Banner and Dread Banner could generate with Quality when obtained from Siosa in Ruthless.
+Fixed an issue where Trarthan Gems could not be obtained from Heist in Ruthless. They will now have a rare chance to drop from any side room chest in Heist Contracts.
+Fixed a bug where Summon Spectral Wolf was displaying an incorrect amount of maximum Life for the wolves in the Character panel.
+Fixed a bug where Maps which were Mirrored would highlight when crafting with a Delirium Orb, despite the orb not being able to be applied.
+Fixed a bug where opening the Reflecting Mist UI didn't pause the game.
+Fixed a bug where certain league rewards were not generating in Ruthless if they tried to generate as Unique items.
+Fixed a bug where some Incursion specific Caster Modifiers could roll on Attack Wands.
+Fixed a bug where using a Vaal Orb on an Essence did not reward the Essence Corruption Achievement, and updated the Achievement description to state that a Vaal Orb is required.
+Fixed a bug where it was possible to set stash affinities on remove-only tabs. You still couldn't put anything in those tabs, of course.
+Fixed a bug where Oak, Alira and Kraityn would make a re-appearance as spectators during the Act 7 Ralakesh boss fight.
+Fixed a bug where in some cases in party play Thunderstorm did not visually grow in size for other players, or could be invisible.
+Fixed an issue where Level-up Effects were visually unimpressive the first time they occurred in a play session.
+Fixed a bug where overlapping alarm lights in Heist areas were creating visual artefacts.
+Fixed a bug in the Incarnation of Dread fight where a rose could be visible but not able to be collected.
+Fixed a bug where the unsupported character glyph was showing in the thousandths place for certain locales.
+Fixed a bug where 'Word by Word' text navigation (Ctrl + Left/Right) in text fields would incorrectly wrap to the end of the text input in some situations.
+Fixed a bug where the Dun Shield microtransaction had lost its visual effects.
+Fixed a bug where Sirus, Awakener of Worlds and The Incarnation of Dread were dropping their uniques more often than intended while in a Feared encounter.
+Updates for 2026-03-01
+Spoiler 
+
+New Patch Notes:
+Chain Support has a Cost & Reservation Multiplier of 140% (previously 150%)
+The Follow-Through Notable Cluster Jewel Passive now grants Projectiles deal 20% increased Damage with Hits and Ailments for each remaining Chain, up to 100% (previously 15% increased with no cap)
+Fixed a bug where Sirus, Awakener of Worlds and The Incarnation of Dread were dropping their uniques more often than intended while in a Feared encounter.

@@ -1,0 +1,455 @@
+Content Update 3.27.0 — Path of Exile: Keepers of the Flame
+
+Table of Contents
+Content Update 3.27.0 — Path of Exile: Keepers of the Flame
+The Keepers of the Flame Challenge League
+New Content and Features
+Bloodlines
+Endgame Changes
+Atlas Passive Tree Changes
+League Changes
+Player Changes
+Skill Gem Changes
+Vaal Gem Changes
+Support Gem Changes
+Ascendancy Changes
+Passive Skill Tree Changes
+Unique Item Changes
+Item Changes
+Ruthless-specific Changes
+Monster Changes
+Kirac League Modifiers
+Quest Reward Changes
+User Interface Changes
+Bug Fixes
+Content Update 3.27.0 — Path of Exile: Keepers of the Flame
+The Keepers of the Flame Challenge League
+The Breachlords are advancing further into the outer world, establishing their ominous constructs across Wraeclast. To stop their conquest, Ailith has founded the Order of the Keepers of the Flame. Harness the power of the Flame from Ailith and destroy the Breach infestations once and for all.
+Upon entering the Mud Flats, you'll find it infested with Breach Monsters constructing some type of hive. Protect Alith as she empowers the Flame to purge them from the area. Hold off the assault long enough, and she'll be able to demolish the hive with cleansing flame.
+In some of the areas, the gap between worlds is strained. A massive Breach Hand sunders the space between dimensions, and touching it will open an Unstable Breach causing monsters to flood in. Slaughter them quickly enough to stabilise the Breach
+As you work more with Ailith, she will bring you to the Monastery of the Keepers, the hallowed halls of her order. Here you will discover the growing heart of the Keepers' power, The Genesis Tree, an engine of unholy creation.
+Use the Genesis Tree to grow twisted rewards, including Currency, Uniques, Equipment, and a new kind of otherworldly item — Grafts.
+Born of the same flesh as sinew as the invading monsters, these breach-hands can be fused directly to your body to wield the power of the Breach.
+For more information about this expansion, check out pathofexile.com/keepers
+With 3.27.0, there are Standard, Hardcore and Solo Self-Found variations of the Keepers challenge league available. They have the same core mechanics and items. You can create private league versions of these leagues, with mods that make the game harder.
+The Hardcore variations of Keepers are parented to their Standard Keepers equivalent, meaning if you die in Hardcore Keepers you can continue on in Standard Keepers League.
+The new Keepers challenge league includes a set of 40 new challenges, and 8 new challenges in Ruthless Keepers. Earn pieces of the Keeper of the Flame Armour Set when you complete 12, 20, 28 and 36 challenges in Keepers, or 2, 4, 6 and 8 challenges in Ruthless Keepers. These challenge rewards are only obtainable in this league.
+From the 19th challenge onwards and for every third challenge after that, you will receive pieces of the Keepers Totem Pole decoration to display in your hideout. The Totem Pole permanently showcases how many of the Keepers challenges you completed during the league.
+
+Return to top
+New Content and Features
+Added a new Dexterity Skill Gem, Conflagration: Fire arrows into the air that rain down around the targeted area, dealing area damage on impact and leaving the arrows stuck in the ground for a duration. If you move close to a stuck arrow, it will explode, dealing area damage on impact and applying a fire damage over time debuff, as well as causing other stuck arrows in range to also explode.
+Added a new Dexterity Skill Gem, Thunderstorm: Fires an arrow into the air to land at a targeted location. On impact, deals area damage and creates a thunderstorm which blinds enemies within it. Entering the thunderstorm will cause it to gain stages, and leaving again will cause it to dissipate. Leaving the storm while it is at maximum stages will cause it to explode, dealing damage and triggering Thunderburst. You must use this skill yourself, it cannot be used by Totems, Traps, Mines, or other objects that use skills for you.
+Added a new Intelligence Skill Gem, Somatic Shell: Fire an initial projectile which applies a kinetic barrier to enemies struck. This barrier will absorb incoming damage from hits, up to a cap. On reaching this cap, the barrier will explode, dealing damage in an area and releasing a projectile which will seek another nearby target. Projectiles created this way can themselves apply Somatic Shell to targets hit.
+Added a new Intelligence Skill Gem, Kinetic Fusillade: Manifest a hovering kinetic Anomaly. After a short duration, the Anomaly is flung at an enemy, causing an explosion on impact and chaining to further targets. Attacking again will reset the duration for all active Anomalies. Multiple Anomalies fired in sequence will attempt to target different enemies. Cannot be used with traps or mines.
+Added a new Intelligence Skill Gem, Kinetic Rain: Swing your wand to cause a number of projectiles to rain down within a large area in front of you, directly targeting the locations of enemies in the area. The locations where each projectile will land are shown with markers before they fall. Each projectile explodes when hitting the ground, dealing area damage and triggering Kinetic Anomaly. This skill cannot be triggered or used with traps, mines or totems.
+Added a new Intelligence Skill Gem, Wall of Force: Creates a wall of force which allies and enemies can pass through. Allied projectiles which can Chain will collide with this wall, Chaining off of it to nearby targets. Projectiles which collide with a Wall of Force cannot collide with any further Walls of Force.
+Added a new Intelligence Transfigured Skill Gem, Kinetic Rain of Impact: Swing your wand to cause a number of projectiles to rain down within a large area in front of you, directly targeting the locations of enemies in the area. The locations where each projectile will land are shown with markers before they fall. Each projectile explodes when hitting the ground, dealing area damage.
+Added a new Dexterity Support Gem, Windburst: Supports Attack Skills, causing them to trigger Windburst on hit after you've travelled a certain distance. Cannot support triggered skills or skills used by things other than you. Cannot modify the skills of minions.
+Added a new Intelligence Support Gem, Living Lightning: Supports Skills which cause Damaging Hits, causing them to trigger Summon Living Lightning when dealing lightning damage. Cannot support skills used by totems, traps, or mines. Cannot modify the skills of Minions.
+Added over 20 new Uniques.
+Added 3 new Wand base types, Blasting Wand, Kinetic Wand, and Somatic Wand. These all share the same implicit modifier, Cannot roll Caster Modifiers.
+Added 6 new Ring base types that can be found in Keepers of the Flame: Cryonic Ring, Enthalpic Ring, Formless Ring, Fugitive Ring, Organic Ring, and Synaptic Ring.
+Added 5 new Divination Cards.
+Added 161 more foiled Tier 17 Valdo's Map options that the Valdo's Puzzle Box can yield.
+Added 197 more foiled Unique Item options that the Voidborn Reliquary can yield.
+Introduced the Foulborn Orb of Augmentation, which augments a Magic item with a new random modifier with higher level modifiers being more likely.
+Introduced the Foulborn Regal Orb, which upgrades a Magic item to a Rare item with higher level modifiers being more likely.
+Introduced the Foulborn Exalted Orb, which augments a Rare item with a new random modifier with higher level modifiers being more likely.
+Introduced the Augmentation Implant, which augments a Magic Graft with a new random modifier.
+Introduced the Regal Implant, which upgrades a Magic Graft to a Rare Graft.
+Introduced the Exalted Implant, which augments a Rare Graft with a new random modifier.
+Introduced the Unstable Implant, which corrupts a Graft, either destroying it entirely or replacing the implicit with a powerful modifier. This does not replace the Skill the Graft will use.
+Added Asynchronous Trade. When you reach Act 6, find Faustus in Lioneye's Watch and have him act as a steward for your Merchant's Tabs. You can place items for sale in these tabs, for direct and instant purchase by other players even when you're not online. If you've already purchased Merchant's Tabs in Path of Exile 2, these will now be available for use when you log into Path of Exile.
+After the 3.27.0 update is deployed, you will be able to access the Mercant's Tab Upgrade tool under "My Account" on the Path of Exile website. This is only available for Premium Stash Tabs purchased prior to the launch of Path of Exile 2: The Third Edict.
+Faustus is now in your Hideout once you have met him in either Kingsmarch or Lioneye's Watch (Act 6).
+The stack size of Gold dropped has been globally increased by ~15% at all levels. The penalties to Gold from Harbinger, Legion, Ultimatum, Expedition, Abyss, Bestiary, Affliction and Harvest monsters have been lowered.
+Gold fees for most basic Currency items that are commonly traded in bulk on the Currency Exchange (such as Orbs of Fusing) have been reduced. Gold fees for Wild, Vivid, and Primal Crystallised Lifeforce as well as Currency Shards have also been reduced.
+The in-game Trade Market interface has also been added to Path of Exile. It works just like the Trade Website, but fully in-game. Press ',' to open the interface, or access it through the pause menu when using a controller.
+In each town you are now able to find an NPC that offers to identify all items within your inventory, typically the one which offers caster items and jewellery for purchase. Faustus has this option in Rogue Harbour, while Rog offers it in Kingsmarch. Nessa only offers this service after you have reached Merveil's Caverns. The Identify Items option does not require any Scrolls of Wisdom, and as a result of this the drop rate of Scrolls of Wisdom has been vastly reduced after Act 1.
+When Spectres die they now transform into a floating Orb Spectre that cannot be targeted and cannot use skills. When you enter an area the Orb Spectre will automatically transform back into the original Spectre. Orb Spectres can still be overridden when Raising new Spectres.
+While holding Right-click and Ctrl on a stack of Stacked Decks, you will now continually open them to your inventory or to a Stash Tab that they are in. While doing so with Shift also held, the Stacked Decks will drop to the ground as they are opened instead.
+Vaal Orbs can now be used on monsters trapped in Essences, and will function as Remnants of Corruption did previously. Remnants of Corruption will no longer be obtainable, and existing Remnants of Corruption will be converted to Vaal Orbs.
+Added 5 new Stash Tab Affinities for Incubators, Scouting Reports, Ritual Items, Sanctum Tomes/Research, and Settlers Items.
+Added a new tab in the Fragments Stash Tab for Betrayal Fragments which houses the Syndicate Medallion and the Allflame Embers.
+You are now able to fully refund your Passive Tree with one click for a gold cost.
+Refunding of Atlas Passive Points can now be done with Gold. Speak to Kirac to access this option. You can now also fully refund your Atlas Passive Tree with one click for a gold cost.
+Added native Apple Silicon support for macOS, Intel Mac users will continue to receive full support.
+Continued to incrementally improve the sound, art, effects and environments.
+
+Return to top
+Bloodlines
+Added Bloodline Classes to the base game as a new means of character customisation in the Endgame.
+These are secondary Ascendancy Classes that are unlocked on a character-by-character basis through defeating specific Endgame Bosses.
+Bloodline Classes can be paired with any Ascendancy Class and are allocated with your normal Ascendancy Passive Skill Points. You can decide how many points to allocate to your original Ascendancy Class, and how many to allocate to your Bloodline.
+There are 10 Bloodline Classes to discover. To unlock your Bloodline, hunt down the Endgame boss whose power you desire, defeat them, and claim their power for yourself.
+
+Return to top
+Endgame Changes
+Introduced the Lonely, Reverent, and Traumatic Fragments, which can be used to access the new, Uber versions of The Moment of Loneliness, The Moment of Reverence, and The Moment of Trauma respectively.
+These new Fragments can be obtained from Tier 17 Map Bossses. The total number of Uber Fragments that drop from these Bosses has been increased such that the total amount of old Uber Fragments you are getting remains unchanged.
+The Feared Maven Invitation now requires Sirus and the Incarnation of Dread to be Witnessed instead of Chayula and Atziri.
+Maven Invitation: The Hidden is now replaced with The Remembered, requiring witness of Courtyard of Wasting, Chambers of Impurity and Theatre of Lies.
+Tier 17 Map Modifiers now grants Item Rarity, Item Quantity and Pack Size at values similar to Red Map Modifiers, except in cases where the Item Rarity, Item Quantity or Pack Size have been specifically augmented to be higher.
+Tier 17 Maps can now sometimes be Corrupted to have 8 Modifiers.
+Evolving Shrines from the Domination Scarab of Evolution now reduce the chance for monsters to upgrade rarity every time a monster upgrades rarity, but now has a base chance to evolve of 25% (previously 10%).
+The Abyss Scarab of Edifice no longer causes Abysses in Area to spawn Hoards as they travel. It instead now causes Abyss pits in Area that do not lead to an Abyssal Depths or spawn an Abyssal Trove will spawn Minor Stygian Spires.
+Additional bosses from Blight Scarab of Blooming no longer spawn extra monsters in their wave.
+Cartography Scarab of Risk now has a limit of 1 (previously 5)
+The following Maps have been added back to the Atlas: Academy, Arachnid Nest, Arena, Burial Chambers, Cells, Coves, Crater, Crimson Temple, Desert, Excavation, Factory, Forking River, Infested Valley, Lava Chamber, Lookout, Marshes, Mud Geyser, Pit, Port, Primordial Pool, Residence, Sulphur Vents, Summit, Thicket, and Volcano.
+The following Maps have been removed from the Atlas: Ancient City, Armoury, Basilica, Bog, Colonnade, Conservatory, Cold River, Coral Ruins, Crystal Ore, Dig, Dungeon, Geode, Forbidden Woods, Foundry, Laboratory, Leyline, Malformation, Peninsula, Pier, Scriptorium, Siege, Sunken City, Terrace, Vault, and Wharf.
+Map tiers and locations have been shuffled (though the 'pin' locations for maps have not changed). Most maps are now initially found at a different tier.
+Some of the Map Bosses you are required to defeat to upgrade your Pantheon have changed as a result of these Atlas changes.
+Crafting Recipes have been shuffled and ones that were previously unlocked in Maps that have been removed from the Atlas are now found within other Maps currently on the Atlas.
+
+Return to top
+Atlas Passive Tree Changes
+In the Keepers of the Flame Leagues Breach clusters have been removed from the Atlas Passive Tree. Beyond clusters have been moved from the left-side of the Atlas Passive Tree to the right-side for Keepers of the Flame Leagues.
+The Straight and Narrow Notable Atlas Passive has been reinstated in the Atlas Passive Tree for Keepers of the Flame Leagues.
+The Guarded Hoards Notable Atlas Passive no longer grants Voltaxic Sulphite Veins and Chests in your Maps have 5% chance to contain double Sulphite.
+The Mining Byproducts Notable Atlas Passive no longer grants Sulphite Veins and Chests in your Maps have 10% chance to also contain an equal amount of Azurite. It now instead grants Voltaxic Sulphite Veins and Chests in your Maps have 15% chance to contain double Sulphite.
+The small Passives in the Mounting Modifiers cluster now grant 5% increased Rare Monsters in your Maps (previously 3% increased effect of Explicit Modifiers on your Maps).
+The small Passives in the Chiselled Perfection cluster now grant 5% increased Magic Monsters in your Maps (previously 3% increased effect of Explicit Modifiers on your Maps).
+The small Passives in the Invasive Adversaries cluster now grant 1% increased Map Pack Size.
+4 small Passives on the interior of the Atlas Tree now grants 2% increased Rarity of Items found in your Maps, instead of effect of Explicit Modifiers on your Maps.
+Small Passives that granted 5% increased Rarity of Items found in your Maps and 1% increased Quantity of Items found in your Maps instead now grant 3% increased Rarity of Items found in your Maps and 1% increased Quantity of Items found in your Maps.
+Syncretism and other Atlas Passive Skills granting either Shrine Buff Effect or Shrine Duration now only grant these benefits to Shrines activated from within Maps.
+Tweaked the description of the Blightspawn Atlas passive to clarify that Blight Bosses add the additional reward chest to the Lane they are from, which is visible at the start of the Blight encounter, rather than the chest spawning when they are defeated. This is purely a description change and not a functional change.
+
+Return to top
+League Changes
+Breach League Uniques are no longer upgraded from Breach Blessings. Blessings now only upgrade Breachstones.
+Breach is no longer a reward outcome from other content.
+The Allflame Ember of Kulemak is unable to substitute It That Fled in Keepers of the Flame Leagues.
+Valdo's Puzzle Box cannot produce outcomes containing Breaches or Breachlords during Keepers of the Flame League.
+Heists which previously could spawn Breach reward rooms can now spawn Gold reward rooms, which drop a sizeable amount of gold.
+Pre-existing Breach reward rooms on Blueprints will be converted to Gold reward rooms.
+Vaal Breach will be unobtainable during Keepers of the Flame league.
+Rogues in the Rogue Harbour will now start at maximum level for the jobs they are proficient in.
+Trarthan Gems can now be found as rewards from Gem side-chests in Heist.
+Opening a Blight chest now opens other Blight chests within 1.5 metres
+Characters are now required to have entered Highgate in Act 9 in order to open Safehouses at Jun, or enter Safehouse portals at a Map Device.
+Syndicate Medallions are now more common from high level Betrayal Safehouses.
+You are now less likely to get high-rarity Divination Cards from chests in Betrayal Transportation Safehouses with Gravicius.
+Harvest reforge crafts which guarantee a certain modifier type, such as "Reforge a Rare item with random modifiers, including a Lightning Modifier" will now respect modifiers on items which restrict modifier types, such as "Cannot Roll Attack Mods".
+When rerolling recruits at Raulf in Kingsmarch workers with expertise in Mapping, Disenchanting and Farming will have less chance to have expertise in other job types.
+The reroll with high quality recruits option at Raulf now costs 16000 Gold (previously 20000).
+Abandoning a commandeered shipment in Kingsmarch now warns you about the loss of crew members.
+Rogue Exiles drop fewer regular items. This does not affect their bonus additional drops of equipment from each item slot.
+Gigantic Rogue Exiles are revived in Rituals as regular Rogue Exiles.
+You are no longer required to purchase Bestiary Orbs to itemise Beasts. While in the Menagerie, you can now itemise a Beast from the Bestiary UI.
+As such, Bestiary Orbs can no longer be purchased from Einhar in the Menagerie, and existing empty Bestiary Orbs will be deleted upon logging in.
+The voices and whispers during Delirium encounters are now considered Ambient Sound Volume, rather than Sound Effects.
+
+Return to top
+Player Changes
+Drowning Orbs no longer drown the player faster when they have sources of "Debuffs on you expire 100% faster".
+Spell Suppression now prevents 40% of Damage from Suppressed Hits and Ailments they inflict (previously 50%).
+Minion Attacks now inherently always Hit.
+Removed all sources of Minion Accuracy from the game, although existing items with Minion Accuracy modifiers are unchanged, and these modifiers will now do nothing.
+Sources that specified "other" rings have been changed to clarify they work with the "opposite" ring instead.
+
+Return to top
+Skill Gem Changes
+Barrage: Attack Speed is now 115% of base (previously 100%), and has a Mana Cost of 5-9 at gem levels 1-20 (previously 6-10).
+Barrage of Volley Fire: Attack Speed is now 115% of base (previously 100%), and has a Mana Cost of 5-9 at gem levels 1-20 (previously 6-10).
+Bladefall: Now has a base Critical Strike Chance of 10% (previously 6%).
+Bladefall of Impaling: Now has a base Critical Strike Chance of 15% (previously 10%).
+Bladefall of Trarthus: Damage has been increased by 50% at all gem levels. Now has a base Critical Strike Chance of 10% (previously 6%).
+Bladefall of Volleys: Now has a base Critical Strike Chance of 10% (previously 6%).
+Blast Rain of Trarthus: Base secondary radius is now 4 metres (previously 3.5). Now deals 20% more Base Fire Damage per second at all gem levels.
+Blink Arrow of Prismatic Clones: Now deal roughly 20% less Damage with their Elemental Arrows attack. Minion Duration is now 5 seconds (previously 20 seconds).
+Blink Arrow of Bombarding Clones: Clones now deal roughly 33% less Damage with their Rain of Arrows attack. Minion Duration is now 5 seconds (previously 20 seconds).
+Boneshatter: Now deals 3-6% more Damage per Trauma at gem levels 1-20 (previously 2-4%).
+Chain Hook of Trarthus: Now throws Chains at up to 8 targets in range (previously 6), and has Maximum 16 chains (previously 12). Now deals 25% more Damage at all gem levels.
+Convocation: Now a white Gem similar to Detonate Mines and no longer has any Attribute requirements.
+Cyclone: Now deals 20% more Damage at all gem levels.
+Cyclone of Tumult: Now deals 20% more Damage at all gem levels.
+Dark Pact: Now has a base Critical Strike Chance of 7% (previously 5%), and now Sacrifices 12% of Skeleton's Life to deal that much Chaos Damage (previously 8%).
+Dark Pact of Trarthus: Now has a base Critical Strike Chance of 7% (previously 5%), and now on Reaching seven Ruin will Sacrifice 50% of your Life to deal 500% of Sacrificed Life as Chaos Damage (previously 400%).
+Elemental Hit: Now has a Base radius of 1.4 metres (previously 1), and an Attack Speed of 120% of base (previously 100%). Now has a Mana Cost of 5-8 at gem levels 1-20 (previously 6-10).
+Explosive Concoction: Now has 65-806 to 126-1210 Added Fire Damage at gem levels 1-20 (previously 116-1203 to 173-1805). Now deals 57-706 to 86-1058 Added Cold Damage if Charges were consumed from a Sapphire Flask (previously 45-466 to 68-707), and deals 12-151 to 143-1764 Added Lightning Damage if Charges were consumed from a Topaz Flask (previously 10-105 to 104-1083). Now also has +120-196% to Damage over Time Multiplier with Ignite if Charges were consumed from a Ruby Flask (previously +60-98%).
+Explosive Concoction of Destruction: Now has 58-714 to 87-1071 Added Fire Damage at gem levels 1-20 (previously 92-960 to 138-1440). It now deals 50-625 to 76-937 Added Cold Damage if Charges were consumed from a Sapphire Flask (previously 36-372 to 54-564), and deals 11-134 to 126-1562 Added Lightning Damage if Charges were consumed from a Topaz Flask (previously 8-84 to 83-854). Now also has +80-137% to Critical Strike Multiplier if Charges were consumed from a Ruby Flask (previously +60-98%).
+Exsanguinate: Now deals 15% more base Physical Damage per second with the Physical Damage over Time debuff.
+Exsanguinate of Transmission: Now deals 15% more base Physical Damage per second with the Physical Damage over Time debuff.
+Flames of Judgement, granted by the Atziri's Rule Unique Staff: Now penetrates 50% Fire Resistance (previously 25%), and has 100% chance to Ignite enemies (previously 50%).
+Hexblast: Now has 200% more Damage with Hits if Enemy is Hexed (previously 150%), and 90% more Damage with Ailments if Enemy is Hexed (previously 60%).
+Hexblast of Contradiction: Now has 300% more Damage with Hits if Enemy is Hexed (previously 240%), and 120% more Damage with Ailments if Enemy is Hexed (previously 90%).
+Kinetic Blast of Clustering: Now deals Added Physical Damage equal to 10-17% of Maximum Mana at gem levels 1-20 (previously 8-15%).
+Kinetic Bolt of Fragmentation: Now has 70-95% Effectiveness of Added Damage at gem levels 1-20 (previously 60-85%). Projectiles now change directions 3 times (previously 2).
+Mirror Arrow of Prismatic Clones: Now deal roughly 20% less Damage with their Elemental Arrows attack. Minion Duration is now 5 seconds (previously 20 seconds).
+Mirror Arrow of Bombarding Clones: Clones now deal roughly 33% less Damage with their Rain of Arrows attack. Minion Duration is now 5 seconds (previously 20 seconds).
+Poisonous Concoction: Now has 22-537 to 33-806 Added Chaos Damage at gem levels 1-20 (previously 30-716 to 44-1073), and Added Chaos Damage is equal to 4-16% of Flask's Recovery Amount if Charges were consumed from a Life Flask (previously 3-11%).
+Poisonous Concoction of Bouncing: Now has 22-537 to 33-806 Added Chaos Damage at gem levels 1-20 (previously 30-716 to 44-1073), and Added Chaos Damage is equal to 6-18% of Flask's Recovery Amount if Charges were consumed from a Life Flask (previously 5-15%).
+Placed Pyroclast Mines no longer have an Aura that adds Fire Damage to Hits against Enemies near them. They instead now apply an Aura that inflicts Fire Exposure. The effect of this Exposure scales with effect of Auras, but multiple placed mines do not cause the Exposure effect to be higher.
+Pyroclast Mine: Now deals 35% more Damage at all gem levels, and fires an additional Projectile for every 3 prior Mines in Detonation Sequence (previously 4). Now has 110% Effectiveness of Added Damage (previously 80%), and the Fire Exposure Aura applies -15% to Fire Resistance.
+Pyroclast Mine of Sabotage: Now deals 35% more Damage at all gem levels, and fires an additional Projectile for every 3 prior Mines in Detonation Sequence (previously 4). The Fire Exposure Aura applies -25% to Fire Resistance.
+Reap: Now deals 15% more base Physical Damage per second with the Physical Damage over Time debuff.
+Shield Crush of the Chieftain: Now has a Mana cost of 7-12 at gem levels 1-20 (previously 9-15). This note was previously included with the 3.26.0 Patch Notes but the change was not applied correctly.
+Siege Ballista of Trarthus: Now deals 35% more Attack Damage at all gem levels.
+Spectral Helix: Attack Speed is now 120% of base (previously 110%). Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+Spectral Helix of Trarthus: Now has 150-220% Effectiveness of Base and Added Damage at gem levels 1-20 (previously 120-180%). Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+Spectral Throw: Attack Speed is now 120% of base (previously 110%). Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+Spectral Throw of Materialising: Attack Speed is now 120% of base (previously 110%). Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+Spectral Throw of Trarthus: Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+Storm Call of Trarthus: Now deals 15% more base Physical Damage per second with the Physical Damage over Time debuff.
+Storm of Judgement, granted by the Atziri's Rule Unique Staff: Now penetrates 50% Lightning Resistance (previously 25%), and has 100% chance to Shock enemies (previously 50%). Marker radius is now 2 metres (previously 1.6), and markers are placed in a 6 metre radius (previously 5 metre).
+Storm Rain of the Fence: Arrows now fire Beams every 0.15 seconds (previously 0.2), and Each Arrow can fire 20 Beams (previously 14). Quality now provides Each Arrow can fire +0-4 Beams (previously +0-2).
+Storm Rain of the Conduit: Each Arrow can fire 6 Beams (previously 4), and Arrows now fire Beams every 0.3 seconds (previously 0.5-0.41 seconds at gem levels 1-20). Quality now provides Each Arrow can fire +0-2 Beams (previously +0-1).
+Sunder of Trarthus: Wave can now restart up to 3 times (previously 2).
+Winter Orb: Now Fires projectiles every 1.2 seconds (previously 1.6), and now has 80% more Projectile Frequency while Channelling (previously 125%).
+Volatile Dead: Orb Explosions now deal 25% more Damage at all gem levels. Now has 210% Effectiveness of Added Damage (previously 170%).
+Volatile Dead of Seething: Orb Explosions now deal 25% more Damage at all gem levels. Now has 210% Effectiveness of Added Damage (previously 170%).
+Volatile Dead of Confinement: Base explosion radius is now 2 metres (previously 1.5).
+Volcanic Fissure of Snaking: No longer has 50% more Area of Effect. Fissures will not automatically target enemies hit by the Explosion of the previous Fissure in the Chain.
+Voltaxic Burst: Now has a base radius of 2.6 metres (previously 2.2), and a cast time of 0.4 seconds (previously 0.5). Now has a Mana Cost of 5-13 at gem levels 1-20 (previously 6-16).
+Vortex of Projection: Now unable to explode from Frostbolts that will explode from other casts of Vortex of Projection.
+
+Return to top
+Vaal Gem Changes
+Vaal Cyclone: Now deals 20% more Damage at all gem levels.
+Vaal Reap: Now deals 15% more base Physical Damage per second with the Physical Damage over Time debuff.
+Vaal Spectral Throw: Attack Speed is now 120% of base (previously 110%), and now deals 100-150% of Attack Damage at gem levels 1-20 (previously 85-135%). Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+
+Return to top
+Support Gem Changes
+Awakened Hextouch Support: Supported Skills now have 25-23% less Curse Duration (previously 30-26% reduced Curse Duration).
+Corrupting Cry Support: Now deals 15% more base Physical Damage per second with the Physical Damage over Time debuff.
+Energy Leech Support: No longer has Supported Skills deal more Damage while Leeching Energy Shield. Supported Skills now deal 15-24% more Damage while on Full Energy Shield at gem levels 1-20 (previously 10-14%). Quality now grants Supported Skills deal 0-20% increased Damage while Leeching Energy Shield (previously 0-10%).
+Hextouch Support: Supported Skills now have 35-26% less Curse Duration at gem levels 1-20 (previously 50-31% reduced Curse Duration).
+Rupture Support: The Rupture debuff can now stack up to 4 times on a target (previously 3).
+Sadism Support: Damaging Ailments inflicted with Supported Skills now deal damage 60-98% faster at gem levels 1-20 (previously 60-79%). Now has 70% less Duration of Ailments inflicted with Supported Skills (previously 80%).
+Spellslinger Support: Supported Skills now deal 30-20% less Damage with Hits and Ailments at gem levels 1-20 (previously 37-31%).
+
+Return to top
+Ascendancy Changes
+
+Chieftain
+The Ngamahu, Flame's Advance Notable Ascendancy Passive Skill now has Non-Unique Jewels cause Small and Notable Passive Skills in a Large Radius to also grant +4 to Strength (previously +3).
+
+Guardian
+Shrine Buffs granted by the Harmony of Purpose Ascendancy Passive Skill now have a base Duration of 20 seconds (previously 10).
+
+Champion
+The Worthy Causes Notable Ascendancy Passive Skill now grants Banner Skills have 100% increased Duration (previously 50%).
+
+Assassin
+The Deadly Infusion, Ambush and Assassinate, and Noxious Strike Notable Ascendancy Passive Skills have all been removed.
+The Mistwalker Notable Ascendancy Passive Skill now grants 100% increased Elusive Effect (previously 50%).
+The Unstable Infusion Notable Ascendancy Passive Skill now grants 30% chance to gain a Power Charge on Non-Critical Strike (previously 20%) and 15% chance to gain a Power Charge on Critical Strike (previously 10%).
+The Toxic Delivery Notable Ascendancy Passive Skill has Poison you inflict with Critical Strikes deals 20% more Damage (previously 25%), and no longer grants +0.5% to Critical Strike Chance per Poison affecting Enemy, up to +2.0%. It now grants 5% increased Poison Duration for each Poison you have inflicted Recently, up to a maximum of 100%, and Recover 0.5% of Life per Poison affecting Enemies you Kill.
+Added a new Notable called Infused Toxins behind Toxic Delivery, which grants All Damage from Hits can Poison.
+Added a new Notable called Assassination Style which allows you to choose one of the following two Notables, Knife in the Back or For the Juglar.
+Knife in the Back grants 100% more Critical Strike Chance against Enemies that are not on Low Life, +100% to Critical Strike Multiplier against Enemies that are on Low Life, and Critical Strikes have Culling Strike.
+For the Jugular grants 100% more Critical Strike Chance against Enemies that are on Low Life, +100% to Critical Strike Multiplier against Enemies that are not on Low Life, and Critical Strikes have Culling Strike.
+Opportunistic is now a Notable behind Assassination Style and grants 35% less Damage taken while there are at least two Rare or Unique Enemies nearby (preivously 20% reduced Damage taken).
+Following Unstable Infusion is a new Notable called Deathmarked which grants Trigger Level 30 Assassin's Mark on Attack Critical Strike against a Rare or Unique Enemy and you have no Marked Enemy, Mark Skills Cost no Mana, and Marked Enemy cannot Evade Attacks.
+Following Unstable Infusion is a new Notable called Mystical Infusion which grants Base Spell Critical Strike Chance of Spells is equal to that of Main Hand Weapon.
+Added a new Notable called Shadowed Blood which grants 40% of Physical Damage taken Recouped as Life and Unaffected by Damaging Ailments.
+
+Trickster
+The Heartstopper Notable Ascendancy Passive Skill now grants Every 10 seconds, Take 50% less Damage from Hits for 5 seconds (previously 40%), and Take 50% less Damage over Time for 5 seconds (previously 40%).
+The Soul Drinker Notable Ascendancy Passive Skill no longer has 20% increased Attack and Cast Speed while Leeching Energy Shield.
+The Spellbreaker Notable Ascendancy Passive Skill no longer has +20% chance to Suppress Spell Damage, and now has Prevent +15% of Suppressed Spell Damage while on Full Energy Shield (previously 10%).
+The One Step Ahead Notable Ascendancy Passive Skill now has Your Action Speed is at least 90% of base value (previously 108%), and Nearby Enemy Monsters' Action Speed is at most 90% of base value (previously 92%).
+
+Saboteur
+The Like Clockwork Notable Ascendancy Passive Skill now grants 40% increased Cooldown Recovery Rate (previously 30%).
+
+Elementalist
+The Liege of the Primordial Notable Ascendancy Passive Skill now provides 50% increased Effect of Buffs granted by your Golems (previously 100%).
+
+Necromancer
+The Corpse Pact Notable Ascendancy Passive Skill now has 4% increased Attack and Cast Speed for each corpse Consumed Recently, up to a maximum of 200% (previously 2% increased Attack and Cast Speed).
+
+Pathfinder
+The Master Distiller Notable Ascendancy Passive Skill now Grants bonuses to Non-Channelling Skills you are consuming 3 Charges from a Flask of each of the following types if possible:
+If Bismuth Flask Charges are consumed, Penetrate 25% Elemental Resistances (previously 20%).
+If Diamond Flask Charges are consumed, 250% increased Critical Strike Chance (previously 150%).
+If Amethyst Flask Charges are consumed, 37% of Physical Damage as Extra Chaos Damage (previously 25%).
+
+Warden
+The Lesson of the Seasons Notable Ascendancy Passive Skill now has Prevent +3% of Suppressed Spell Damage per Bark below maximum (from +2%).
+Barkskin, granted by the Mother's Teaching Notable Passive Skill, no longer has a Mana Reservation.
+
+Return to top
+Passive Skill Tree Changes
+Removed the Accuracy Mastery that granted Minions' Accuracy Rating is equal to yours.
+Replaced the Minion Offence Mastery that grants Minions have +250 to Accuracy Rating with Minions have 20% increased Cooldown Recovery Rate
+The Gravepact Passive Tree cluster now grants Chaos Resistance instead of Minion Accuracy.
+
+Return to top
+Unique Item Changes
+The Ashcaller Unique Wand is now found on Goat's Horn base type (previously Carved Wand).
+The Command of the Pit Unique Gloves no longer has With a Ghastly Eye Jewel Socketed, Minions have +1000 to Accuracy Rating. Instead, it now has With a Ghastly Eye Jewel Socketed, Minions have 25% chance to gain Unholy Might on Hit with Spells. Existing versions of this Unique are unaffected by these changes.
+The Eclipse Solaris Unique Wand is now found on the Faun's Horn base type (previously Engraved Wand). Now provides 20-26% increased Attack Speed (previously 6-10%), 15-20% increased Light Radius (previously 20%), and now has adds 2 to 5 Fire Damage to Attacks for every 1% your Light Radius is above base value. Existing versions of this item can be updated to the new Attack Speed and Light Radius values with a Divine Orb.
+The Glorious Madness buff from the Beacon of Madness Unique Boots Embrace Madness Skill now inflicts a random Touched Debuff every 2 seconds (previously every 1 second).
+The Hinekora's Sight Unique Amulet now has Prevent +4-6% of Suppressed Spell Damage (previously +3%). Existing versions of this item can be updated to the new values using a Divine Orb.
+The Midnight Bargain Unique Wand is now found on the Calling Wand base type (previously Engraved Wand).
+The Moonsorrow Unique Wand is now found on the Kinetic Wand base type (previously Imbued Wand).
+The Nebulis Unique Sceptre now grants 5-10% increased Elemental Damage per 1% Fire, Lightning, or Cold Resistance above 75% (previously 15-20% Cold or Lightning Damage per 1% Cold or Lightning Resistance above 75%). It also now grants 60-120% increased Magnitude of Implicit modifiers.
+The Obliteration Unique Wand is now found on the Omen Wand base type (previously Imbued Wand).
+The Replica Midnight Bargain Unique is now found on the Calling Wand base type (previously Engraved Wand).
+The Replica Nebulis Unique Sceptre now grants 10-15% increased Elemental Damage per 1% missing Fire, Lightning, or Cold Resistance, up to a Maximum of 450% (previously 15-20% increased Fire or Cold Damage per 1% missing Fire or Cold Resistance, up to a Maximum of 300%). It also now grants 60-120% increased Magnitude of Implicit modifiers.
+The Replica Twyzel Unique Wand now has 110-170% increased Physical Damage.
+The Piscator's Vigil Unique Wand is now found on the Kinetic Wand base type (previously Imbued Wand).
+The Poet's Pen Unique Wand is now found on the Somatic Wand base type (previously Carved Wand).
+The Twyzel Unique Wand no longer has Socketed Gems fire an additional Projectile. It now has 80-140% increased Physical Damage (previously 80-120%), Attacks fire 1-2 additional Projectiles when in Off Hand, and Attacks have 40-60% increased Area of Effect when in Main Hand.
+The Void Spawn minions summoned by the Servant of Decay Unique Body Armour now deal roughly 100% more damage, and now have a combined Life and Energy Shield 3 times their previous total values.
+The Wine of the Prophet Unique Flask's The Doctor Buff now displays as granting stolen Rare modifiers for 60 seconds (previously stated 20 seconds but was functionally 60).
+The Whispers of Infinity Unique Amulet now has +50-100 to Maximum Energy Shield (previously +200-400). Existing items can be made worse with a Divine Orb.
+
+Return to top
+Item Changes
+Essence of Fear now grants increased Minion Damage on Helmets (from increased Minion Accuracy Rating).
+Runegraft of Recompense has been renamed to Runegraft of Refraction. It no longer grants Recover 10% of Skill Mana Cost per unspent Chain when Projectiles end, up to 50%, and instead now grants Fire at most 1 Projectile, Skills chain +1 Times, and Projectiles Fork.
+Redeemer Amulets can now roll Prevent +3-5% of Suppressed Spell Damage (previously +2%). Existing versions of this item can be updated to the new values using a Divine Orb.
+You can no longer obtain Rings in Delve that have the Curse Skills have increased Skill Effect Duration modifier.
+The Carved Wand, Engraved Wand, and Imbued Wand base types can no longer be obtained, existing items are not affected by this change.
+Accumulator Wand, Assembler Wand, and Congregator Wand now have a base Critical Strike Chance of 8.5% (previously 9%).
+Calling Wand, Convening Wand, and Convoking Wand now have a base Critical Strike Chance of 8% (previously 8.3%).
+Coiled Wand, Crystal Wand, Goat's Horn, Opal Wand, Quartz Wand, Spiraled Wand, and Tornado Wand now have a base Critical Strike Chance of 8% (previously 9%).
+Demon's Horn now has a base Critical Strike Chance of 8% (previously 9.5%).
+Faun's Horn, Pagan Wand, and Profane Wand now have a base Critical Strike Chance of 8% (previously 8.5%).
+Omen Wand, Sage Wand, and Prophecy Wand now have a base Critical Strike Chance of 8.7% (previously 10%), and now have 1.5 Attacks per second (previously 1.4).
+Flaying Knife, Glass Shank, and Skinning Knife now have a base Critical Strike Chance of 8% (previously 7.5%).
+Ambusher, Poignard, and Stiletto now have a base Critical Strike Chance of 8.3% (previously 7.8%).
+Prong Dagger and Sai now have a base Critical Strike Chance of 8.5% (previously 8%).
+Hollowpoint Dagger, Pneumatic Dagger, and Pressurised Dagger now have a base Critical Strike Chance of 8.8% (previously 8.3%).
+Gutting Knife and Trisula now have a base Critical Strike Chance of 9% (previously 8.5%).
+Boot Blade, Boot Knife, Butcher Knife, Carving Knife, Ezomyte Dagger, Flashfire Blade, Flickerflame Blade, Imperial Skean, Infernal Blade, Royal Skean, Skean, and Slaughter Knife now have a base Critical Strike Chance of 8.5% (previously 8%).
+Copper Kris, Demon Dagger, Fiend Dagger, Golden Kris, Imp Dagger, and Platinum Kris now have a base Critical Strike Chance of 9% (previously 8.5%).
+Modifiers on Heist Rogue Gear that granted increased Experience gain for the equipped Rogue no longer can roll, though existing mods will not be removed. They just aren't very useful anymore.
+
+Return to top
+Ruthless-specific Changes
+The Pathfinder's Master Distiller Notable Ascendancy Passive Skill now Grants bonuses to Non-Channelling Skills you are consuming 3 Charges from a Flask of each of the following types if possible:
+If Bismuth Flask Charges are consumed, Penetrate 20% Elemental Resistances (previously 15%).
+If Diamond Flask Charges are consumed, 150% increased Critical Strike Chance (previously 100%).
+If Amethyst Flask Charges are consumed, 23% of Physical Damage as Extra Chaos Damage (previously 15%).
+
+Return to top
+Monster Changes
+Refactored how monsters with Physical damage converted to Elemental damage scale with Monster Modifiers and Map Modifiers that grant Physical Damage gained as extra Element. In general these Modifiers will have far less effect on high level monsters that converted most/all of their Physical Damage to a specific Element.
+Adjusted The Incarnation of Dread, The Incarnation of Fear, and The Incarnation of Neglect Boss fights, generally resulting in less Life, but more Damage or Debuff potency.
+The detonation speed of most Monster Volatile Cores can no longer scale with attack or cast speed. Additionally, the ability for some sources of Volatile Cores to ignore block, evasion, and spell suppression has been removed. Volatile Cores from the Tier 17 Map modifiers and specific Ritual Monsters have also had their damage reduced.
+Malachai, The Nightmare should now more reliably remove the Invulnerable visuals from his Lifebar when he becomes targetable between phases.
+Improved the visuals and audio of the on-death effect from Vibrant Gargoyles.
+
+Return to top
+Kirac League Modifiers
+Abyss now costs 3 Chaos Orbs (previously 5) and causes the area to contain 2 additional Abysses (previously 3).
+Ambush now costs 4 Chaos Orbs (previously 3) and causes the area to contain 4 additional Strongboxes (previously 3).
+Anarchy now costs 4 Chaos Orbs (previously 6) and causes the area to contain 4 additional Rogue Exiles (previously 7).
+Domination now costs 4 Chaos Orbs (previously 3) and causes the area to contain 4 additional Shrines (previously 3).
+Heist now costs 5 Chaos Orbs (previously 6).
+Legion now costs 3 Chaos Orbs (previously 7) and causes the area to contain 1 additional Legion (previously 2).
+Settlers now costs 5 Chaos Orbs (previously 3) and causes the area to contain 2 additional Ore Deposits (previously 1).
+Torment now costs 2 Chaos Orbs (previously 4) and causes the area to contain 4 additional Tormented Spirits (previously 8).
+The Breach and Imbued Breach Map Device Crafting Options have been removed.
+Added an Imbued Heist Map Device Crafting Option, which causes the area to contain 5 additional Smuggler's Caches.
+
+Return to top
+Quest Reward Changes
+Kinetic Fusillade can be purchased from Nessa by the Witch, Shadow, and Scion upon completing The Siren's Cadence.
+Living Lightning Support is now offered to the Witch for completing Sharp and Cruel, and can be purchased from Yeena by the Templar and Scion.
+Kinetic Instability Support is now offered to the Witch for completing Sharp and Cruel, and can be purchased from Yeena by the Shadow and Scion.
+Wall of Force is now offered to the Witch for completing Intruders in Black, and can be purchased from Yeena by the Shadow and Scion.
+Windburst Support is now offered to the Duelist and Ranger for completing A Fixture of Fate, and can be purchased from Clarissa by the Shadow and Scion.
+Conflagration is now offered to the Ranger for completing Sever the Right Hand.
+Thunderstorm is offered to Ranger and Duelist for completing Sever the Right Hand, and can be purchased from Clarissa by the Shadow and Scion.
+Kinetic Rain is offered to the Witch for completing Sever the Right Hand and can be purchased from Clarissa by the Templar, Shadow, and Scion.
+Somatic Shell is now offered to the Witch for completing Sever the Right Hand and can be purchased from Clarissa by the Templar, Shadow, and Scion.
+
+Return to top
+User Interface Changes
+Added an option in gameplay settings to prevent the game from pausing during gameplay.
+Added an indicator for your current Thaumaturgic Dust to the recombinator.
+While using an Orb of Alteration, you can now hold Alt to swap to using an Orb of Augmentation if one is available in your inventory or stash, presuming you are in an area with access to your stash.
+When multiple Gems are able to be levelled up, there is now a button available that can be clicked to level them all up at once.
+You can now access the Disenchanting window from Rog in Towns and Hideouts (assuming you have unlocked Disenchanting at Rog in Kingsmarch).
+Added icons to the Maps in Kirac's mission UI that represent the objective of each mission.
+Skill Gems traded to other players via the trade window now have their 'Level Up Dismissed' and 'Attack In Place' properties reset.
+Reordered the list of Currency Item types in the item note editor.
+The Cursor Size UI option has been changed to a slider.
+The "Portal Access" option is now accessible when using a controller within the hideout stash.
+Increased the size of the Resistance icons for Bosses when playing on controller.
+Improved the management of cache files on console to avoid running out of temporary storage space. This should fix issues with the minimap being reset on leaving and re-entering an area, and with loot filters failing to load.
+
+Return to top
+Bug Fixes
+Fix a bug where Summon Reaper of Revenants was causing all existing Reapers to temporarily idle when you spawned a new one.
+Fixed a bug where Lightning Resistance Synthesis Implicit Modifiers could still roll on Weapons.
+Fixed a bug where Simplex Amulets and Heist base types with similar implicits could be Magic Rarity with modifiers.
+Fixed a bug where modifiers to shrine effect from items were applying twice to shrines granted by the Harmony of Purpose Guardian Ascendancy Passive Skill.
+Fixed a bug where the "20% increased Armor for each different Retaliation Skill you've used in the past 10 seconds" Passive Skill Mastery would grant Armour for each Retaliation Skill used rather than each Unique Retaliation Skill used.
+Fixed a bug where Scold's Bridle dealt damage to the player based on over-time mana costs, even though it specified that it did not do so.
+Fixed a bug where Wave of Conviction of Trarthus could sometimes hit enemies a second time before returning and then not hit them when returning.
+Fixed an issue where Tectonic Slam of Cataclysm sometimes scaled from Endurance Charges without removing them.
+Fixed a bug where the Damage over Time debuffs applied to enemies by Blast Rain of Trarthus were incorrectly affected by modifiers to Area Damage.
+Fixed a bug where Energy from Within was not granting Golems Maximum Energy Shield instead of Life from Golem Life Passive Skills.
+Fixed a bug where "Elemental Damage with Hits is Lucky while you are Shocked" from The Fulcrum Unique Staff was making your elemental damage lucky even if you were not shocked.
+Fixed a bug where Red, Green and Blue Nightmare Unique Jewels were not applying to modifiers of minion or totems elemental resistance in range of the jewel.
+Fixed a bug where Dark Pact was not correctly sacrificing life. It will no longer kill skeletons it sacrifices on, and will only grant damage for the portion actually sacrificed.
+Fixed a bug where Divine Font crafting options could be used on Corrupted Gems. Corrupted Gems can only be used for options offered by using a Dedication to the Goddess.
+Fixed a bug where the orbiting Volatiles in The Maven Boss fight would fail to play their build up animation prior to exploding.
+Fixed a bug where the Incarnation of Dread Boss could be prevented from starting the rose phase.
+Fixed a bug where the roses in the Incarnation of Dread Boss fight could desync in party play.
+Fixed a bug in the Cold River Map that could prevent players from re-entering the area if their portal was placed on the arena stairs.
+Fixed a bug where the Moment of Loneliness Boss Arena entrance could become inaccessible from certain locations.
+Fixed a bug where expensive Settler costs could be unreadable during recruitment.
+Fixed a bug where the Gold cost for refunding Ascendancy Passive Skills was not visible.
+Fixed the description on Slashing Horror itemised corpses to be more accurate about how Rage affects them.
+Fixed an issue where the game would not remain paused when exiting to character selection.
+Fixed an issue where a number of user interfaces did not receive the increased search textbox maximum character limit introduced in 3.26.0. Most notably the Passive Skill screen, the Crafting Bench interface, and Bestiary interfaces.
+Fixed a bug where disabling the "Output Dialogue to Chat" option did not stop character dialogue outputing to chat.
+Fixed the Guild Hideout pin on the world map showing the wrong message when hovering over it if your Guild didn't have a hideout selected.
+Fixed an issue preventing the /convertracereward command from being usable with a controller.
+Fixed a bug where the Templar's right-hand would break disturbingly when using a Two-handed Sword.
+Fixed a bug where the Skull of Undeath Helmet Microtransaction was not tracking kills made by your Minions.
+Fixed a bug where the Void Emperor Summon Skitterbots skill effect microtransaction did not apply to the new Scorching Skitterbot
+Fixed the size discrepancy of the Cruel Trarthan Executioner Back Attachment microtransaction between different character classes.
+Fixed a visual bug with the Scientist Bane skill effect microtransaction.
+Fixed a bug where Chess Pieces from the Chronomancer Supporter Pack could not be accredited to your guild.
+Fixed a rare issue where very old microtransactions could appear to be in use on a character on another player's account when attempting to reclaim the microtransaction.
+Fixed a client freeze that could occur on PlayStation.
+Fixed a client crash.
+Updates for 2025-10-24
+Spoiler 
+
+New Patch Notes:
+Evolving Shrines from the Domination Scarab of Evolution now reduce the chance for monsters to upgrade rarity every time a monster upgrades rarity, but now has a base chance to evolve of 25% (previously 10%).
+
+Updates for 2025-10-29
+Spoiler 
+
+New Patch Notes:
+Syncretism and other Atlas Passive Skills granting either Shrine Buff Effect or Shrine Duration now only grant these benefits to Shrines activated from within Maps.
+Tweaked the description of the Blightspawn Atlas passive to clarify that Blight Bosses add the additional reward chest to the Lane they are from, which is visible at the start of the Blight encounter, rather than the chest spawning when they are defeated. This is purely a description change and not a functional change.
+Barrage: Attack Speed is now 115% of base (previously 100%), and has a Mana Cost of 5-9 at gem levels 1-20 (previously 6-10).
+Barrage of Volley Fire: Attack Speed is now 115% of base (previously 100%), and has a Mana Cost of 5-9 at gem levels 1-20 (previously 6-10).
+Kinetic Blast of Clustering: Now deals Added Physical Damage equal to 10-17% of Maximum Mana at gem levels 1-20 (previously 8-15%).
+Kinetic Bolt of Fragmentation: Now has 70-95% Effectiveness of Added Damage at gem levels 1-20 (previously 60-85%). Projectiles now change directions 3 times (previously 2).
+Shrine Buffs granted by the Harmony of Purpose Ascendancy Passive Skill now have a base Duration of 20 seconds (previously 10).
+The Command of the Pit Unique Gloves no longer has With a Ghastly Eye Jewel Socketed, Minions have +1000 to Accuracy Rating. Instead, it now has With a Ghastly Eye Jewel Socketed, Minions have 25% chance to gain Unholy Might on Hit with Spells. Existing versions of this Unique are unaffected by these changes.
+Fixed a bug where modifiers to shrine effect from items were applying twice to shrines granted by the Harmony of Purpose Guardian Ascendancy Passive Skill.
+
+Updated Patch Notes:
+Kinetic Rain is offered to the Witch for completing Sever the Right Hand and can be purchased from Clarissa by the Templar, Shadow, and Scion.
+Thunderstorm is offered to Ranger and Duelist for completing Sever the Right Hand, and can be purchased from Clarissa by the Shadow and Scion.
+
+Updates for 2025-10-31
+Spoiler 
+
+New Patch Notes:
+Added 161 more foiled Tier 17 Valdo's Map options that the Valdo's Puzzle Box can yield.
+Added 197 more foiled Unique Item options that the Voidborn Reliquary can yield.
+The stack size of Gold dropped has been globally increased by ~15% at all levels. The penalties to Gold from Harbinger, Legion, Ultimatum, Expedition, Abyss, Bestiary, Affliction and Harvest monsters have been lowered.
+Gold fees for most basic Currency items that are commonly traded in bulk on the Currency Exchange (such as Orbs of Fusing) have been reduced. Gold fees for Wild, Vivid, and Primal Crystallised Lifeforce as well as Currency Shards have also been reduced.
+Fixed a bug where Divine Font crafting options could be used on Corrupted Gems. Corrupted Gems can only be used for options offered by using a Dedication to the Goddess.
+
+Updated Patch Notes:
+Spectral Helix of Trarthus: Now has 150-220% Effectiveness of Base and Added Damage at gem levels 1-20 (previously 120-180%). Quality now provides Projectiles that have Pierced deal 0-20% more Damage (previously 10%).
+
+
+We really hope you enjoy Path of Exile: Keepers of the Flame. Thanks for your support!
