@@ -12,6 +12,15 @@ from rich.live import Live
 from rich.prompt import Prompt
 from rich.spinner import Spinner
 
+from poe_copilot.config import (
+    SECONDS_PER_MINUTE,
+    TRUNCATE_ITEM_TYPE_CHARS,
+    TRUNCATE_LONG_URL_CHARS,
+    TRUNCATE_NAME_FILTER_CHARS,
+    TRUNCATE_QUERY_CHARS,
+    TRUNCATE_SECTION_CHARS,
+    TRUNCATE_SHORT_URL_CHARS,
+)
 from poe_copilot.constants import LOGS_DIR
 from poe_copilot.core.agent import ClarifyingQuestion
 
@@ -49,22 +58,22 @@ def tool_status_label(name: str, tool_input: dict) -> str:
         section = tool_input.get("section", "")
         short_url = url.replace("https://", "").replace("http://", "")
         if section:
-            return f'Reading "{truncate(section, 25)}" from {truncate(short_url, 30)}'
-        return f"Reading {truncate(short_url, 45)}"
+            return f'Reading "{truncate(section, TRUNCATE_SECTION_CHARS)}" from {truncate(short_url, TRUNCATE_SHORT_URL_CHARS)}'
+        return f"Reading {truncate(short_url, TRUNCATE_LONG_URL_CHARS)}"
 
     if name == "poe_web_search":
         query = tool_input.get("query", "")
         if query:
-            return f"Searching: {truncate(query, 45)}"
+            return f"Searching: {truncate(query, TRUNCATE_QUERY_CHARS)}"
         return "Searching the web..."
 
     if name == "get_item_prices":
         name_filter = tool_input.get("name", "")
         item_type = tool_input.get("type", "")
         if name_filter:
-            return f'Looking up "{truncate(name_filter, 30)}" prices...'
+            return f'Looking up "{truncate(name_filter, TRUNCATE_NAME_FILTER_CHARS)}" prices...'
         if item_type:
-            return f"Looking up {truncate(item_type, 30)} prices..."
+            return f"Looking up {truncate(item_type, TRUNCATE_ITEM_TYPE_CHARS)} prices..."
         return "Looking up item prices..."
 
     if name == "get_build_meta":
@@ -128,8 +137,8 @@ class TimedSpinner:
             Spinner renderables with elapsed-time annotation.
         """
         elapsed = int(time.monotonic() - self._start)
-        if elapsed >= 60:
-            time_str = f"{elapsed // 60}m {elapsed % 60:02d}s"
+        if elapsed >= SECONDS_PER_MINUTE:
+            time_str = f"{elapsed // SECONDS_PER_MINUTE}m {elapsed % SECONDS_PER_MINUTE:02d}s"
         else:
             time_str = f"{elapsed}s"
         self._spinner.update(text=f"{self._text}  [dim]{time_str}[/dim]")

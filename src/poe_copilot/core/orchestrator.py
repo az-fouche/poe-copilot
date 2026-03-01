@@ -6,6 +6,16 @@ from typing import Callable, Optional
 
 import anthropic
 
+from poe_copilot.config import (
+    ASSISTANT_MESSAGE_CHAR_LIMIT,
+    DEFAULT_MAX_API_CALLS,
+    DEFAULT_MAX_TOKENS,
+    MAX_DELEGATION_RESULT_CHARS,
+    MAX_LOG_PREVIEW_CHARS,
+    MAX_PARTIAL_RESULT_CHARS,
+    MAX_RESEARCH_ITEMS_FOR_ANSWER,
+    USER_MESSAGE_CHAR_LIMIT,
+)
 from poe_copilot.constants import REGISTRY_FILE
 from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
 
@@ -35,7 +45,7 @@ class Orchestrator:
         self.settings = settings
         self.messages: list[dict] = []
         self.api_calls = 0
-        self.max_api_calls = 25
+        self.max_api_calls = DEFAULT_MAX_API_CALLS
         self._accumulated_research: list[str] = []
         self._conversation_context: str = ""
         self._on_status: Optional[Callable[[str], None]] = None
@@ -61,7 +71,7 @@ class Orchestrator:
                 model=cfg["model"],
                 tools=tools,
                 next_agent=cfg.get("next"),
-                max_tokens=cfg.get("max_tokens", 4096),
+                max_tokens=cfg.get("max_tokens", DEFAULT_MAX_TOKENS),
                 client=client,
             )
 
@@ -157,7 +167,7 @@ class Orchestrator:
                 return self._parse_clarification(decision.input["clarification"])  # type: ignore
 
         answer_text: str = decision.input["text"]  # type: ignore
-        logger.info("ANSWER: %s", answer_text[:500])
+        logger.info("ANSWER: %s", answer_text[:MAX_LOG_PREVIEW_CHARS])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
 
@@ -178,7 +188,7 @@ class Orchestrator:
         """
         result = self._force_answerer(extra_context)
         answer_text: str = result.input["text"]
-        logger.info("FORCE_ANSWER: %s", answer_text[:500])
+        logger.info("FORCE_ANSWER: %s", answer_text[:MAX_LOG_PREVIEW_CHARS])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
 
@@ -188,7 +198,7 @@ class Orchestrator:
             self._on_status("Writing response...")
 
         research_summary = (
-            "\n".join(self._accumulated_research[-20:])
+            "\n".join(self._accumulated_research[-MAX_RESEARCH_ITEMS_FOR_ANSWER:])
             if self._accumulated_research
             else "(no research collected)"
         )
@@ -290,7 +300,7 @@ class Orchestrator:
                         {"tool_use_id": tc["id"], "content": delegation_result}
                     )
                     self._accumulated_research.append(
-                        f"[{tc['name']}] {delegation_result[:2000]}"
+                        f"[{tc['name']}] {delegation_result[:MAX_DELEGATION_RESULT_CHARS]}"
                     )
 
                 results.extend(self._execute_tool_calls(regular_calls))
@@ -300,7 +310,7 @@ class Orchestrator:
                     logger.warning(
                         "Budget exceeded during delegation, returning partial results"
                     )
-                    partial = "\n".join(r["content"][:2000] for r in results)
+                    partial = "\n".join(r["content"][:MAX_PARTIAL_RESULT_CHARS] for r in results)
                     return f"(partial results — budget exceeded)\n{partial}"
 
                 if on_status:
@@ -378,7 +388,7 @@ class Orchestrator:
             )
             results.append({"tool_use_id": tc["id"], "content": result_content})
             self._accumulated_research.append(
-                f"[{tc['name']}] {result_content[:2000]}"
+                f"[{tc['name']}] {result_content[:MAX_DELEGATION_RESULT_CHARS]}"
             )
         return results
 
@@ -436,7 +446,7 @@ class Orchestrator:
                         text_parts.append(block.text)  # type: ignore
                 content = " ".join(text_parts)
             if content and isinstance(content, str):
-                limit = 1500 if role == "assistant" else 300
+                limit = ASSISTANT_MESSAGE_CHAR_LIMIT if role == "assistant" else USER_MESSAGE_CHAR_LIMIT
                 context_parts.append(f"{role}: {content[:limit]}")
 
         context_str = (

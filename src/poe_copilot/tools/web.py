@@ -6,8 +6,12 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 from ddgs import DDGS
 
-MAX_CONTENT_CHARS = 6000
-MAX_INTRO_CHARS = 2000
+from poe_copilot.config import (
+    HTTP_REQUEST_TIMEOUT,
+    MAX_WEB_CONTENT_CHARS,
+    MAX_WEB_INTRO_CHARS,
+)
+
 MAX_RESULTS = 8
 
 # Tags whose content is noise rather than article text
@@ -164,8 +168,8 @@ def _extract_section(soup: BeautifulSoup, section_query: str) -> str | None:
             parts.append(text)
 
     content = "\n".join(parts)
-    if len(content) > MAX_CONTENT_CHARS:
-        content = content[:MAX_CONTENT_CHARS] + "\n\n[... content truncated]"
+    if len(content) > MAX_WEB_CONTENT_CHARS:
+        content = content[:MAX_WEB_CONTENT_CHARS] + "\n\n[... content truncated]"
     return content
 
 
@@ -180,7 +184,7 @@ def _read_page(url: str, section: str | None = None) -> dict:
     """Fetch a webpage and return its outline or a targeted section."""
     try:
         with httpx.Client(
-            timeout=15,
+            timeout=HTTP_REQUEST_TIMEOUT,
             follow_redirects=True,
             headers={
                 "User-Agent": (
@@ -224,8 +228,8 @@ def _read_page(url: str, section: str | None = None) -> dict:
             section_names = [h["text"] for h in toc]
 
             body = _get_body_text(soup)
-            intro = body[:MAX_INTRO_CHARS]
-            if len(body) > MAX_INTRO_CHARS:
+            intro = body[:MAX_WEB_INTRO_CHARS]
+            if len(body) > MAX_WEB_INTRO_CHARS:
                 intro += (
                     "\n\n[... use section parameter to read specific sections]"
                 )
