@@ -15,6 +15,7 @@ dependencies = [
     "beautifulsoup4>=4.12.0",
     "InquirerPy>=0.3.4",
     "pytest>=9.0.2",
+    "ruff>=0.15.4",
 ]
 
 [project.optional-dependencies]
@@ -27,7 +28,7 @@ where = ["src"]
 [tool.ruff]
 target-version = "py311"
 src = ["src"]
-line-length = 120
+line-length = 81
 
 [project.scripts]
 poechat = "poe_copilot.__main__:main"

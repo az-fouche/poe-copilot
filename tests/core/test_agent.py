@@ -31,7 +31,11 @@ def test_call_with_query_sets_thread(mock_anthropic_client):
 def test_call_returns_tool_calls(mock_anthropic_client):
     resp = make_tool_response(
         [
-            {"id": "tu_1", "name": "get_currency_prices", "input": {"type": "Currency"}},
+            {
+                "id": "tu_1",
+                "name": "get_currency_prices",
+                "input": {"type": "Currency"},
+            },
             {"id": "tu_2", "name": "poe_web_search", "input": {"query": "test"}},
         ]
     )
@@ -104,7 +108,9 @@ def test_call_with_tool_results_appends_to_thread(mock_anthropic_client):
     # First call with query
     agent.call({"query": "do stuff"})
     # Second call with tool results
-    agent.call({"tool_results": [{"tool_use_id": "tu_1", "content": "result data"}]})
+    agent.call(
+        {"tool_results": [{"tool_use_id": "tu_1", "content": "result data"}]}
+    )
     assert len(agent._thread) == 4
     assert agent._thread[0]["role"] == "user"
     assert agent._thread[1]["role"] == "assistant"

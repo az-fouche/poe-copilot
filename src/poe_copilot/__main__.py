@@ -40,8 +40,12 @@ def main():
 
     logger.info("Settings: %s", settings)
     league_display = resolve_league(settings)
-    console.print("\n[bold cyan]PoE Chat[/bold cyan] — your Path of Exile companion")
-    console.print(f"[dim]{league_display} · {settings['mode']} · {settings['experience']}[/dim]")
+    console.print(
+        "\n[bold cyan]PoE Chat[/bold cyan] — your Path of Exile companion"
+    )
+    console.print(
+        f"[dim]{league_display} · {settings['mode']} · {settings['experience']}[/dim]"
+    )
     console.print(
         "Type [bold]/quit[/bold] to exit, [bold]/clear[/bold] to clear history, [bold]/setup[/bold] to reconfigure"
     )
@@ -95,9 +99,16 @@ def main():
                         on_message=show_message,
                     )
             except KeyboardInterrupt:
-                result = handle_interrupt(console, len(orchestrator._accumulated_research), orchestrator.force_answer)
+                result = handle_interrupt(
+                    console,
+                    len(orchestrator._accumulated_research),
+                    orchestrator.force_answer,
+                )
                 if result is None:
-                    if orchestrator.messages and orchestrator.messages[-1].get("role") == "user":
+                    if (
+                        orchestrator.messages
+                        and orchestrator.messages[-1].get("role") == "user"
+                    ):
                         orchestrator.messages.pop()
                     console.print("[dim]Cancelled.[/dim]\n")
                     continue
@@ -105,7 +116,10 @@ def main():
             # Handle clarification loop (max 2 rounds)
             max_clarification_rounds = 2
             clarification_round = 0
-            while isinstance(result, list) and clarification_round < max_clarification_rounds:
+            while (
+                isinstance(result, list)
+                and clarification_round < max_clarification_rounds
+            ):
                 clarification_round += 1
                 answers_text = ask_clarifying_questions(console, result)
                 enriched_input = f"{user_input}\n\n(My answers: {answers_text})"
@@ -125,10 +139,15 @@ def main():
                         )
                 except KeyboardInterrupt:
                     result = handle_interrupt(
-                        console, len(orchestrator._accumulated_research), orchestrator.force_answer
+                        console,
+                        len(orchestrator._accumulated_research),
+                        orchestrator.force_answer,
                     )
                     if result is None:
-                        if orchestrator.messages and orchestrator.messages[-1].get("role") == "user":
+                        if (
+                            orchestrator.messages
+                            and orchestrator.messages[-1].get("role") == "user"
+                        ):
                             orchestrator.messages.pop()
                         console.print("[dim]Cancelled.[/dim]\n")
                         break
@@ -140,7 +159,9 @@ def main():
                 console.print()
             elif result is not None:
                 # Shouldn't happen, but handle gracefully
-                console.print("\n[dim]Could not generate a response. Please try again.[/dim]\n")
+                console.print(
+                    "\n[dim]Could not generate a response. Please try again.[/dim]\n"
+                )
 
         except Exception as e:
             console.print(f"\n[bold red]Error:[/bold red] {e}\n")

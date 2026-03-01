@@ -112,7 +112,9 @@ POE_NINJA_TOOLS = [
                 },
                 "class_filter": {
                     "type": "string",
-                    "description": ("Optional ascendancy name to filter results (e.g. 'Juggernaut', 'Necromancer')."),
+                    "description": (
+                        "Optional ascendancy name to filter results (e.g. 'Juggernaut', 'Necromancer')."
+                    ),
                 },
             },
         },
@@ -163,7 +165,9 @@ def _extract_sparkline(spark_data: dict | None) -> dict | None:
     if change is not None:
         result["total_change_pct"] = round(change, 2)
     if points:
-        result["sparkline"] = [round(p, 2) if p is not None else 0.0 for p in points]
+        result["sparkline"] = [
+            round(p, 2) if p is not None else 0.0 for p in points
+        ]
     return result or None
 
 
@@ -194,7 +198,9 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
     try:
         if name == "get_currency_prices":
             item_type = params["type"]
-            data = _fetch("currencyoverview", {"league": league, "type": item_type})
+            data = _fetch(
+                "currencyoverview", {"league": league, "type": item_type}
+            )
             lines = data.get("lines", [])
             results = []
             for line in lines[:MAX_RESULTS]:
@@ -221,7 +227,11 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
 
             name_filter = params.get("name_filter", "").lower()
             if name_filter:
-                lines = [line for line in lines if name_filter in line.get("name", "").lower()]
+                lines = [
+                    line
+                    for line in lines
+                    if name_filter in line.get("name", "").lower()
+                ]
 
             results = []
             for line in lines[:MAX_RESULTS]:
@@ -268,7 +278,10 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
                 skills_raw = [
                     s
                     for s in skills_raw
-                    if any(class_filter in n.get("name", "").lower() for n in s.get("classes", []))
+                    if any(
+                        class_filter in n.get("name", "").lower()
+                        for n in s.get("classes", [])
+                    )
                 ]
             active_skills = _ranked_list(skills_raw, cap)
 

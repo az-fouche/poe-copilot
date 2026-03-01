@@ -152,9 +152,15 @@ def _extract_section(soup: BeautifulSoup, section_query: str) -> str | None:
             if sibling_level <= target_level:
                 break
             # Sub-heading within the section — include it
-            parts.append(f"\n{'#' * sibling_level} {sibling.get_text(strip=True)}")
+            parts.append(
+                f"\n{'#' * sibling_level} {sibling.get_text(strip=True)}"
+            )
             continue
-        text = sibling.get_text(separator="\n", strip=True) if isinstance(sibling, Tag) else str(sibling).strip()
+        text = (
+            sibling.get_text(separator="\n", strip=True)
+            if isinstance(sibling, Tag)
+            else str(sibling).strip()
+        )
         if text:
             parts.append(text)
 
@@ -189,7 +195,9 @@ def _read_page(url: str, section: str | None = None) -> dict:
             resp.raise_for_status()
 
         soup = BeautifulSoup(resp.text, "html.parser")
-        title = soup.title.string.strip() if soup.title and soup.title.string else ""
+        title = (
+            soup.title.string.strip() if soup.title and soup.title.string else ""
+        )
         _clean_soup(soup)
 
         if section:
@@ -219,7 +227,9 @@ def _read_page(url: str, section: str | None = None) -> dict:
             body = _get_body_text(soup)
             intro = body[:MAX_INTRO_CHARS]
             if len(body) > MAX_INTRO_CHARS:
-                intro += "\n\n[... use section parameter to read specific sections]"
+                intro += (
+                    "\n\n[... use section parameter to read specific sections]"
+                )
 
             return {
                 "url": url,

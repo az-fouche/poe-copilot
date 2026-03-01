@@ -154,7 +154,9 @@ def setup_logging():
 
     handler = logging.FileHandler(log_file, encoding="utf-8")
     handler.setLevel(logging.DEBUG)
-    handler.setFormatter(logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s"))
+    handler.setFormatter(
+        logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+    )
 
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
@@ -196,7 +198,9 @@ def handle_interrupt(
     force_answer_fn: Callable[[str], str],
 ) -> str | None:
     """Handle Ctrl+C during agent.run() — offer menu to salvage partial results."""
-    console.print(f"\n[bold yellow]Interrupted[/bold yellow] — {research_count} research result(s) gathered so far.")
+    console.print(
+        f"\n[bold yellow]Interrupted[/bold yellow] — {research_count} research result(s) gathered so far."
+    )
 
     try:
         choice = inquirer.select(  # type: ignore

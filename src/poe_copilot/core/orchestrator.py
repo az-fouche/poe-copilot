@@ -86,7 +86,9 @@ class Orchestrator:
 
         # Load tool steps
         for tool_name, handler in _HANDLERS.items():
-            self.steps[tool_name] = ToolStep(name=tool_name, handler=handler, settings=settings)
+            self.steps[tool_name] = ToolStep(
+                name=tool_name, handler=handler, settings=settings
+            )
 
     def run(
         self,
@@ -130,16 +132,24 @@ class Orchestrator:
         if clarification_round > 0:
             query = (
                 "IMPORTANT: The user has already answered your clarifying questions below. "
-                'Do NOT return action "clarify". Classify and route to the appropriate agent.\n\n' + query
+                'Do NOT return action "clarify". Classify and route to the appropriate agent.\n\n'
+                + query
             )
         self._conversation_context = query
         self._accumulated_research: list[str] = []
         self._on_status = on_status
         logger.info("CALL %s <- query", start_agent)
         decision = self._call_agent(start_agent, {"query": query})
-        logger.info("DECISION %s -> type=%s input_keys=%s", start_agent, decision.type, list(decision.input.keys()))
+        logger.info(
+            "DECISION %s -> type=%s input_keys=%s",
+            start_agent,
+            decision.type,
+            list(decision.input.keys()),
+        )
 
-        decision = self._step_loop(decision, on_status=on_status, on_message=on_message)
+        decision = self._step_loop(
+            decision, on_status=on_status, on_message=on_message
+        )
 
         # Terminal answer handling
         if "clarification" in decision.input:  # type: ignore
@@ -151,7 +161,9 @@ class Orchestrator:
                 )
                 decision = self._call_agent(
                     "researcher",
-                    {"query": f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{user_message}"},
+                    {
+                        "query": f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{user_message}"
+                    },
                 )
             else:
                 logger.info("CLARIFY: %s", decision.input["clarification"])  # type: ignore
@@ -190,13 +202,15 @@ class Orchestrator:
             self._on_status("Writing response...")
 
         research_summary = (
-            "\n".join(self._accumulated_research[-20:]) if self._accumulated_research else "(no research collected)"
+            "\n".join(self._accumulated_research[-20:])
+            if self._accumulated_research
+            else "(no research collected)"
         )
-        forced_query = (
-            f"## User Question\n{self._conversation_context}\n\n## Research Gathered So Far\n{research_summary}\n\n"
-        )
+        forced_query = f"## User Question\n{self._conversation_context}\n\n## Research Gathered So Far\n{research_summary}\n\n"
         if extra_context:
-            forced_query += f"## Additional Context from User\n{extra_context}\n\n"
+            forced_query += (
+                f"## Additional Context from User\n{extra_context}\n\n"
+            )
         forced_query += (
             "## Instructions\n"
             "IMPORTANT: You MUST write a final, helpful answer in markdown for the user. "
@@ -232,7 +246,9 @@ class Orchestrator:
         """Invoke a named agent step, enforcing the API-call budget."""
         self.api_calls += 1
         if self.api_calls > self.max_api_calls:
-            logger.warning("API cap reached (%d), forcing answerer", self.max_api_calls)
+            logger.warning(
+                "API cap reached (%d), forcing answerer", self.max_api_calls
+            )
             return self._force_answerer()
         return self.steps[name].call(input)
 
@@ -254,44 +270,87 @@ class Orchestrator:
             inp = decision.input
 
             if "tools" in inp:
-                delegation_calls = [tc for tc in inp["tools"] if tc["name"] in DELEGATION_TOOL_NAMES]
-                regular_calls = [tc for tc in inp["tools"] if tc["name"] not in DELEGATION_TOOL_NAMES]
+                delegation_calls = [
+                    tc
+                    for tc in inp["tools"]
+                    if tc["name"] in DELEGATION_TOOL_NAMES
+                ]
+                regular_calls = [
+                    tc
+                    for tc in inp["tools"]
+                    if tc["name"] not in DELEGATION_TOOL_NAMES
+                ]
 
                 results = []
                 for tc in delegation_calls:
                     if on_status:
-                        on_status(STATUS_LABELS.get(tc["name"], f"Delegating {tc['name']}"))
-                    logger.info("DELEGATION %s input=%s", tc["name"], tc["input"])
-                    delegation_result = self._handle_delegation(tc["name"], tc["input"])
-                    logger.info("DELEGATION_RESULT %s (%d chars)", tc["name"], len(delegation_result))
-                    results.append({"tool_use_id": tc["id"], "content": delegation_result})
-                    self._accumulated_research.append(f"[{tc['name']}] {delegation_result[:2000]}")
+                        on_status(
+                            STATUS_LABELS.get(
+                                tc["name"], f"Delegating {tc['name']}"
+                            )
+                        )
+                    logger.info(
+                        "DELEGATION %s input=%s", tc["name"], tc["input"]
+                    )
+                    delegation_result = self._handle_delegation(
+                        tc["name"], tc["input"]
+                    )
+                    logger.info(
+                        "DELEGATION_RESULT %s (%d chars)",
+                        tc["name"],
+                        len(delegation_result),
+                    )
+                    results.append(
+                        {"tool_use_id": tc["id"], "content": delegation_result}
+                    )
+                    self._accumulated_research.append(
+                        f"[{tc['name']}] {delegation_result[:2000]}"
+                    )
 
                 results.extend(self._execute_tool_calls(regular_calls))
 
                 # Budget check during delegation — return partial results
                 if intercept_routing and self.api_calls >= self.max_api_calls:
-                    logger.warning("Budget exceeded during delegation, returning partial results")
+                    logger.warning(
+                        "Budget exceeded during delegation, returning partial results"
+                    )
                     partial = "\n".join(r["content"][:2000] for r in results)
                     return f"(partial results — budget exceeded)\n{partial}"
 
                 if on_status:
                     on_status("Analyzing results...")
-                logger.info("CALL %s <- tool_results (%d)", inp["return_to"], len(results))
-                decision = self._call_agent(inp["return_to"], {"tool_results": results})
                 logger.info(
-                    "DECISION %s -> type=%s input_keys=%s", inp["return_to"], decision.type, list(decision.input.keys())
+                    "CALL %s <- tool_results (%d)",
+                    inp["return_to"],
+                    len(results),
+                )
+                decision = self._call_agent(
+                    inp["return_to"], {"tool_results": results}
+                )
+                logger.info(
+                    "DECISION %s -> type=%s input_keys=%s",
+                    inp["return_to"],
+                    decision.type,
+                    list(decision.input.keys()),
                 )
 
             elif "target" in inp:
                 if intercept_routing:
-                    logger.info("DELEGATION_INTERCEPT -> %s (capturing output)", inp["target"])
+                    logger.info(
+                        "DELEGATION_INTERCEPT -> %s (capturing output)",
+                        inp["target"],
+                    )
                     return inp["query"]
 
                 query = inp["query"]
                 target = inp["target"]
                 # Agents that need conversation context injected (static — matches registry)
-                if target in ("researcher", "answerer", "build_agent", "planner"):
+                if target in (
+                    "researcher",
+                    "answerer",
+                    "build_agent",
+                    "planner",
+                ):
                     query = f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{query}"
                 # Inject budget info when routing to planner
                 if target == "planner":
@@ -304,7 +363,12 @@ class Orchestrator:
                     query = budget_info + query
                 logger.info("CALL %s <- query", target)
                 decision = self._call_agent(target, {"query": query})
-                logger.info("DECISION %s -> type=%s input_keys=%s", target, decision.type, list(decision.input.keys()))
+                logger.info(
+                    "DECISION %s -> type=%s input_keys=%s",
+                    target,
+                    decision.type,
+                    list(decision.input.keys()),
+                )
 
         if intercept_routing:
             return decision.input.get("text", str(decision.input))
@@ -323,15 +387,21 @@ class Orchestrator:
                 if isinstance(tool_result.input["result"], (dict, list))
                 else str(tool_result.input["result"])
             )
-            logger.info("TOOL_RESULT %s (%d chars)", tc["name"], len(result_content))
+            logger.info(
+                "TOOL_RESULT %s (%d chars)", tc["name"], len(result_content)
+            )
             results.append({"tool_use_id": tc["id"], "content": result_content})
-            self._accumulated_research.append(f"[{tc['name']}] {result_content[:2000]}")
+            self._accumulated_research.append(
+                f"[{tc['name']}] {result_content[:2000]}"
+            )
         return results
 
     def _handle_delegation(self, tool_name: str, tool_input: dict) -> str:
         """Map delegation tool calls to sub-agent runs."""
         if tool_name == "delegate_research":
-            return self._run_agent_to_completion("researcher", tool_input["task"])
+            return self._run_agent_to_completion(
+                "researcher", tool_input["task"]
+            )
         elif tool_name == "delegate_build":
             task = tool_input["task"]
             context = tool_input.get("context", "")
@@ -361,7 +431,9 @@ class Orchestrator:
         query = f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{task}"
         decision = self._call_agent(agent_name, {"query": query})
 
-        return self._step_loop(decision, on_status=self._on_status, intercept_routing=True)  # type: ignore
+        return self._step_loop(
+            decision, on_status=self._on_status, intercept_routing=True
+        )  # type: ignore
 
     def _build_context(self, user_message: str) -> str:
         """Assemble recent conversation history into a context string for the router."""
@@ -381,14 +453,18 @@ class Orchestrator:
                 limit = 1500 if role == "assistant" else 300
                 context_parts.append(f"{role}: {content[:limit]}")
 
-        context_str = "\n".join(context_parts) if context_parts else "(new conversation)"
+        context_str = (
+            "\n".join(context_parts) if context_parts else "(new conversation)"
+        )
         return f"Recent conversation:\n{context_str}\n\nCurrent user message: {user_message}"
 
     def _status_label(self, decision: NextStep) -> str:
         """Derive a human-friendly spinner label from a routing decision."""
         inp = decision.input
         if "target" in inp:
-            return STATUS_LABELS.get(inp["target"], f"Running {inp['target']}...")
+            return STATUS_LABELS.get(
+                inp["target"], f"Running {inp['target']}..."
+            )
         if "tools" in inp and inp["tools"]:
             first_tool = inp["tools"][0]
             if first_tool["name"] in DELEGATION_TOOL_NAMES:

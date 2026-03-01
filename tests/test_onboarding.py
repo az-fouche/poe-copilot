@@ -13,7 +13,12 @@ from poe_copilot.onboarding import load_settings, run_onboarding, save_settings
 
 @patch("poe_copilot.onboarding.SETTINGS_FILE")
 def test_load_settings_returns_dict(mock_file):
-    data = {"api_key": "sk-test-key", "league": "Keepers", "mode": "ssf", "experience": "veteran"}
+    data = {
+        "api_key": "sk-test-key",
+        "league": "Keepers",
+        "mode": "ssf",
+        "experience": "veteran",
+    }
     mock_file.exists.return_value = True
     mock_file.read_text.return_value = json.dumps(data)
     result = load_settings()
@@ -33,7 +38,12 @@ def test_load_settings_returns_none_when_missing(mock_file):
 @patch("poe_copilot.onboarding.SETTINGS_FILE")
 @patch("poe_copilot.onboarding.SETTINGS_DIR")
 def test_save_settings_creates_file(mock_dir, mock_file):
-    data = {"api_key": "sk-test-key", "league": "Standard", "mode": "softcore_trade", "experience": "newbie"}
+    data = {
+        "api_key": "sk-test-key",
+        "league": "Standard",
+        "mode": "softcore_trade",
+        "experience": "newbie",
+    }
     save_settings(data)
     mock_dir.mkdir.assert_called_once_with(parents=True, exist_ok=True)
     mock_file.write_text.assert_called_once_with(json.dumps(data, indent=2))
@@ -46,7 +56,9 @@ def test_save_settings_creates_file(mock_dir, mock_file):
 @patch("poe_copilot.onboarding.save_settings")
 @patch("poe_copilot.onboarding.Prompt.ask")
 @patch("poe_copilot.onboarding.Console")
-def test_run_onboarding_collects_api_key(mock_console_cls, mock_ask, mock_save, mock_resolve):
+def test_run_onboarding_collects_api_key(
+    mock_console_cls, mock_ask, mock_save, mock_resolve
+):
     # Prompt.ask is called 4 times: api_key, league_choice, mode, experience
     mock_ask.side_effect = ["sk-ant-test-key", "1", "1", "3"]
     result = run_onboarding()
@@ -61,8 +73,15 @@ def test_run_onboarding_collects_api_key(mock_console_cls, mock_ask, mock_save, 
 @patch("poe_copilot.onboarding.save_settings")
 @patch("poe_copilot.onboarding.Prompt.ask")
 @patch("poe_copilot.onboarding.Console")
-def test_run_onboarding_preserves_existing_key(mock_console_cls, mock_ask, mock_save, mock_resolve):
-    existing = {"api_key": "sk-ant-existing", "league": "standard", "mode": "ssf", "experience": "veteran"}
+def test_run_onboarding_preserves_existing_key(
+    mock_console_cls, mock_ask, mock_save, mock_resolve
+):
+    existing = {
+        "api_key": "sk-ant-existing",
+        "league": "standard",
+        "mode": "ssf",
+        "experience": "veteran",
+    }
     # When existing key is present, pressing Enter keeps it (returned as default)
     mock_ask.side_effect = ["sk-ant-existing", "2", "1", "3"]
     result = run_onboarding(existing=existing)

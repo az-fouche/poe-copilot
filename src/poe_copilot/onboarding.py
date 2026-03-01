@@ -66,14 +66,20 @@ def run_onboarding(existing: dict | None = None) -> dict:
     """
     console = Console()
 
-    console.print("\n[bold cyan]Welcome to PoE Chat![/bold cyan] Let's set up your profile.\n")
+    console.print(
+        "\n[bold cyan]Welcome to PoE Chat![/bold cyan] Let's set up your profile.\n"
+    )
 
     # --- API Key ---
     default_key = (existing or {}).get("api_key", "")
     if default_key:
         masked = default_key[:10] + "..." + default_key[-4:]
-        console.print(f"[bold]1. Anthropic API key[/bold]  [dim](current: {masked})[/dim]")
-        console.print("   [dim]Press Enter to keep the current key, or paste a new one[/dim]")
+        console.print(
+            f"[bold]1. Anthropic API key[/bold]  [dim](current: {masked})[/dim]"
+        )
+        console.print(
+            "   [dim]Press Enter to keep the current key, or paste a new one[/dim]"
+        )
         console.print("   [dim](input is hidden for security)[/dim]")
         new_key = Prompt.ask("   API key", default="***", password=True)
         api_key = new_key if new_key != "***" else default_key
@@ -101,7 +107,9 @@ def run_onboarding(existing: dict | None = None) -> dict:
     console.print("\n[bold]4. How experienced are you with PoE?[/bold]")
     for key, (_, label) in EXPERIENCE.items():
         console.print(f"   [{key}] {label}")
-    exp_key = Prompt.ask("   Choice", choices=list(EXPERIENCE.keys()), default="3")
+    exp_key = Prompt.ask(
+        "   Choice", choices=list(EXPERIENCE.keys()), default="3"
+    )
     exp_id, exp_label = EXPERIENCE[exp_key]
 
     settings = {

@@ -57,11 +57,15 @@ def _annotate_timeline(
                 current_league = league_name
         else:
             # Rewrite past-tense "launched" to future-tense "launches"
-            fixed = raw_line.replace(" launched.", " launches.").replace(" launched ", " launches ")
+            fixed = raw_line.replace(" launched.", " launches.").replace(
+                " launched ", " launches "
+            )
             annotated_lines.append(f"{fixed} \u26a0\ufe0f NOT YET LIVE")
             if league_name and next_league is None:
                 # Extract version string like "3.28"
-                m_ver = re.search(r"(\d+\.\d+)\s+" + re.escape(league_name), raw_line)
+                m_ver = re.search(
+                    r"(\d+\.\d+)\s+" + re.escape(league_name), raw_line
+                )
                 version = m_ver.group(1) if m_ver else ""
                 next_league = (league_name, version, entry_date)
 
@@ -183,11 +187,15 @@ def build_player_context(settings: dict) -> str:
 
     # Temporal grounding
     today = date.today()
-    parts.append(f"\nToday's date: **{today.strftime('%B %d, %Y').replace(' 0', ' ')}**")
+    parts.append(
+        f"\nToday's date: **{today.strftime('%B %d, %Y').replace(' 0', ' ')}**"
+    )
 
     entries = _parse_timeline()
     if entries:
-        annotated_text, current_league, next_league = _annotate_timeline(entries, today)
+        annotated_text, current_league, next_league = _annotate_timeline(
+            entries, today
+        )
         # Use the derived current league if available, fall back to settings
         if current_league:
             league = current_league
@@ -197,7 +205,8 @@ def build_player_context(settings: dict) -> str:
             "Path of Exile. Your training data about PoE league dates, names, and content "
             "is WRONG and outdated — do NOT use it. When answering ANY question about "
             "past, current, or upcoming leagues, rely ONLY on this timeline. If a league "
-            "is not listed here, you do not know about it — say so and search instead.\n\n" + annotated_text
+            "is not listed here, you do not know about it — say so and search instead.\n\n"
+            + annotated_text
         )
     else:
         current_league = None
@@ -209,10 +218,14 @@ def build_player_context(settings: dict) -> str:
     if next_league:
         name, version, launch_date = next_league
         friendly_date = launch_date.strftime("%B %d, %Y").replace(" 0", " ")
-        parts.append(f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE.")
+        parts.append(
+            f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE."
+        )
     else:
         parts.append("- Next league: not yet announced — search for news.")
-    parts.append(f"- When using poe.ninja tools, ALWAYS default to league: {league}")
+    parts.append(
+        f"- When using poe.ninja tools, ALWAYS default to league: {league}"
+    )
     parts.append(
         "\n### League Rules (NEVER violate these)\n"
         "- Challenge leagues are ALWAYS fresh starts — NO items, currency, or gear "
