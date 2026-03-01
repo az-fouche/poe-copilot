@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import time
+import tomllib
 from datetime import datetime
 from pathlib import Path
 
@@ -17,6 +18,17 @@ from .orchestrator import ClarificationRequest, Orchestrator
 from .onboarding import load_settings, run_onboarding
 
 logger = logging.getLogger(__name__)
+
+
+def get_version() -> str:
+    """Read version from pyproject.toml."""
+    try:
+        pyproject_path = Path(__file__).resolve().parent.parent.parent / "pyproject.toml"
+        with open(pyproject_path, "rb") as f:
+            data = tomllib.load(f)
+            return data.get("project", {}).get("version", "unknown")
+    except Exception:
+        return "unknown"
 
 
 def setup_logging():
@@ -119,6 +131,12 @@ def _handle_interrupt(console: Console, agent) -> str | None:
 
 
 def main():
+    # Handle --version flag
+    if "--version" in sys.argv or "-v" in sys.argv:
+        console = Console()
+        console.print(get_version())
+        sys.exit(0)
+
     setup_logging()
     console = Console(width=80)
 
