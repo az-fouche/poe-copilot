@@ -68,10 +68,9 @@ def _make_orchestrator(settings, agent_responses: dict[str, list] | None = None)
         patch(
             "poe_copilot.core.orchestrator.build_primer", return_value="primer"
         ),
-        patch("poe_copilot.core.orchestrator.anthropic.Anthropic"),
     ):
         mock_reg.return_value = _MOCK_REGISTRY
-        orch = Orchestrator(settings)
+        orch = Orchestrator(settings, backend=MagicMock())
 
     # Replace agent steps with mocks that return pre-configured NextStep sequences
     for name, responses in agent_responses.items():

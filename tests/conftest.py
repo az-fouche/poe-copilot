@@ -1,10 +1,10 @@
 """Shared fixtures and mock factories for poe-copilot tests."""
 
-from dataclasses import dataclass
-from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
+
+from poe_copilot.backends import ContentBlock, ToolUseBlock
 
 # ---------------------------------------------------------------------------
 # Settings fixture
@@ -21,75 +21,50 @@ def settings() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Anthropic mock helpers
+# LLMBackend mock helpers
 # ---------------------------------------------------------------------------
 
 
-@dataclass
-class _TextBlock:
-    type: str
-    text: str
+def make_text_response(text: str) -> list[ContentBlock]:
+    """Build a content block list with a single text block."""
+    return [text]
 
 
-@dataclass
-class _ToolUseBlock:
-    type: str
-    id: str
-    name: str
-    input: dict
-
-
-@dataclass
-class _Message:
-    content: list[Any]
-    stop_reason: str = "end_turn"
-
-
-def make_text_response(text: str) -> _Message:
-    """Build a mock Anthropic Message with a single TextBlock."""
-    return _Message(content=[_TextBlock(type="text", text=text)])
-
-
-def make_tool_response(tool_calls: list[dict]) -> _Message:
-    """Build a mock Anthropic Message with ToolUseBlock items.
+def make_tool_response(tool_calls: list[dict]) -> list[ContentBlock]:
+    """Build a content block list with ToolUseBlock items.
 
     Each dict should have keys: id, name, input.
     """
-    blocks = [
-        _ToolUseBlock(
-            type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]
-        )
+    return [
+        ToolUseBlock(id=tc["id"], name=tc["name"], input=tc["input"])
         for tc in tool_calls
     ]
-    return _Message(content=blocks, stop_reason="tool_use")
 
 
-def make_mixed_response(text: str, tool_calls: list[dict]) -> _Message:
-    """Build a mock Anthropic Message with both text and tool_use blocks."""
-    blocks: list[Any] = [_TextBlock(type="text", text=text)]
+def make_mixed_response(text: str, tool_calls: list[dict]) -> list[ContentBlock]:
+    """Build a content block list with both text and tool_use blocks."""
+    blocks: list[ContentBlock] = [text]
     blocks.extend(
-        _ToolUseBlock(
-            type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]
-        )
+        ToolUseBlock(id=tc["id"], name=tc["name"], input=tc["input"])
         for tc in tool_calls
     )
-    return _Message(content=blocks, stop_reason="tool_use")
+    return blocks
 
 
 @pytest.fixture
-def mock_anthropic_client():
-    """Factory that returns a mock anthropic.Anthropic whose .messages.create()
+def mock_backend():
+    """Factory that returns a mock LLMBackend whose .complete()
     returns configurable responses (pass a list to side_effect for sequences)."""
 
     def _factory(responses=None, side_effect=None):
-        client = MagicMock()
+        backend = MagicMock()
         if side_effect is not None:
-            client.messages.create.side_effect = side_effect
+            backend.complete.side_effect = side_effect
         elif responses is not None:
-            client.messages.create.side_effect = responses
+            backend.complete.side_effect = responses
         else:
-            client.messages.create.return_value = make_text_response("ok")
-        return client
+            backend.complete.return_value = make_text_response("ok")
+        return backend
 
     return _factory
 

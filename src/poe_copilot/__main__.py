@@ -7,11 +7,13 @@ import tomllib
 from pathlib import Path
 from typing import Callable
 
+import anthropic
 from rich.console import Console
 from rich.live import Live
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 
+from .backends.anthropic import AnthropicBackend
 from .core import Orchestrator, resolve_league
 from .core.agent import ClarifyingQuestion
 from .core.cli import (
@@ -59,8 +61,6 @@ def main() -> None:
     if settings is None or not settings.get("api_key") or force_setup:
         settings = run_onboarding(existing=settings)
 
-    os.environ["ANTHROPIC_API_KEY"] = settings["api_key"]
-
     logger.info("Settings: %s", settings)
     league_display = resolve_league(settings)
     console.print(
@@ -74,7 +74,12 @@ def main() -> None:
     )
     console.print("Press [bold]Ctrl+C[/bold] to interrupt and take control\n")
 
-    orchestrator = Orchestrator(settings=settings)
+    orchestrator = Orchestrator(
+        settings=settings,
+        backend=AnthropicBackend(
+            anthropic.Anthropic(api_key=settings["api_key"])
+        ),
+    )
 
     while True:
         try:
@@ -94,8 +99,12 @@ def main() -> None:
             continue
         if stripped == "/setup":
             settings = run_onboarding(existing=settings)
-            os.environ["ANTHROPIC_API_KEY"] = settings["api_key"]
-            orchestrator = Orchestrator(settings=settings)
+            orchestrator = Orchestrator(
+                settings=settings,
+                backend=AnthropicBackend(
+                    anthropic.Anthropic(api_key=settings["api_key"])
+                ),
+            )
             console.print("[dim]Agent reloaded with new settings.[/dim]\n")
             continue
         if not stripped:
