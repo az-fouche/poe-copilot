@@ -35,20 +35,32 @@ Launch:
 poechat
 ```
 
-**PoE Chat is free and open-source, but the AI compute is not.** You need your own Anthropic API key to use it. A typical question costs a few cents; complex multi-agent queries (build plans, fact-checked research) can cost ~$0.10–0.30. Support for other providers (OpenAI, Gemini) and smaller/cheaper models is on the roadmap.
-
-On first launch, onboarding will prompt you for:
-
-1. **Anthropic API key** — get one at [console.anthropic.com](https://console.anthropic.com/)
-2. **League** — e.g. Mirage, Standard
-3. **Game mode** — Softcore Trade, Hardcore, SSF, HC SSF
-4. **Experience level** — Newbie through Veteran
-
-Settings are saved to `~/.poechat/settings.usr`. Re-run onboarding anytime with:
+On first launch, onboarding will prompt you for your backend, league, game mode, and experience level. Settings are saved to `~/.poechat/settings.usr`. Re-run onboarding anytime with:
 
 ```bash
 poechat --setup
 ```
+
+## Supported backends
+
+### Anthropic (Claude API)
+
+The default backend. Requires an API key from [console.anthropic.com](https://console.anthropic.com/).
+
+A typical question costs a few cents; complex multi-agent queries (build plans, fact-checked research) can cost ~$0.10–0.30.
+
+### Ollama (local)
+
+Run locally for free using [Ollama](https://ollama.com). 16GB VRAM recommended for 14B models.
+
+```bash
+# Install from https://ollama.com/download, then:
+ollama pull qwen2.5:14b    # download a model (~9 GB)
+ollama serve               # start the server (often auto-starts on install)
+poechat --setup            # select Ollama as your backend
+```
+
+Quality varies — smaller local models may struggle with complex multi-step queries and tool use.
 
 ## Commands
 
@@ -64,14 +76,6 @@ poechat --setup
 ```bash
 uv sync --extra dev
 pre-commit install
-```
-
-This installs [pre-commit](https://pre-commit.com/) hooks that run **ruff** linting and formatting on every commit.
-
-To run the hooks manually against all files:
-
-```bash
-pre-commit run --all-files
 ```
 
 ## Contributing

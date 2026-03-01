@@ -16,6 +16,11 @@ class GameMode(StrEnum):
     HC_SSF = "hc_ssf"
 
 
+class Backend(StrEnum):
+    ANTHROPIC = "anthropic"
+    OLLAMA = "ollama"
+
+
 class Experience(StrEnum):
     NEWBIE = "newbie"
     CASUAL = "casual"
