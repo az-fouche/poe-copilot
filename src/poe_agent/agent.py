@@ -70,6 +70,7 @@ class AgentStep:
             })
 
         # Single API call
+        logger.debug("API_REQ [%s] model=%s msgs=%d", self.name, self.model, len(self._thread))
         kwargs: dict = {
             "model": self.model,
             "max_tokens": self.max_tokens,
@@ -80,11 +81,13 @@ class AgentStep:
             kwargs["tools"] = self.tools
 
         response = self.client.messages.create(**kwargs)
+        logger.debug("API_RES [%s] stop=%s blocks=%d", self.name, response.stop_reason, len(response.content))
         self._thread.append({"role": "assistant", "content": response.content})
 
         # Check for tool_use blocks
         tool_calls = [b for b in response.content if getattr(b, "type", None) == "tool_use"]
         if tool_calls:
+            logger.debug("API_RES [%s] tool_use: %s", self.name, [t.name for t in tool_calls])
             return NextStep(
                 type="call",
                 input={
@@ -96,8 +99,35 @@ class AgentStep:
         # Text response
         text_parts = [b.text for b in response.content if getattr(b, "type", None) == "text"]
         text = "\n".join(text_parts).strip()
+        logger.debug("API_RES [%s] text: %s", self.name, text[:500])
 
-        return self._handle_decision_json(text)
+        result = self._handle_decision_json(text)
+        logger.debug("ROUTE [%s] -> type=%s input_keys=%s", self.name, result.type, list(result.input.keys()))
+        return result
+
+    @staticmethod
+    def _extract_json(text: str) -> dict | None:
+        """Scan text for an embedded JSON routing object when full-text parse fails."""
+        end = text.rfind("}")
+        if end == -1:
+            return None
+        # Walk backwards through candidate '{' positions
+        start = end
+        while True:
+            start = text.rfind("{", 0, start)
+            if start == -1:
+                return None
+            candidate = text[start:end + 1]
+            try:
+                data = json.loads(candidate)
+            except json.JSONDecodeError:
+                # Try an earlier '{' on next iteration
+                continue
+            if isinstance(data, dict) and ("action" in data or "target" in data):
+                return data
+            # Valid JSON but not a routing object — keep looking
+            continue
+        return None
 
     def _handle_decision_json(self, text: str) -> NextStep:
         # Strip markdown fences if present
@@ -111,10 +141,13 @@ class AgentStep:
         try:
             data = json.loads(cleaned)
         except json.JSONDecodeError:
-            logger.debug("decision_json parse failed, treating as plain text")
-            if self.next_agent:
-                return NextStep(type="call", input={"target": self.next_agent, "query": text})
-            return NextStep(type="answer", input={"text": text})
+            # Full-text parse failed — try to extract embedded routing JSON
+            data = self._extract_json(text)
+            if data is None:
+                logger.debug("decision_json parse failed, treating as plain text")
+                if self.next_agent:
+                    return NextStep(type="call", input={"target": self.next_agent, "query": text})
+                return NextStep(type="answer", input={"text": text})
 
         if data.get("action") == "clarify":
             return NextStep(type="answer", input={"clarification": data})
@@ -122,8 +155,12 @@ class AgentStep:
         # Use target from JSON if present, otherwise fall back to next_agent
         target = data.get("target", self.next_agent)
         query = data.get("query") or data.get("enriched_query") or text
+        user_msg = data.get("user_msg")
         if target:
-            return NextStep(type="call", input={"target": target, "query": query})
+            inp = {"target": target, "query": query}
+            if user_msg:
+                inp["user_msg"] = user_msg
+            return NextStep(type="call", input=inp)
         return NextStep(type="answer", input={"text": text})
 
 

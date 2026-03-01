@@ -19,11 +19,11 @@ _STATUS_LABELS: dict[str, str] = {
     "researcher": "Researching...",
     "build_agent": "Composing build...",
     "answerer": "Writing response...",
-    "get_currency_prices": "Checking currency prices",
-    "get_item_prices": "Looking up item prices",
+    "get_currency_prices": "Checking currency prices...",
+    "get_item_prices": "Looking up item prices...",
     "get_build_meta": "Checking build meta...",
-    "poe_web_search": "Searching the web",
-    "read_webpage": "Reading a webpage",
+    "poe_web_search": "Searching the web...",
+    "read_webpage": "Reading a webpage...",
 }
 
 
@@ -84,7 +84,9 @@ class Orchestrator:
         user_message: str,
         on_status: Optional[Callable[[str], None]] = None,
         start_agent: str = "router",
+        clarification_round: int = 0,
     ) -> str | ClarificationRequest:
+        logger.info("USER: %s", user_message)
         self.messages.append({"role": "user", "content": user_message})
         self.api_calls = 0
 
@@ -94,9 +96,17 @@ class Orchestrator:
                 step.reset()
 
         query = self._build_context(user_message)
+        if clarification_round > 0:
+            query = (
+                "IMPORTANT: The user has already answered your clarifying questions below. "
+                "Do NOT return action \"clarify\". Classify and route to the appropriate agent.\n\n"
+                + query
+            )
         self._conversation_context = query
         self._accumulated_research: list[str] = []
+        logger.info("CALL %s <- query", start_agent)
         decision = self._call_agent(start_agent, {"query": query})
+        logger.info("DECISION %s -> type=%s input_keys=%s", start_agent, decision.type, list(decision.input.keys()))
 
         # Generic loop
         while decision.type != "answer":
@@ -115,12 +125,14 @@ class Orchestrator:
                                 tool_call["name"], f"Using {tool_call['name']}"
                             )
                         )
+                    logger.info("TOOL %s input=%s", tool_call["name"], tool_call["input"])
                     tool_result = self.steps[tool_call["name"]].call(tool_call["input"])
                     result_content = (
                         json.dumps(tool_result.input["result"])
                         if isinstance(tool_result.input["result"], (dict, list))
                         else str(tool_result.input["result"])
                     )
+                    logger.info("TOOL_RESULT %s (%d chars)", tool_call["name"], len(result_content))
                     results.append(
                         {
                             "tool_use_id": tool_call["id"],
@@ -130,22 +142,38 @@ class Orchestrator:
                     self._accumulated_research.append(
                         f"[{tool_call['name']}] {result_content[:2000]}"
                     )
+                logger.info("CALL %s <- tool_results (%d)", inp["return_to"], len(results))
                 decision = self._call_agent(inp["return_to"], {"tool_results": results})
+                logger.info("DECISION %s -> type=%s input_keys=%s", inp["return_to"], decision.type, list(decision.input.keys()))
 
             elif "target" in inp:
                 query = inp["query"]
                 if inp["target"] in ("researcher", "answerer", "build_agent"):
                     query = f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{query}"
+                logger.info("CALL %s <- query", inp["target"])
                 decision = self._call_agent(inp["target"], {"query": query})
+                logger.info("DECISION %s -> type=%s input_keys=%s", inp["target"], decision.type, list(decision.input.keys()))
 
         # Terminal answer handling
         if "clarification" in decision.input:
-            self.messages.pop()  # remove user message — will re-send with answers
-            return ClarificationRequest(
-                questions=self._parse_clarification(decision.input["clarification"])
-            )
+            # Circuit breaker: if we already clarified, don't ask again — force-route to researcher
+            if clarification_round >= 1:
+                logger.warning(
+                    "Router re-clarified on round %d — forcing route to researcher",
+                    clarification_round,
+                )
+                decision = self._call_agent(
+                    "researcher", {"query": f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{user_message}"}
+                )
+            else:
+                logger.info("CLARIFY: %s", decision.input["clarification"])
+                self.messages.pop()  # remove user message — will re-send with answers
+                return ClarificationRequest(
+                    questions=self._parse_clarification(decision.input["clarification"])
+                )
 
         answer_text = decision.input["text"]
+        logger.info("ANSWER: %s", answer_text[:500])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
 
@@ -155,7 +183,11 @@ class Orchestrator:
             logger.warning("API cap reached (%d), forcing answerer", self.max_api_calls)
 
             # Build a rich context for the forced answerer
-            research_summary = "\n".join(self._accumulated_research[-20:]) if self._accumulated_research else "(no research collected)"
+            research_summary = (
+                "\n".join(self._accumulated_research[-20:])
+                if self._accumulated_research
+                else "(no research collected)"
+            )
             forced_query = (
                 f"## User Question\n{self._conversation_context}\n\n"
                 f"## Research Gathered So Far\n{research_summary}\n\n"
@@ -170,7 +202,10 @@ class Orchestrator:
             # Circuit breaker: if the answerer still didn't produce a terminal answer,
             # force it into one so we never loop back into research.
             if result.type != "answer" or "text" not in result.input:
-                logger.warning("Force-answerer returned non-answer (%s), applying circuit breaker", result.type)
+                logger.warning(
+                    "Force-answerer returned non-answer (%s), applying circuit breaker",
+                    result.type,
+                )
                 return NextStep(
                     type="answer",
                     input={
@@ -207,6 +242,8 @@ class Orchestrator:
 
     def _status_label(self, decision: NextStep) -> str:
         inp = decision.input
+        if inp.get("user_msg"):
+            return inp["user_msg"]
         if "target" in inp:
             return _STATUS_LABELS.get(inp["target"], f"Running {inp['target']}...")
         if "tools" in inp and inp["tools"]:

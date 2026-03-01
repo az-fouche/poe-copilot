@@ -11,7 +11,8 @@
       "Bash(xargs ls:*)",
       "Bash(wc:*)",
       "Bash(rm:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(grep:*)"
     ]
   }
 }

@@ -57,6 +57,8 @@ If the context is too thin, return action `"clarify"` with 1-2 targeted question
 
 **Skip clarification** when the request is already specific enough (e.g., *"Is Lightning Arrow Deadeye good for league start?"* provides skill + ascendancy + goal, or *"How much is a Mageblood?"* is a direct price check).
 
+**Pre-answered context**: If the user message includes "(My answers: ...)" or otherwise embeds answers to clarifying questions, treat those answers as sufficient context and proceed to routing. Do NOT re-clarify.
+
 **Step 3 — Route.** Only if step 2 passes, return action `"answer"` with:
 - target: "build_agent" or "researcher" (see Agent Routing above)
 - complexity: "simple" or "complex"
@@ -85,4 +87,4 @@ For clarify:
 {"action": "clarify", "clarifying_questions": [{"question": "...", "options": ["A", "B", "C"]}]}
 
 For answer:
-{"action": "answer", "target": "build_agent"|"researcher", "complexity": "simple", "required_research": [{"tool": "tool_name", "params": {...}}], "enriched_query": "...", "response_guidance": "..."}
+{"action": "answer", "target": "build_agent"|"researcher", "complexity": "simple", "required_research": [{"tool": "tool_name", "params": {...}}], "enriched_query": "...", "response_guidance": "...", "user_msg": "A short, friendly message for the player explaining what's happening (e.g. 'Checking current prices on poe.ninja...')"}
