@@ -53,9 +53,6 @@ def make_mixed_response(text: str, tool_calls: list[dict]) -> list[ContentBlock]
 
 @pytest.fixture
 def mock_backend():
-    """Factory that returns a mock LLMBackend whose .complete()
-    returns configurable responses (pass a list to side_effect for sequences)."""
-
     def _factory(responses=None, side_effect=None):
         backend = MagicMock()
         if side_effect is not None:

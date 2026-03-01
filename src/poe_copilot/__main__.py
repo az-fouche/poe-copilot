@@ -47,7 +47,6 @@ def main() -> None:
     Handles onboarding, settings loading, and the main input loop
     including clarification rounds and interrupt recovery.
     """
-
     console = Console(width=80)
     if "--version" in sys.argv or "-v" in sys.argv:
         console.print(get_version())
