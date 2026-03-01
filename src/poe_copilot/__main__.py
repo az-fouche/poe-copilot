@@ -134,7 +134,7 @@ def main() -> None:
             except KeyboardInterrupt:
                 result = handle_interrupt(
                     console,
-                    len(orchestrator._accumulated_research),
+                    max(0, orchestrator.api_calls - 1),
                     orchestrator.force_answer,
                 )
                 if result is None:
@@ -175,7 +175,7 @@ def main() -> None:
                 except KeyboardInterrupt:
                     result = handle_interrupt(
                         console,
-                        len(orchestrator._accumulated_research),
+                        orchestrator.api_calls,
                         orchestrator.force_answer,
                     )
                     if result is None:

@@ -246,10 +246,13 @@ class AgentStep:
         target = data.get("target", self.next_agent)
         query = data.get("query") or data.get("enriched_query") or text
         user_msg = data.get("user_msg")
+        loadout = data.get("loadout")
         if target:
             inp = {"target": target, "query": query}
             if user_msg:
                 inp["user_msg"] = user_msg
+            if loadout:
+                inp["loadout"] = loadout
             return NextStep(type="call", input=inp)
         return NextStep(type="answer", input={"text": text})
 
