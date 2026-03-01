@@ -14,6 +14,9 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 
 from .backends.anthropic import AnthropicBackend
+from .backends.backend import LLMBackend
+from .backends.ollama import OllamaBackend
+from .constants import Backend
 from .core import Orchestrator, resolve_league
 from .core.agent import ClarifyingQuestion
 from .core.cli import (
@@ -41,6 +44,26 @@ def get_version() -> str:
         return "unknown"
 
 
+def _build_backend(settings: dict) -> LLMBackend:
+    """Create the LLM backend from user settings."""
+    if settings.get("backend") == Backend.OLLAMA:
+        return OllamaBackend(
+            base_url=settings["ollama_url"],
+            model_override=settings["ollama_model"],
+        )
+    return AnthropicBackend(anthropic.Anthropic(api_key=settings["api_key"]))
+
+
+def _needs_setup(settings: dict | None) -> bool:
+    """Check whether onboarding is required."""
+    if settings is None:
+        return True
+    backend = settings.get("backend", Backend.ANTHROPIC)
+    if backend == Backend.OLLAMA:
+        return not settings.get("ollama_model")
+    return not settings.get("api_key")
+
+
 def main() -> None:
     """Run the interactive PoE Chat REPL.
 
@@ -57,8 +80,10 @@ def main() -> None:
     force_setup = "--setup" in sys.argv
 
     settings = load_settings()
-    if settings is None or not settings.get("api_key") or force_setup:
+    if _needs_setup(settings) or force_setup:
         settings = run_onboarding(existing=settings)
+    if settings is None:
+        raise RuntimeError("Failed to load settings after onboarding")
 
     logger.info("Settings: %s", settings)
     league_display = resolve_league(settings)
@@ -75,9 +100,7 @@ def main() -> None:
 
     orchestrator = Orchestrator(
         settings=settings,
-        backend=AnthropicBackend(
-            anthropic.Anthropic(api_key=settings["api_key"])
-        ),
+        backend=_build_backend(settings),
     )
 
     while True:
@@ -100,9 +123,7 @@ def main() -> None:
             settings = run_onboarding(existing=settings)
             orchestrator = Orchestrator(
                 settings=settings,
-                backend=AnthropicBackend(
-                    anthropic.Anthropic(api_key=settings["api_key"])
-                ),
+                backend=_build_backend(settings),
             )
             console.print("[dim]Agent reloaded with new settings.[/dim]\n")
             continue

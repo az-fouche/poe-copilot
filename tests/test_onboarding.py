@@ -57,9 +57,10 @@ def test_save_settings_creates_file(mock_dir, mock_file):
 def test_run_onboarding_collects_api_key(
     mock_console_cls, mock_ask, mock_save, mock_resolve
 ):
-    # Prompt.ask is called 4 times: api_key, league_choice, mode, experience
-    mock_ask.side_effect = ["sk-ant-test-key", "1", "1", "3"]
+    # backend, api_key, league, mode, experience
+    mock_ask.side_effect = ["1", "sk-ant-test-key", "1", "1", "3"]
     result = run_onboarding()
+    assert result["backend"] == "anthropic"
     assert result["api_key"] == "sk-ant-test-key"
     assert result["league"] == "challenge"
     assert result["mode"] == "softcore_trade"
@@ -75,13 +76,14 @@ def test_run_onboarding_preserves_existing_key(
     mock_console_cls, mock_ask, mock_save, mock_resolve
 ):
     existing = {
+        "backend": "anthropic",
         "api_key": "sk-ant-existing",
         "league": "standard",
         "mode": "ssf",
         "experience": "veteran",
     }
-    # When existing key is present, pressing Enter keeps it (returned as default)
-    mock_ask.side_effect = ["sk-ant-existing", "2", "1", "3"]
+    # backend, api_key (keep), league, mode, experience
+    mock_ask.side_effect = ["1", "sk-ant-existing", "2", "1", "3"]
     result = run_onboarding(existing=existing)
     assert result["api_key"] == "sk-ant-existing"
 
