@@ -104,7 +104,7 @@ Best sources: **poewiki.net** (mechanics, gems, items), **poedb.tw** (mod pools,
 
 If you discover the question isn't actually about building, or you need deep research the researcher handles better, output JSON:
 
-{"target": "researcher", "query": "## Build Context\n<what you've found>\n\n## What's Needed\n<what the researcher should look up>", "user_msg": "A short, friendly message for the player explaining what you're doing next (e.g. 'Looking up pricing data for key uniques...')"}
+{"target": "researcher", "query": "## Build Context\n<what you've found>\n\n## What's Needed\n<what the researcher should look up>", "user_msg": "One short sentence telling the player what you're doing — a loading-screen status message, NOT a conversational reply. Never reference internal agents, pipelines, or architecture. Examples: 'Looking up pricing data for key uniques...', 'Checking build guides for Penance Brand...'"}
 
 This should be rare — you have the same tools. Only route when the researcher's expertise is genuinely better suited.
 

@@ -83,6 +83,7 @@ class Orchestrator:
         self,
         user_message: str,
         on_status: Optional[Callable[[str], None]] = None,
+        on_message: Optional[Callable[[str], None]] = None,
         start_agent: str = "router",
         clarification_round: int = 0,
     ) -> str | ClarificationRequest:
@@ -110,6 +111,8 @@ class Orchestrator:
 
         # Generic loop
         while decision.type != "answer":
+            if decision.input.get("user_msg") and on_message:
+                on_message(decision.input["user_msg"])
             if on_status:
                 on_status(self._status_label(decision))
 
@@ -242,8 +245,6 @@ class Orchestrator:
 
     def _status_label(self, decision: NextStep) -> str:
         inp = decision.input
-        if inp.get("user_msg"):
-            return inp["user_msg"]
         if "target" in inp:
             return _STATUS_LABELS.get(inp["target"], f"Running {inp['target']}...")
         if "tools" in inp and inp["tools"]:

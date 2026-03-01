@@ -87,4 +87,4 @@ For clarify:
 {"action": "clarify", "clarifying_questions": [{"question": "...", "options": ["A", "B", "C"]}]}
 
 For answer:
-{"action": "answer", "target": "build_agent"|"researcher", "complexity": "simple", "required_research": [{"tool": "tool_name", "params": {...}}], "enriched_query": "...", "response_guidance": "...", "user_msg": "A short, friendly message for the player explaining what's happening (e.g. 'Checking current prices on poe.ninja...')"}
+{"action": "answer", "target": "build_agent"|"researcher", "complexity": "simple", "required_research": [{"tool": "tool_name", "params": {...}}], "enriched_query": "...", "response_guidance": "...", "user_msg": "One short sentence telling the player what you're doing — a loading-screen status message, NOT a conversational reply. Never reference internal agents, pipelines, or architecture. Examples: 'Checking current prices on poe.ninja...', 'Looking into Lightning Arrow builds...', 'Pulling up the latest patch notes...'"}

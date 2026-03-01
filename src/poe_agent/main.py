@@ -66,7 +66,6 @@ def _ask_clarifying_questions(
     clarification: ClarificationRequest,
 ) -> str:
     """Render interactive menus for clarifying questions, return answers as text."""
-    console.print()
     answers = []
     for q in clarification.questions:
         options = list(q.options)
@@ -137,6 +136,9 @@ def main():
         console.print()
 
         try:
+            def show_message(text: str):
+                console.print(f"\n[dim]{text}[/dim]\n")
+
             # First pass — may return clarification or answer
             spinner = TimedSpinner("Analyzing your question...")
             with Live(spinner, console=console, transient=True):
@@ -144,7 +146,11 @@ def main():
                 def update_status(text: str):
                     spinner.update(text)
 
-                result = agent.run(user_input, on_status=update_status)
+                result = agent.run(
+                    user_input,
+                    on_status=update_status,
+                    on_message=show_message,
+                )
 
             # Handle clarification loop (max 2 rounds)
             max_clarification_rounds = 2
@@ -162,6 +168,7 @@ def main():
                     result = agent.run(
                         enriched_input,
                         on_status=_make_status_cb(spinner),
+                        on_message=show_message,
                         start_agent="router",
                         clarification_round=clarification_round,
                     )
