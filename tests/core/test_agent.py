@@ -10,23 +10,23 @@ from poe_copilot.core.agent import AgentStep, ToolStep
 # ── AgentStep.call — query input ──────────────────────────────────────────
 
 
-def test_call_with_query_sets_thread(mock_anthropic_client):
+def test_call_with_query_sets_thread(mock_backend):
     resp = make_text_response("hello")
-    client = mock_anthropic_client(responses=[resp])
+    backend = mock_backend(responses=[resp])
     agent = AgentStep(
         name="test",
         primer="system prompt",
         model="claude-haiku-4-5-20251001",
-        client=client,
+        backend=backend,
     )
     agent.call({"query": "test"})
     assert len(agent._thread) == 2
     assert agent._thread[0] == {"role": "user", "content": "test"}
     assert agent._thread[1]["role"] == "assistant"
-    assert agent._thread[1]["content"] is resp.content
+    assert agent._thread[1]["content"] is resp
 
 
-def test_call_returns_tool_calls(mock_anthropic_client):
+def test_call_returns_tool_calls(mock_backend):
     resp = make_tool_response(
         [
             {
@@ -37,13 +37,13 @@ def test_call_returns_tool_calls(mock_anthropic_client):
             {"id": "tu_2", "name": "poe_web_search", "input": {"query": "test"}},
         ]
     )
-    client = mock_anthropic_client(responses=[resp])
+    backend = mock_backend(responses=[resp])
     agent = AgentStep(
         name="researcher",
         primer="prompt",
         model="claude-haiku-4-5-20251001",
         tools=[{"name": "get_currency_prices"}],
-        client=client,
+        backend=backend,
     )
     result = agent.call({"query": "check prices"})
     assert result.type == "call"
@@ -53,55 +53,55 @@ def test_call_returns_tool_calls(mock_anthropic_client):
     assert result.input["return_to"] == "researcher"
 
 
-def test_call_with_tools_includes_tools_in_kwargs(mock_anthropic_client):
+def test_call_with_tools_includes_tools_in_kwargs(mock_backend):
     resp = make_text_response("ok")
-    client = mock_anthropic_client(responses=[resp])
+    backend = mock_backend(responses=[resp])
     tools_defs = [{"name": "test_tool"}]
     agent = AgentStep(
         name="test",
         primer="prompt",
         model="claude-haiku-4-5-20251001",
         tools=tools_defs,
-        client=client,
+        backend=backend,
     )
     agent.call({"query": "hi"})
-    kwargs = client.messages.create.call_args[1]
+    kwargs = backend.complete.call_args[1]
     assert "tools" in kwargs
     assert kwargs["tools"] is tools_defs
 
 
-def test_call_without_tools_omits_tools_kwarg(mock_anthropic_client):
+def test_call_without_tools_omits_tools_kwarg(mock_backend):
     resp = make_text_response("ok")
-    client = mock_anthropic_client(responses=[resp])
+    backend = mock_backend(responses=[resp])
     agent = AgentStep(
         name="test",
         primer="prompt",
         model="claude-haiku-4-5-20251001",
         tools=None,
-        client=client,
+        backend=backend,
     )
     agent.call({"query": "hi"})
-    kwargs = client.messages.create.call_args[1]
-    assert "tools" not in kwargs
+    kwargs = backend.complete.call_args[1]
+    assert kwargs["tools"] is None
 
 
 # ── AgentStep.call — tool_results input ───────────────────────────────────
 
 
-def test_call_with_tool_results_appends_to_thread(mock_anthropic_client):
+def test_call_with_tool_results_appends_to_thread(mock_backend):
     resp1 = make_tool_response(
         [
             {"id": "tu_1", "name": "t", "input": {}},
         ]
     )
     resp2 = make_text_response("done")
-    client = mock_anthropic_client(responses=[resp1, resp2])
+    backend = mock_backend(responses=[resp1, resp2])
     agent = AgentStep(
         name="researcher",
         primer="prompt",
         model="claude-haiku-4-5-20251001",
         tools=[{"name": "t"}],
-        client=client,
+        backend=backend,
     )
     # First call with query
     agent.call({"query": "do stuff"})
@@ -119,15 +119,15 @@ def test_call_with_tool_results_appends_to_thread(mock_anthropic_client):
 # ── AgentStep._handle_decision_json ───────────────────────────────────────
 
 
-def _make_agent_with_next(next_agent=None, client=None):
-    if client is None:
-        client = MagicMock()
+def _make_agent_with_next(next_agent=None, backend=None):
+    if backend is None:
+        backend = MagicMock()
     return AgentStep(
         name="router",
         primer="prompt",
         model="claude-haiku-4-5-20251001",
         next_agent=next_agent,
-        client=client,
+        backend=backend,
     )
 
 

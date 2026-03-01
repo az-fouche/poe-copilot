@@ -4,8 +4,7 @@ import json
 import logging
 from typing import Callable, Optional
 
-import anthropic
-
+from poe_copilot.backends import LLMBackend
 from poe_copilot.constants import REGISTRY_FILE
 from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
 
@@ -28,9 +27,11 @@ class Orchestrator:
     ----------
     settings : dict
         User settings used to build agent primers and configure tools.
+    backend : LLMBackend
+        LLM backend used for all agent API calls.
     """
 
-    def __init__(self, settings: dict):
+    def __init__(self, settings: dict, backend: LLMBackend):
         """Initialize agents, tools, and conversation state from *settings*."""
         self.settings = settings
         self.messages: list[dict] = []
@@ -40,7 +41,6 @@ class Orchestrator:
         self._conversation_context: str = ""
         self._on_status: Optional[Callable[[str], None]] = None
 
-        client = anthropic.Anthropic()
         registry = _load_registry()
 
         self.steps: dict[str, AgentStep | ToolStep] = {}
@@ -62,7 +62,7 @@ class Orchestrator:
                 tools=tools,
                 next_agent=cfg.get("next"),
                 max_tokens=cfg.get("max_tokens", 4096),
-                client=client,
+                backend=backend,
             )
 
         # Load tool steps

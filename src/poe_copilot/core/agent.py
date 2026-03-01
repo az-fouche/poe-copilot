@@ -5,7 +5,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Callable
 
-import anthropic
+from poe_copilot.backends import LLMBackend, ToolUseBlock
 
 logger = logging.getLogger(__name__)
 
@@ -56,10 +56,10 @@ class ClarifyingQuestion:
 
 
 class AgentStep:
-    """Pipeline step that wraps a single Claude conversational agent.
+    """Pipeline step that wraps a single LLM conversational agent.
 
-    Maintains a per-run message thread and delegates to the Anthropic
-    Messages API.  Tool-use blocks are surfaced as ``NextStep(type="call")``;
+    Maintains a per-run message thread and delegates to an ``LLMBackend``.
+    Tool-use blocks are surfaced as ``NextStep(type="call")``;
     plain text is parsed for JSON routing instructions.
 
     Parameters
@@ -69,15 +69,15 @@ class AgentStep:
     primer : str
         System prompt sent with every API request.
     model : str
-        Anthropic model identifier (e.g. ``"claude-sonnet-4-20250514"``).
+        Model identifier (e.g. ``"claude-sonnet-4-20250514"``).
+    backend : LLMBackend
+        Shared LLM backend (Anthropic, OpenAI, etc.) used to make API calls.
     tools : list or None, optional
         Tool definitions passed to the API.  ``None`` disables tool use.
     next_agent : str or None, optional
         Default routing target when the response contains no explicit target.
     max_tokens : int, optional
         Maximum completion tokens (default ``4096``).
-    client : anthropic.Anthropic or None, optional
-        Shared API client.  A new one is created when ``None``.
     """
 
     def __init__(
@@ -85,10 +85,10 @@ class AgentStep:
         name: str,
         primer: str,
         model: str,
+        backend: LLMBackend,
         tools: list | None = None,
         next_agent: str | None = None,
         max_tokens: int = 4096,
-        client: anthropic.Anthropic | None = None,
     ):
         """Initialize the agent step and create an empty message thread."""
         self.name = name
@@ -97,7 +97,7 @@ class AgentStep:
         self.tools = tools
         self.next_agent = next_agent
         self.max_tokens = max_tokens
-        self.client = client or anthropic.Anthropic()
+        self.backend = backend
         self._thread: list[dict] = []
 
     def reset(self) -> None:
@@ -140,34 +140,22 @@ class AgentStep:
             self.model,
             len(self._thread),
         )
-        kwargs: dict = {
-            "model": self.model,
-            "max_tokens": self.max_tokens,
-            "system": [
-                {
-                    "type": "text",
-                    "text": self.primer,
-                    "cache_control": {"type": "ephemeral"},
-                }
-            ],
-            "messages": self._thread,
-        }
-        if self.tools:
-            kwargs["tools"] = self.tools
-
-        response = self.client.messages.create(**kwargs)
-        logger.debug(
-            "API_RES [%s] stop=%s blocks=%d",
-            self.name,
-            response.stop_reason,
-            len(response.content),
+        blocks = self.backend.complete(
+            model=self.model,
+            max_tokens=self.max_tokens,
+            system=self.primer,
+            messages=self._thread,
+            tools=self.tools,
         )
-        self._thread.append({"role": "assistant", "content": response.content})
+        logger.debug(
+            "API_RES [%s] blocks=%d",
+            self.name,
+            len(blocks),
+        )
+        self._thread.append({"role": "assistant", "content": blocks})
 
         # Check for tool_use blocks
-        tool_calls = [
-            b for b in response.content if getattr(b, "type", None) == "tool_use"
-        ]
+        tool_calls = [b for b in blocks if isinstance(b, ToolUseBlock)]
         if tool_calls:
             logger.debug(
                 "API_RES [%s] tool_use: %s",
@@ -186,11 +174,7 @@ class AgentStep:
             )
 
         # Text response
-        text_parts = [
-            b.text
-            for b in response.content
-            if getattr(b, "type", None) == "text"
-        ]
+        text_parts = [b for b in blocks if isinstance(b, str)]
         text = "\n".join(text_parts).strip()
         logger.debug("API_RES [%s] text: %s", self.name, text[:500])
 
