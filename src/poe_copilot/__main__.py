@@ -3,6 +3,8 @@
 import logging
 import os
 import sys
+import tomllib
+from pathlib import Path
 from typing import Callable
 
 from rich.console import Console
@@ -23,14 +25,33 @@ from .onboarding import load_settings, run_onboarding
 logger = logging.getLogger(__name__)
 
 
+def get_version() -> str:
+    """Read version from pyproject.toml."""
+    try:
+        pyproject_path = (
+            Path(__file__).resolve().parent.parent.parent / "pyproject.toml"
+        )
+        with open(pyproject_path, "rb") as f:
+            data = tomllib.load(f)
+            version: str = data.get("project", {}).get("version", "unknown")
+            return version
+    except Exception:
+        return "unknown"
+
+
 def main() -> None:
     """Run the interactive PoE Chat REPL.
 
     Handles onboarding, settings loading, and the main input loop
     including clarification rounds and interrupt recovery.
     """
-    setup_logging()
+
     console = Console(width=80)
+    if "--version" in sys.argv or "-v" in sys.argv:
+        console.print(get_version())
+        sys.exit(0)
+
+    setup_logging()
 
     force_setup = "--setup" in sys.argv
 
