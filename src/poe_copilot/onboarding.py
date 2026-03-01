@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.prompt import Prompt
 
 from .constants import SETTINGS_DIR, SETTINGS_FILE
-from .context import resolve_league
+from .core.context import resolve_league
 
 MODES = {
     "1": ("softcore_trade", "Softcore Trade"),

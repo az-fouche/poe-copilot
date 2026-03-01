@@ -5,12 +5,10 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 from poe_copilot.core.agent import AgentStep, NextStep, ToolStep
+from poe_copilot.core.cli import STATUS_LABELS, tool_status_label, truncate
 from poe_copilot.core.orchestrator import (
-    _STATUS_LABELS,
     ClarifyingQuestion,
     Orchestrator,
-    _tool_status_label,
-    _truncate,
 )
 
 # ---------------------------------------------------------------------------
@@ -75,7 +73,7 @@ def test_build_context_empty_history(settings):
     assert "Current user message: hello" in result
 
 
-def test_build_context_truncates_assistant_at_1500(settings):
+def test_build_contexttruncates_assistant_at_1500(settings):
     orch = _make_orchestrator(settings)
     long_content = "a" * 2000
     orch.messages = [
@@ -94,7 +92,7 @@ def test_build_context_truncates_assistant_at_1500(settings):
             break
 
 
-def test_build_context_truncates_user_at_300(settings):
+def test_build_contexttruncates_user_at_300(settings):
     orch = _make_orchestrator(settings)
     long_user = "b" * 500
     orch.messages = [
@@ -564,8 +562,8 @@ def test_planner_receives_budget_info(settings):
 
 def test_status_labels_include_new_agents(settings):
     """Status labels include planner and fact_checker."""
-    assert "planner" in _STATUS_LABELS
-    assert "fact_checker" in _STATUS_LABELS
+    assert "planner" in STATUS_LABELS
+    assert "fact_checker" in STATUS_LABELS
 
 
 def test_status_label_delegation_tools(settings):
@@ -594,34 +592,34 @@ def test_max_api_calls_is_25(settings):
 
 
 # ---------------------------------------------------------------------------
-# _truncate
+# truncate
 # ---------------------------------------------------------------------------
 
 
-def test_truncate_short_text():
-    assert _truncate("hello", 50) == "hello"
+def testtruncate_short_text():
+    assert truncate("hello", 50) == "hello"
 
 
-def test_truncate_long_text():
+def testtruncate_long_text():
     long = "a" * 60
-    result = _truncate(long, 50)
+    result = truncate(long, 50)
     assert len(result) == 50
     assert result.endswith("\u2026")
 
 
 # ---------------------------------------------------------------------------
-# _tool_status_label
+# tool_status_label
 # ---------------------------------------------------------------------------
 
 
-def test_tool_status_label_read_webpage():
-    label = _tool_status_label("read_webpage", {"url": "https://maxroll.gg/guides/lightning-arrow-deadeye"})
+def testtool_status_label_read_webpage():
+    label = tool_status_label("read_webpage", {"url": "https://maxroll.gg/guides/lightning-arrow-deadeye"})
     assert "maxroll.gg" in label
     assert label.startswith("Reading ")
 
 
-def test_tool_status_label_read_webpage_with_section():
-    label = _tool_status_label(
+def testtool_status_label_read_webpage_with_section():
+    label = tool_status_label(
         "read_webpage",
         {
             "url": "https://maxroll.gg/guides/la-build",
@@ -632,24 +630,24 @@ def test_tool_status_label_read_webpage_with_section():
     assert "maxroll.gg" in label
 
 
-def test_tool_status_label_web_search():
-    label = _tool_status_label("poe_web_search", {"query": "Lightning Arrow build guide"})
+def testtool_status_label_web_search():
+    label = tool_status_label("poe_web_search", {"query": "Lightning Arrow build guide"})
     assert label.startswith("Searching: ")
     assert "Lightning Arrow" in label
 
 
-def test_tool_status_label_item_prices_with_filter():
-    label = _tool_status_label("get_item_prices", {"type": "UniqueArmour", "name": "Mageblood"})
+def testtool_status_label_item_prices_with_filter():
+    label = tool_status_label("get_item_prices", {"type": "UniqueArmour", "name": "Mageblood"})
     assert '"Mageblood"' in label
 
 
-def test_tool_status_label_build_meta_with_class():
-    label = _tool_status_label("get_build_meta", {"class_filter": "Deadeye"})
+def testtool_status_label_build_meta_with_class():
+    label = tool_status_label("get_build_meta", {"class_filter": "Deadeye"})
     assert "Deadeye" in label
 
 
-def test_tool_status_label_fallback():
-    label = _tool_status_label("get_currency_prices", {})
+def testtool_status_label_fallback():
+    label = tool_status_label("get_currency_prices", {})
     assert label == "Checking currency prices..."
 
 

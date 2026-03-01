@@ -186,7 +186,7 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
         Result payload with prices, items, or build meta statistics.
         Contains an ``"error"`` key on failure.
     """
-    from poe_copilot.context import resolve_league
+    from poe_copilot.core.context import resolve_league
 
     league = params.get("league") or resolve_league(settings)
     include_trends = params.get("include_trends", False)

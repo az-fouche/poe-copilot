@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from datetime import date
 
-from .constants import AGENTS_DIR, TIMELINE_FILE
+from ..constants import AGENTS_DIR, TIMELINE_FILE
 
 
 def _load_timeline() -> str:

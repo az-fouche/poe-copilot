@@ -9,26 +9,15 @@ from typing import Callable, Optional
 
 import anthropic
 
-from ..constants import REGISTRY_FILE
-from ..context import build_primer
-from ..delegation import DELEGATION_TOOL_NAMES, DELEGATION_TOOLS
-from ..tools import _HANDLERS, TOOL_DEFINITIONS
+from poe_copilot.constants import REGISTRY_FILE
+from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
+
 from .agent import AgentStep, NextStep, ToolStep
+from .cli import STATUS_LABELS, tool_status_label
+from .context import build_primer
+from .delegation import DELEGATION_TOOL_NAMES, DELEGATION_TOOLS
 
 logger = logging.getLogger(__name__)
-
-# Friendly spinner labels for agents and delegation tools
-_STATUS_LABELS: dict[str, str] = {
-    "router": "Analyzing your question...",
-    "planner": "Planning approach...",
-    "researcher": "Researching...",
-    "build_agent": "Composing build...",
-    "fact_checker": "Verifying facts...",
-    "answerer": "Writing response...",
-    "delegate_research": "Researching...",
-    "delegate_build": "Composing build...",
-    "delegate_fact_check": "Verifying facts...",
-}
 
 
 @dataclass
@@ -153,7 +142,7 @@ class Orchestrator:
         decision = self._step_loop(decision, on_status=on_status, on_message=on_message)
 
         # Terminal answer handling
-        if "clarification" in decision.input:
+        if "clarification" in decision.input:  # type: ignore
             # Circuit breaker: if we already clarified, don't ask again — force-route to researcher
             if clarification_round >= 1:
                 logger.warning(
@@ -165,11 +154,11 @@ class Orchestrator:
                     {"query": f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{user_message}"},
                 )
             else:
-                logger.info("CLARIFY: %s", decision.input["clarification"])
+                logger.info("CLARIFY: %s", decision.input["clarification"])  # type: ignore
                 self.messages.pop()  # remove user message — will re-send with answers
-                return self._parse_clarification(decision.input["clarification"])
+                return self._parse_clarification(decision.input["clarification"])  # type: ignore
 
-        answer_text = decision.input["text"]
+        answer_text = decision.input["text"]  # type: ignore
         logger.info("ANSWER: %s", answer_text[:500])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
@@ -271,7 +260,7 @@ class Orchestrator:
                 results = []
                 for tc in delegation_calls:
                     if on_status:
-                        on_status(_STATUS_LABELS.get(tc["name"], f"Delegating {tc['name']}"))
+                        on_status(STATUS_LABELS.get(tc["name"], f"Delegating {tc['name']}"))
                     logger.info("DELEGATION %s input=%s", tc["name"], tc["input"])
                     delegation_result = self._handle_delegation(tc["name"], tc["input"])
                     logger.info("DELEGATION_RESULT %s (%d chars)", tc["name"], len(delegation_result))
@@ -326,7 +315,7 @@ class Orchestrator:
         results = []
         for tc in tool_calls:
             if self._on_status:
-                self._on_status(_tool_status_label(tc["name"], tc["input"]))
+                self._on_status(tool_status_label(tc["name"], tc["input"]))
             logger.info("TOOL %s input=%s", tc["name"], tc["input"])
             tool_result = self.steps[tc["name"]].call(tc["input"])
             result_content = (
@@ -372,7 +361,7 @@ class Orchestrator:
         query = f"## Conversation Context\n{self._conversation_context}\n\n## Task\n{task}"
         decision = self._call_agent(agent_name, {"query": query})
 
-        return self._step_loop(decision, on_status=self._on_status, intercept_routing=True)
+        return self._step_loop(decision, on_status=self._on_status, intercept_routing=True)  # type: ignore
 
     def _build_context(self, user_message: str) -> str:
         """Assemble recent conversation history into a context string for the router."""
@@ -399,12 +388,12 @@ class Orchestrator:
         """Derive a human-friendly spinner label from a routing decision."""
         inp = decision.input
         if "target" in inp:
-            return _STATUS_LABELS.get(inp["target"], f"Running {inp['target']}...")
+            return STATUS_LABELS.get(inp["target"], f"Running {inp['target']}...")
         if "tools" in inp and inp["tools"]:
             first_tool = inp["tools"][0]
             if first_tool["name"] in DELEGATION_TOOL_NAMES:
-                return _STATUS_LABELS.get(first_tool["name"], "Delegating...")
-            return _tool_status_label(first_tool["name"], first_tool["input"])
+                return STATUS_LABELS.get(first_tool["name"], "Delegating...")
+            return tool_status_label(first_tool["name"], first_tool["input"])
         return "Working..."
 
     def _parse_clarification(self, data: dict) -> list[ClarifyingQuestion]:
@@ -418,50 +407,6 @@ class Orchestrator:
                 )
             )
         return questions
-
-
-def _truncate(text: str, max_len: int) -> str:
-    """Truncate text to a maximum length, adding an ellipsis if truncated."""
-    if len(text) <= max_len:
-        return text
-    return text[: max_len - 1] + "\u2026"
-
-
-def _tool_status_label(name: str, tool_input: dict) -> str:
-    """Build a dynamic spinner label based on tool name and its inputs."""
-    if name == "read_webpage":
-        url = tool_input.get("url", "")
-        section = tool_input.get("section", "")
-        short_url = url.replace("https://", "").replace("http://", "")
-        if section:
-            return f'Reading "{_truncate(section, 25)}" from {_truncate(short_url, 30)}'
-        return f"Reading {_truncate(short_url, 45)}"
-
-    if name == "poe_web_search":
-        query = tool_input.get("query", "")
-        if query:
-            return f"Searching: {_truncate(query, 45)}"
-        return "Searching the web..."
-
-    if name == "get_item_prices":
-        name_filter = tool_input.get("name", "")
-        item_type = tool_input.get("type", "")
-        if name_filter:
-            return f'Looking up "{_truncate(name_filter, 30)}" prices...'
-        if item_type:
-            return f"Looking up {_truncate(item_type, 30)} prices..."
-        return "Looking up item prices..."
-
-    if name == "get_build_meta":
-        class_filter = tool_input.get("class_filter", "")
-        if class_filter:
-            return f"Checking {class_filter} build meta..."
-        return "Checking build meta..."
-
-    if name == "get_currency_prices":
-        return "Checking currency prices..."
-
-    return f"Using {name}..."
 
 
 def _load_registry() -> dict:
