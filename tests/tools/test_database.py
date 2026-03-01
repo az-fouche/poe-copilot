@@ -171,7 +171,7 @@ def test_multi_query_batching():
         "query_game_data",
         {
             "queries": ["Divine Orb", "Exalted Orb"],
-            "category": "currency",
+            "categories": ["currency"],
         },
         SETTINGS,
     )
@@ -182,12 +182,12 @@ def test_multi_query_batching():
 
 
 def test_category_filter_skips_others():
-    """category='currency' does not search patch_notes."""
+    """categories=['currency'] does not search patch_notes."""
     result = handle_database_tool(
         "query_game_data",
         {
             "queries": ["Necromancer"],
-            "category": "currency",
+            "categories": ["currency"],
         },
         SETTINGS,
     )
@@ -195,18 +195,19 @@ def test_category_filter_skips_others():
     assert "patch_notes" not in necro
 
 
-def test_category_all_searches_everything():
-    """category='all' searches structured + patch notes."""
+def test_single_category_searches_only_that():
+    """categories=['ascendancy'] skips patch_notes."""
     result = handle_database_tool(
         "query_game_data",
         {
             "queries": ["Necromancer"],
-            "category": "all",
+            "categories": ["ascendancy"],
         },
         SETTINGS,
     )
     necro = result["Necromancer"]
     assert "ascendancy" in necro
+    assert "patch_notes" not in necro
 
 
 def test_default_category_is_all():
@@ -218,6 +219,23 @@ def test_default_category_is_all():
     )
     divine = result["Divine Orb"]
     assert "currency" in divine
+
+
+def test_multi_category_searches_subset():
+    """categories=['gems','patch_notes'] skips others."""
+    result = handle_database_tool(
+        "query_game_data",
+        {
+            "queries": ["Necromancer"],
+            "categories": ["gems", "patch_notes"],
+        },
+        SETTINGS,
+    )
+    necro = result["Necromancer"]
+    assert "ascendancy" not in necro
+    assert "currency" not in necro
+    # patch_notes should be searched
+    assert "patch_notes" in necro
 
 
 def test_no_results_returns_empty_dict():

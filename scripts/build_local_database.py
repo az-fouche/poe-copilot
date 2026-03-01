@@ -2,8 +2,9 @@
 
 Usage
 -----
-    uv run python scripts/build_local_database.py            # all
-    uv run python scripts/build_local_database.py --limit 10 # 10 pages per category
+    uv run python scripts/build_local_database.py                    # all
+    uv run python scripts/build_local_database.py --limit 10         # 10 pages per category
+    uv run python scripts/build_local_database.py --only skill_gems  # single file
 """
 
 import argparse
@@ -45,6 +46,11 @@ CATEGORIES: dict[str, list[str]] = {
         "Dexterity skill gems",
         "Intelligence skill gems",
         "White skill gems",
+        # Support gems
+        "Strength support gems",
+        "Dexterity support gems",
+        "Intelligence support gems",
+        "Exceptional support gems",
     ],
     "unique_items.txt": [
         "Unique items",
@@ -312,7 +318,7 @@ async def _build_file(
     print(f"  Wrote {out} ({len(sorted_titles)} pages)")
 
 
-async def main(limit: int | None = None) -> None:
+async def main(limit: int | None = None, only: str | None = None) -> None:
     """Build all local database files."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
@@ -323,6 +329,8 @@ async def main(limit: int | None = None) -> None:
         headers={"User-Agent": USER_AGENT},
     ) as client:
         for filename, cats in CATEGORIES.items():
+            if only and filename != f"{only}.txt":
+                continue
             print(f"Building {filename}...")
             try:
                 await _build_file(client, filename, cats, limit, semaphore)
@@ -332,6 +340,8 @@ async def main(limit: int | None = None) -> None:
 
 
 if __name__ == "__main__":
+    _valid_names = [f.removesuffix(".txt") for f in CATEGORIES]
+
     parser = argparse.ArgumentParser(
         description="Build local PoE wiki database files.",
     )
@@ -341,10 +351,16 @@ if __name__ == "__main__":
         default=None,
         help="Max pages per category (for testing).",
     )
+    parser.add_argument(
+        "--only",
+        choices=_valid_names,
+        default=None,
+        help="Only rebuild this database file.",
+    )
     args = parser.parse_args()
 
     try:
-        asyncio.run(main(limit=args.limit))
+        asyncio.run(main(limit=args.limit, only=args.only))
     except KeyboardInterrupt:
         print("\nAborted.")
         sys.exit(1)

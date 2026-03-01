@@ -54,6 +54,6 @@
     "get_build_meta": "Build meta statistics from poe.ninja (ascendancies, skills, uniques)",
     "poe_web_search": "Search the web for PoE information",
     "read_webpage": "Fetch and read webpage content",
-    "query_game_data": "Search local PoE knowledge base (currencies, ascendancies, mechanics, gems, patch notes) — supports multi-query"
+    "query_game_data": "Query the PoE knowledge base (currencies, ascendancies, game mechanics, gems, unique items, passives tree, patch notes) — supports multi-query"
   }
 }

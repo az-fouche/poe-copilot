@@ -37,19 +37,21 @@ DATABASE_TOOLS = [
                         " 'Necromancer']."
                     ),
                 },
-                "category": {
-                    "type": "string",
-                    "enum": [
-                        "currency",
-                        "ascendancy",
-                        "mechanics",
-                        "gems",
-                        "patch_notes",
-                        "all",
-                    ],
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "currency",
+                            "ascendancy",
+                            "mechanics",
+                            "gems",
+                            "uniques",
+                            "patch_notes",
+                        ],
+                    },
                     "description": (
-                        "Narrow search to one category."
-                        " Omit or 'all' to search everything."
+                        "Categories to search. Omit to search everything."
                     ),
                 },
             },
@@ -180,16 +182,14 @@ def _grep_patch_notes(query: str, patch_dir: Path) -> list[dict]:
     return results
 
 
-def _run_query(query: str, category: str) -> dict:
+def _run_query(query: str, categories: list[str] | None) -> dict:
     """Run a single query against selected categories."""
     result: dict = {}
 
-    if category in _STRUCTURED_FILES:
-        files = {category: _STRUCTURED_FILES[category]}
-    elif category == "all":
+    if categories is None:
         files = _STRUCTURED_FILES
     else:
-        files = {}
+        files = {k: v for k, v in _STRUCTURED_FILES.items() if k in categories}
 
     for cat, filename in files.items():
         filepath = DATABASE_DIR / filename
@@ -199,7 +199,7 @@ def _run_query(query: str, category: str) -> dict:
         if hits:
             result[cat] = hits
 
-    if category in ("patch_notes", "all"):
+    if categories is None or "patch_notes" in categories:
         patch_dir = DATABASE_DIR / "patch_notes"
         hits = _grep_patch_notes(query, patch_dir)
         if hits:
@@ -217,7 +217,7 @@ def handle_database_tool(name: str, params: dict, settings: dict) -> dict:
         Tool name (``"query_game_data"``).
     params : dict
         Must contain ``"queries"`` list; optional
-        ``"category"``.
+        ``"categories"``.
     settings : dict
         User settings (unused, kept for handler protocol).
 
@@ -227,5 +227,5 @@ def handle_database_tool(name: str, params: dict, settings: dict) -> dict:
         Results keyed by query string.
     """
     queries: list[str] = params["queries"]
-    category = params.get("category", "all")
-    return {q: _run_query(q, category) for q in queries}
+    categories = params.get("categories")
+    return {q: _run_query(q, categories) for q in queries}
