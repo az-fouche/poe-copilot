@@ -81,7 +81,6 @@ def _translate_messages(
             role == "user"
             and isinstance(content, list)
             and content
-            and isinstance(content[0], dict)
             and content[0].get("type") == "tool_result"
         ):
             for result in content:
@@ -171,7 +170,7 @@ class OllamaBackend:
             raise ConnectionError(
                 f"Cannot connect to Ollama at {self._base_url}"
                 " — is it running? Start with: ollama serve"
-            )
+            ) from None
 
         if resp.status_code == 404:
             raise RuntimeError(

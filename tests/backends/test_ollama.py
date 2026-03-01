@@ -235,8 +235,7 @@ def test_complete_connection_error():
 
 def test_complete_404_model_not_found():
     backend = _make_backend(model="nonexistent:7b")
-    resp = MagicMock()
-    resp.status_code = 404
+    resp = _mock_response(status_code=404)
 
     with patch.object(backend._client, "post", return_value=resp):
         with pytest.raises(RuntimeError, match="ollama pull"):

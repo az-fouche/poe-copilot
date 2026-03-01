@@ -25,7 +25,7 @@ from .core.cli import (
     handle_interrupt,
     setup_logging,
 )
-from .onboarding import load_settings, run_onboarding
+from .onboarding import load_settings, needs_setup, run_onboarding
 
 logger = logging.getLogger(__name__)
 
@@ -54,16 +54,6 @@ def _build_backend(settings: dict) -> LLMBackend:
     return AnthropicBackend(anthropic.Anthropic(api_key=settings["api_key"]))
 
 
-def _needs_setup(settings: dict | None) -> bool:
-    """Check whether onboarding is required."""
-    if settings is None:
-        return True
-    backend = settings.get("backend", Backend.ANTHROPIC)
-    if backend == Backend.OLLAMA:
-        return not settings.get("ollama_model")
-    return not settings.get("api_key")
-
-
 def main() -> None:
     """Run the interactive PoE Chat REPL.
 
@@ -80,7 +70,7 @@ def main() -> None:
     force_setup = "--setup" in sys.argv
 
     settings = load_settings()
-    if _needs_setup(settings) or force_setup:
+    if needs_setup(settings) or force_setup:
         settings = run_onboarding(existing=settings)
     if settings is None:
         raise RuntimeError("Failed to load settings after onboarding")
