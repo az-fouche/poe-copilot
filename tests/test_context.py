@@ -1,4 +1,4 @@
-"""Tests for poe_copilot/context.py — 12 tests."""
+"""Tests for poe_copilot/context.py — 14 tests."""
 
 from datetime import date
 from unittest.mock import patch
@@ -9,6 +9,7 @@ from poe_copilot.core.context import (
     _parse_timeline,
     build_player_context,
     build_primer,
+    load_loadout,
 )
 
 # ── _parse_timeline ───────────────────────────────────────────────────────
@@ -167,3 +168,17 @@ def test_build_primer_structure(mock_prompt, mock_ctx):
     assert result.startswith(IDENTITY)
     assert "[router prompt]" in result
     assert "[player context]" in result
+
+
+# ── load_loadout ─────────────────────────────────────────────────────────
+
+
+def test_load_loadout_returns_content():
+    content = load_loadout("builds")
+    assert "Composition Framework" in content
+    assert "Build Research Patterns" in content
+
+
+def test_load_loadout_missing_returns_empty():
+    result = load_loadout("nonexistent_loadout_xyz")
+    assert result == ""

@@ -22,14 +22,8 @@ logger = logging.getLogger(__name__)
 # Friendly spinner labels for agents and delegation tools
 STATUS_LABELS: dict[str, str] = {
     "router": "Analyzing your question...",
-    "planner": "Planning approach...",
-    "researcher": "Researching...",
-    "build_agent": "Composing build...",
-    "fact_checker": "Verifying facts...",
+    "analyst": "Researching...",
     "answerer": "Writing response...",
-    "delegate_research": "Researching...",
-    "delegate_build": "Composing build...",
-    "delegate_fact_check": "Verifying facts...",
 }
 
 # ── Helper functions ──────────────────────────────────────────────────────
@@ -193,12 +187,12 @@ def ask_clarifying_questions(
 
 def handle_interrupt(
     console: Console,
-    research_count: int,
+    steps_completed: int,
     force_answer_fn: Callable[[str], str],
 ) -> str | None:
     """Handle Ctrl+C during agent.run() — offer menu to salvage partial results."""
     console.print(
-        f"\n[bold yellow]Interrupted[/bold yellow] — {research_count} research result(s) gathered so far."
+        f"\n[bold yellow]Interrupted[/bold yellow] — {steps_completed} step(s) completed so far."
     )
 
     try:

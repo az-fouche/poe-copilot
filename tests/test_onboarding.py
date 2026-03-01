@@ -93,7 +93,7 @@ def test_status_label_target():
     from poe_copilot.core.orchestrator import Orchestrator
 
     # Test the _status_label method using a minimal instance
-    ns = NextStep(type="call", input={"target": "researcher"})
+    ns = NextStep(type="call", input={"target": "analyst"})
     # Call the method directly — it doesn't need self state
     label = Orchestrator._status_label(None, ns)
     assert label == "Researching..."

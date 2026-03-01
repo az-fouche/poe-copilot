@@ -29,6 +29,7 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 # Asset directories
 ASSETS_DIR = PACKAGE_DIR / "assets"
 AGENTS_DIR = ASSETS_DIR / "agents"
+LOADOUTS_DIR = AGENTS_DIR / "loadouts"
 DATABASE_DIR = ASSETS_DIR / "database"
 
 # Specific asset files

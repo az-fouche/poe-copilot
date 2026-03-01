@@ -1,4 +1,4 @@
-"""Tests for poe_copilot/agent.py — 14 tests."""
+"""Tests for poe_copilot/agent.py — 15 tests."""
 
 from unittest.mock import MagicMock
 
@@ -142,16 +142,16 @@ def test_decision_json_clarify():
 
 def test_decision_json_route_to_target():
     agent = _make_agent_with_next()
-    text = '{"target":"build_agent","query":"build plan"}'
+    text = '{"target":"analyst","query":"build plan"}'
     result = agent._handle_decision_json(text)
     assert result.type == "call"
-    assert result.input["target"] == "build_agent"
+    assert result.input["target"] == "analyst"
     assert result.input["query"] == "build plan"
 
 
 def test_decision_json_enriched_query_fallback():
     agent = _make_agent_with_next()
-    text = '{"target":"researcher","enriched_query":"enriched"}'
+    text = '{"target":"analyst","enriched_query":"enriched"}'
     result = agent._handle_decision_json(text)
     assert result.input["query"] == "enriched"
 
@@ -188,6 +188,15 @@ def test_decision_json_strips_markdown_fences():
     assert result.type == "call"
     assert result.input["target"] == "researcher"
     assert result.input["query"] == "q"
+
+
+def test_decision_json_passes_loadout():
+    agent = _make_agent_with_next()
+    text = '{"target":"analyst","enriched_query":"build q","loadout":"builds"}'
+    result = agent._handle_decision_json(text)
+    assert result.type == "call"
+    assert result.input["target"] == "analyst"
+    assert result.input["loadout"] == "builds"
 
 
 # ── ToolStep ──────────────────────────────────────────────────────────────
