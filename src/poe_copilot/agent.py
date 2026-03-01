@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
@@ -21,16 +21,17 @@ def load_registry() -> dict:
 # NextStep — the only return type from any step
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class NextStep:
-    type: str                        # "answer" | "call"
+    type: str  # "answer" | "call"
     input: dict[str, Any]
-    history: list[str] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
 # AgentStep — wraps one Claude agent
 # ---------------------------------------------------------------------------
+
 
 class AgentStep:
     def __init__(
@@ -40,7 +41,6 @@ class AgentStep:
         model: str,
         tools: list | None = None,
         next_agent: str | None = None,
-        output_format: str | None = None,
         max_tokens: int = 4096,
         client: anthropic.Anthropic | None = None,
     ):
@@ -49,7 +49,6 @@ class AgentStep:
         self.model = model
         self.tools = tools
         self.next_agent = next_agent
-        self.output_format = output_format
         self.max_tokens = max_tokens
         self.client = client or anthropic.Anthropic()
         self._thread: list[dict] = []
@@ -62,12 +61,12 @@ class AgentStep:
         if "query" in input:
             self._thread = [{"role": "user", "content": input["query"]}]
         elif "tool_results" in input:
-            self._thread.append({
-                "role": "user",
-                "content": [
-                    {"type": "tool_result", **r} for r in input["tool_results"]
-                ],
-            })
+            self._thread.append(
+                {
+                    "role": "user",
+                    "content": [{"type": "tool_result", **r} for r in input["tool_results"]],
+                }
+            )
 
         # Single API call
         logger.debug("API_REQ [%s] model=%s msgs=%d", self.name, self.model, len(self._thread))
@@ -117,7 +116,7 @@ class AgentStep:
             start = text.rfind("{", 0, start)
             if start == -1:
                 return None
-            candidate = text[start:end + 1]
+            candidate = text[start : end + 1]
             try:
                 data = json.loads(candidate)
             except json.JSONDecodeError:
@@ -167,6 +166,7 @@ class AgentStep:
 # ---------------------------------------------------------------------------
 # ToolStep — wraps one tool
 # ---------------------------------------------------------------------------
+
 
 class ToolStep:
     def __init__(self, name: str, handler: Callable, settings: dict):

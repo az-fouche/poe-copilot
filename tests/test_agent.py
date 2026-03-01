@@ -1,24 +1,17 @@
-"""Tests for poe_agent/agent.py — 14 tests."""
+"""Tests for poe_copilot/agent.py — 14 tests."""
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import MagicMock
 
-from poe_agent.agent import AgentStep, NextStep, ToolStep
+from poe_copilot.agent import AgentStep, ToolStep
 
 # Import helpers from conftest
 from conftest import make_text_response, make_tool_response
 
 
-# ── NextStep ──────────────────────────────────────────────────────────────
-
-def test_nextstep_default_history():
-    ns = NextStep(type="answer", input={})
-    assert ns.history == []
-
-
 # ── AgentStep.call — query input ──────────────────────────────────────────
+
 
 def test_call_with_query_sets_thread(mock_anthropic_client):
     resp = make_text_response("hello")
@@ -37,10 +30,12 @@ def test_call_with_query_sets_thread(mock_anthropic_client):
 
 
 def test_call_returns_tool_calls(mock_anthropic_client):
-    resp = make_tool_response([
-        {"id": "tu_1", "name": "get_currency_prices", "input": {"type": "Currency"}},
-        {"id": "tu_2", "name": "poe_web_search", "input": {"query": "test"}},
-    ])
+    resp = make_tool_response(
+        [
+            {"id": "tu_1", "name": "get_currency_prices", "input": {"type": "Currency"}},
+            {"id": "tu_2", "name": "poe_web_search", "input": {"query": "test"}},
+        ]
+    )
     client = mock_anthropic_client(responses=[resp])
     agent = AgentStep(
         name="researcher",
@@ -91,10 +86,13 @@ def test_call_without_tools_omits_tools_kwarg(mock_anthropic_client):
 
 # ── AgentStep.call — tool_results input ───────────────────────────────────
 
+
 def test_call_with_tool_results_appends_to_thread(mock_anthropic_client):
-    resp1 = make_tool_response([
-        {"id": "tu_1", "name": "t", "input": {}},
-    ])
+    resp1 = make_tool_response(
+        [
+            {"id": "tu_1", "name": "t", "input": {}},
+        ]
+    )
     resp2 = make_text_response("done")
     client = mock_anthropic_client(responses=[resp1, resp2])
     agent = AgentStep(
@@ -117,6 +115,7 @@ def test_call_with_tool_results_appends_to_thread(mock_anthropic_client):
 
 # ── AgentStep._handle_decision_json ───────────────────────────────────────
 
+
 def _make_agent_with_next(next_agent=None, client=None):
     if client is None:
         client = MagicMock()
@@ -125,7 +124,6 @@ def _make_agent_with_next(next_agent=None, client=None):
         primer="prompt",
         model="claude-haiku-4-5-20251001",
         next_agent=next_agent,
-        output_format="decision_json",
         client=client,
     )
 
@@ -190,6 +188,7 @@ def test_decision_json_strips_markdown_fences():
 
 
 # ── ToolStep ──────────────────────────────────────────────────────────────
+
 
 def test_toolstep_handler_exception():
     def boom(name, input, settings):

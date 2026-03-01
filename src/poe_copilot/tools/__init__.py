@@ -10,10 +10,3 @@ _HANDLERS = {
     "poe_web_search": handle_web_tool,
     "read_webpage": handle_web_tool,
 }
-
-
-def execute_tool(name: str, params: dict, settings: dict):
-    handler = _HANDLERS.get(name)
-    if handler is None:
-        return {"error": f"Unknown tool: {name}"}
-    return handler(name, params, settings)

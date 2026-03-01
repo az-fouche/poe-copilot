@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import logging
 import os
-import re
-import sys
 import httpx
 from bs4 import BeautifulSoup, Tag
 from ddgs import DDGS
@@ -14,8 +11,16 @@ MAX_RESULTS = 8
 
 # Tags whose content is noise rather than article text
 _STRIP_TAGS = {
-    "script", "style", "nav", "footer", "header", "aside",
-    "noscript", "iframe", "svg", "form",
+    "script",
+    "style",
+    "nav",
+    "footer",
+    "header",
+    "aside",
+    "noscript",
+    "iframe",
+    "svg",
+    "form",
 }
 
 _HEADING_TAGS = {"h1", "h2", "h3", "h4"}

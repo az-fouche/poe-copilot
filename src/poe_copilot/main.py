@@ -5,7 +5,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from dotenv import load_dotenv
 from InquirerPy import inquirer
 from rich.console import Console
 from rich.live import Live
@@ -13,6 +12,7 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 from rich.spinner import Spinner
 
+from .context import resolve_league
 from .orchestrator import ClarificationRequest, Orchestrator
 from .onboarding import load_settings, run_onboarding
 
@@ -29,9 +29,7 @@ def setup_logging():
 
     handler = logging.FileHandler(log_file, encoding="utf-8")
     handler.setLevel(logging.DEBUG)
-    handler.setFormatter(
-        logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
-    )
+    handler.setFormatter(logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s"))
 
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
@@ -88,9 +86,7 @@ def _ask_clarifying_questions(
 def _handle_interrupt(console: Console, agent) -> str | None:
     """Handle Ctrl+C during agent.run() — offer menu to salvage partial results."""
     count = len(agent._accumulated_research)
-    console.print(
-        f"\n[bold yellow]Interrupted[/bold yellow] — {count} research result(s) gathered so far."
-    )
+    console.print(f"\n[bold yellow]Interrupted[/bold yellow] — {count} research result(s) gathered so far.")
 
     try:
         choice = inquirer.select(  # type: ignore
@@ -123,29 +119,25 @@ def _handle_interrupt(console: Console, agent) -> str | None:
 
 
 def main():
-    load_dotenv()
     setup_logging()
     console = Console(width=80)
 
     force_setup = "--setup" in sys.argv
 
     settings = load_settings()
-    if settings is None or force_setup:
-        settings = run_onboarding()
+    if settings is None or not settings.get("api_key") or force_setup:
+        settings = run_onboarding(existing=settings)
+
+    os.environ["ANTHROPIC_API_KEY"] = settings["api_key"]
 
     logger.info("Settings: %s", settings)
+    league_display = resolve_league(settings)
     console.print("\n[bold cyan]PoE Chat[/bold cyan] — your Path of Exile companion")
+    console.print(f"[dim]{league_display} · {settings['mode']} · {settings['experience']}[/dim]")
     console.print(
-        f"[dim]{settings['league']} · {settings['mode']} · {settings['experience']}[/dim]"
+        "Type [bold]/quit[/bold] to exit, [bold]/clear[/bold] to clear history, [bold]/setup[/bold] to reconfigure"
     )
-    console.print(
-        "Type [bold]/quit[/bold] to exit, "
-        "[bold]/clear[/bold] to clear history, "
-        "[bold]/setup[/bold] to reconfigure"
-    )
-    console.print(
-        "Press [bold]Ctrl+C[/bold] to interrupt and take control\n"
-    )
+    console.print("Press [bold]Ctrl+C[/bold] to interrupt and take control\n")
 
     agent = Orchestrator(settings=settings)
 
@@ -166,7 +158,8 @@ def main():
             console.print("[dim]Conversation cleared.[/dim]\n")
             continue
         if stripped == "/setup":
-            settings = run_onboarding()
+            settings = run_onboarding(existing=settings)
+            os.environ["ANTHROPIC_API_KEY"] = settings["api_key"]
             agent = Orchestrator(settings=settings)
             console.print("[dim]Agent reloaded with new settings.[/dim]\n")
             continue
@@ -176,6 +169,7 @@ def main():
         console.print()
 
         try:
+
             def show_message(text: str):
                 console.print(f"\n[dim]{text}[/dim]\n")
 
@@ -236,9 +230,7 @@ def main():
                 console.print()
             elif result is not None:
                 # Shouldn't happen, but handle gracefully
-                console.print(
-                    "\n[dim]Could not generate a response. Please try again.[/dim]\n"
-                )
+                console.print("\n[dim]Could not generate a response. Please try again.[/dim]\n")
 
         except Exception as e:
             console.print(f"\n[bold red]Error:[/bold red] {e}\n")

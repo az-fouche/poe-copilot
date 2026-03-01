@@ -1,4 +1,4 @@
-"""Shared fixtures and mock factories for poe-agent tests."""
+"""Shared fixtures and mock factories for poe-copilot tests."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import pytest
 # Settings fixture
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def settings() -> dict:
     return {"league": "Keepers", "mode": "softcore_trade", "experience": "intermediate"}
@@ -21,6 +22,7 @@ def settings() -> dict:
 # ---------------------------------------------------------------------------
 # Anthropic mock helpers
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class _TextBlock:
@@ -52,20 +54,14 @@ def make_tool_response(tool_calls: list[dict]) -> _Message:
 
     Each dict should have keys: id, name, input.
     """
-    blocks = [
-        _ToolUseBlock(type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"])
-        for tc in tool_calls
-    ]
+    blocks = [_ToolUseBlock(type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]) for tc in tool_calls]
     return _Message(content=blocks, stop_reason="tool_use")
 
 
 def make_mixed_response(text: str, tool_calls: list[dict]) -> _Message:
     """Build a mock Anthropic Message with both text and tool_use blocks."""
     blocks: list[Any] = [_TextBlock(type="text", text=text)]
-    blocks.extend(
-        _ToolUseBlock(type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"])
-        for tc in tool_calls
-    )
+    blocks.extend(_ToolUseBlock(type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]) for tc in tool_calls)
     return _Message(content=blocks, stop_reason="tool_use")
 
 
@@ -73,6 +69,7 @@ def make_mixed_response(text: str, tool_calls: list[dict]) -> _Message:
 def mock_anthropic_client():
     """Factory that returns a mock anthropic.Anthropic whose .messages.create()
     returns configurable responses (pass a list to side_effect for sequences)."""
+
     def _factory(responses=None, side_effect=None):
         client = MagicMock()
         if side_effect is not None:
@@ -82,12 +79,14 @@ def mock_anthropic_client():
         else:
             client.messages.create.return_value = make_text_response("ok")
         return client
+
     return _factory
 
 
 # ---------------------------------------------------------------------------
 # poe.ninja realistic payloads
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def poe_ninja_currency_payload() -> dict:

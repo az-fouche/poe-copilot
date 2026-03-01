@@ -1,13 +1,12 @@
-"""Tests for poe_agent/tools/poe_ninja.py — 18 tests."""
+"""Tests for poe_copilot/tools/poe_ninja.py — 18 tests."""
 
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
 import httpx
-import pytest
 
-from poe_agent.tools.poe_ninja import (
+from poe_copilot.tools.poe_ninja import (
     _extract_sparkline,
     _league_slug,
     handle_poe_ninja_tool,
@@ -15,6 +14,7 @@ from poe_agent.tools.poe_ninja import (
 
 
 # ── _league_slug ──────────────────────────────────────────────────────────
+
 
 def test_league_slug_multi_word():
     assert _league_slug("Settlers of Kalguur") == "settlers-of-kalguur"
@@ -25,6 +25,7 @@ def test_league_slug_single_word():
 
 
 # ── _extract_sparkline ────────────────────────────────────────────────────
+
 
 def test_sparkline_none_input():
     assert _extract_sparkline(None) is None
@@ -56,7 +57,8 @@ def test_sparkline_zero_change_not_none():
 
 # ── handle_poe_ninja_tool — currency ──────────────────────────────────────
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_currency_prices_basic(mock_fetch, settings):
     mock_fetch.return_value = {
         "lines": [
@@ -64,9 +66,7 @@ def test_currency_prices_basic(mock_fetch, settings):
             {"currencyTypeName": "Exalted Orb", "chaosEquivalent": 14.5},
         ]
     }
-    result = handle_poe_ninja_tool(
-        "get_currency_prices", {"type": "Currency"}, settings
-    )
+    result = handle_poe_ninja_tool("get_currency_prices", {"type": "Currency"}, settings)
     assert result == {
         "league": "Keepers",
         "type": "Currency",
@@ -78,21 +78,17 @@ def test_currency_prices_basic(mock_fetch, settings):
     }
 
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_currency_prices_league_fallback_to_settings(mock_fetch, settings):
     mock_fetch.return_value = {"lines": []}
     handle_poe_ninja_tool("get_currency_prices", {"type": "Currency"}, settings)
-    mock_fetch.assert_called_once_with(
-        "currencyoverview", {"league": "Keepers", "type": "Currency"}
-    )
+    mock_fetch.assert_called_once_with("currencyoverview", {"league": "Keepers", "type": "Currency"})
 
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_currency_prices_empty_lines(mock_fetch, settings):
     mock_fetch.return_value = {"lines": []}
-    result = handle_poe_ninja_tool(
-        "get_currency_prices", {"type": "Currency"}, settings
-    )
+    result = handle_poe_ninja_tool("get_currency_prices", {"type": "Currency"}, settings)
     assert result == {
         "league": "Keepers",
         "type": "Currency",
@@ -101,24 +97,20 @@ def test_currency_prices_empty_lines(mock_fetch, settings):
     }
 
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_currency_prices_capped_at_50(mock_fetch, settings):
     mock_fetch.return_value = {
-        "lines": [
-            {"currencyTypeName": f"Orb{i}", "chaosEquivalent": float(i)}
-            for i in range(60)
-        ]
+        "lines": [{"currencyTypeName": f"Orb{i}", "chaosEquivalent": float(i)} for i in range(60)]
     }
-    result = handle_poe_ninja_tool(
-        "get_currency_prices", {"type": "Currency"}, settings
-    )
+    result = handle_poe_ninja_tool("get_currency_prices", {"type": "Currency"}, settings)
     assert result["count"] == 50
     assert len(result["prices"]) == 50
 
 
 # ── handle_poe_ninja_tool — items ─────────────────────────────────────────
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_item_prices_with_name_filter(mock_fetch, settings):
     mock_fetch.return_value = {
         "lines": [
@@ -139,7 +131,7 @@ def test_item_prices_with_name_filter(mock_fetch, settings):
     assert "Mageblood" not in names
 
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_item_prices_gem_fields(mock_fetch, settings):
     mock_fetch.return_value = {
         "lines": [
@@ -152,31 +144,24 @@ def test_item_prices_gem_fields(mock_fetch, settings):
             }
         ]
     }
-    result = handle_poe_ninja_tool(
-        "get_item_prices", {"type": "SkillGem"}, settings
-    )
+    result = handle_poe_ninja_tool("get_item_prices", {"type": "SkillGem"}, settings)
     item = result["items"][0]
     assert item["gem_level"] == 21
     assert item["gem_quality"] == 23
 
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_item_prices_optional_fields_absent(mock_fetch, settings):
-    mock_fetch.return_value = {
-        "lines": [
-            {"name": "Scarab of Speed", "chaosValue": 5.0, "divineValue": 0.03}
-        ]
-    }
-    result = handle_poe_ninja_tool(
-        "get_item_prices", {"type": "Scarab"}, settings
-    )
+    mock_fetch.return_value = {"lines": [{"name": "Scarab of Speed", "chaosValue": 5.0, "divineValue": 0.03}]}
+    result = handle_poe_ninja_tool("get_item_prices", {"type": "Scarab"}, settings)
     item = result["items"][0]
     assert set(item.keys()) == {"name", "chaos_value", "divine_value"}
 
 
 # ── handle_poe_ninja_tool — build meta ────────────────────────────────────
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_build_meta_sorted_by_count(mock_fetch, settings, poe_ninja_build_payload):
     mock_fetch.return_value = poe_ninja_build_payload
     result = handle_poe_ninja_tool("get_build_meta", {}, settings)
@@ -184,12 +169,10 @@ def test_build_meta_sorted_by_count(mock_fetch, settings, poe_ninja_build_payloa
     assert counts == sorted(counts, reverse=True)
 
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_build_meta_class_filter(mock_fetch, settings, poe_ninja_build_payload):
     mock_fetch.return_value = poe_ninja_build_payload
-    result = handle_poe_ninja_tool(
-        "get_build_meta", {"class_filter": "necromancer"}, settings
-    )
+    result = handle_poe_ninja_tool("get_build_meta", {"class_filter": "necromancer"}, settings)
     assert result["filtered_by"] == "necromancer"
     for skill in result["top_skills"]:
         assert skill["name"] == "Summon Raging Spirit"
@@ -197,15 +180,12 @@ def test_build_meta_class_filter(mock_fetch, settings, poe_ninja_build_payload):
 
 # ── error handling ────────────────────────────────────────────────────────
 
-@patch("poe_agent.tools.poe_ninja._fetch")
+
+@patch("poe_copilot.tools.poe_ninja._fetch")
 def test_http_404_error_with_hint(mock_fetch, settings):
     resp = MagicMock()
     resp.status_code = 404
-    mock_fetch.side_effect = httpx.HTTPStatusError(
-        "Not Found", request=MagicMock(), response=resp
-    )
-    result = handle_poe_ninja_tool(
-        "get_currency_prices", {"type": "Currency"}, settings
-    )
+    mock_fetch.side_effect = httpx.HTTPStatusError("Not Found", request=MagicMock(), response=resp)
+    result = handle_poe_ninja_tool("get_currency_prices", {"type": "Currency"}, settings)
     assert result["error"] == "poe.ninja returned HTTP 404"
     assert result["hint"] == "Check that the league name is correct."

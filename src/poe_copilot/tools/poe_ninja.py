@@ -39,8 +39,7 @@ POE_NINJA_TOOLS = [
                     "type": "string",
                     "enum": CURRENCY_TYPES,
                     "description": (
-                        "Currency category: 'Currency' for orbs/scrolls, "
-                        "'Fragment' for map fragments and splinters."
+                        "Currency category: 'Currency' for orbs/scrolls, 'Fragment' for map fragments and splinters."
                     ),
                 },
                 "league": {
@@ -50,8 +49,7 @@ POE_NINJA_TOOLS = [
                 "include_trends": {
                     "type": "boolean",
                     "description": (
-                        "When true, include 7-day sparkline trend data and "
-                        "percentage change for each currency."
+                        "When true, include 7-day sparkline trend data and percentage change for each currency."
                     ),
                 },
             },
@@ -88,8 +86,7 @@ POE_NINJA_TOOLS = [
                 "include_trends": {
                     "type": "boolean",
                     "description": (
-                        "When true, include 7-day sparkline trend data and "
-                        "percentage change for each item."
+                        "When true, include 7-day sparkline trend data and percentage change for each item."
                     ),
                 },
             },
@@ -113,10 +110,7 @@ POE_NINJA_TOOLS = [
                 },
                 "class_filter": {
                     "type": "string",
-                    "description": (
-                        "Optional ascendancy name to filter results "
-                        "(e.g. 'Juggernaut', 'Necromancer')."
-                    ),
+                    "description": ("Optional ascendancy name to filter results (e.g. 'Juggernaut', 'Necromancer')."),
                 },
             },
         },
@@ -133,6 +127,20 @@ def _fetch(endpoint: str, params: dict) -> dict:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
         return resp.json()
+
+
+def _ranked_list(items: list[dict], cap: int) -> list[dict]:
+    """Extract name/count/percentage from items, sort by count desc, and cap."""
+    result = [
+        {
+            "name": i.get("name", "Unknown"),
+            "count": i.get("count", 0),
+            "percentage": round(i.get("percentage", 0), 2),
+        }
+        for i in items
+    ]
+    result.sort(key=lambda x: x["count"], reverse=True)
+    return result[:cap]
 
 
 def _league_slug(league: str) -> str:
@@ -157,23 +165,21 @@ def _extract_sparkline(spark_data: dict | None) -> dict | None:
 
 
 def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
-    league = params.get("league") or settings.get("league", "Standard")
+    from poe_copilot.context import resolve_league
+
+    league = params.get("league") or resolve_league(settings)
     include_trends = params.get("include_trends", False)
 
     try:
         if name == "get_currency_prices":
             item_type = params["type"]
-            data = _fetch(
-                "currencyoverview", {"league": league, "type": item_type}
-            )
+            data = _fetch("currencyoverview", {"league": league, "type": item_type})
             lines = data.get("lines", [])
             results = []
             for line in lines[:MAX_RESULTS]:
                 entry = {
                     "name": line["currencyTypeName"],
-                    "chaos_equivalent": round(
-                        line.get("chaosEquivalent", 0), 2
-                    ),
+                    "chaos_equivalent": round(line.get("chaosEquivalent", 0), 2),
                 }
                 if include_trends:
                     trend = _extract_sparkline(line.get("receiveSparkLine"))
@@ -189,18 +195,12 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
 
         elif name == "get_item_prices":
             item_type = params["type"]
-            data = _fetch(
-                "itemoverview", {"league": league, "type": item_type}
-            )
+            data = _fetch("itemoverview", {"league": league, "type": item_type})
             lines = data.get("lines", [])
 
             name_filter = params.get("name_filter", "").lower()
             if name_filter:
-                lines = [
-                    l
-                    for l in lines
-                    if name_filter in l.get("name", "").lower()
-                ]
+                lines = [line for line in lines if name_filter in line.get("name", "").lower()]
 
             results = []
             for line in lines[:MAX_RESULTS]:
@@ -239,56 +239,20 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
             class_filter = params.get("class_filter", "").lower()
             cap = MAX_BUILD_META_RESULTS
 
-            # --- Ascendancy classes ---
-            classes = []
-            for c in data.get("classes", []):
-                classes.append({
-                    "name": c.get("name", "Unknown"),
-                    "count": c.get("count", 0),
-                    "percentage": round(c.get("percentage", 0), 2),
-                })
-            classes.sort(key=lambda x: x["count"], reverse=True)
-            classes = classes[:cap]
+            classes = _ranked_list(data.get("classes", []), cap)
 
-            # --- Active skills ---
-            active_skills = []
-            for s in data.get("activeSkills", []):
-                skill_classes = [
-                    n.get("name", "") for n in s.get("classes", [])
+            # Active skills: pre-filter by class before ranking
+            skills_raw = data.get("activeSkills", [])
+            if class_filter:
+                skills_raw = [
+                    s
+                    for s in skills_raw
+                    if any(class_filter in n.get("name", "").lower() for n in s.get("classes", []))
                 ]
-                if class_filter and not any(
-                    class_filter in c.lower() for c in skill_classes
-                ):
-                    continue
-                active_skills.append({
-                    "name": s.get("name", "Unknown"),
-                    "count": s.get("count", 0),
-                    "percentage": round(s.get("percentage", 0), 2),
-                })
-            active_skills.sort(key=lambda x: x["count"], reverse=True)
-            active_skills = active_skills[:cap]
+            active_skills = _ranked_list(skills_raw, cap)
 
-            # --- Unique items ---
-            uniques = []
-            for u in data.get("uniqueItems", []):
-                uniques.append({
-                    "name": u.get("name", "Unknown"),
-                    "count": u.get("count", 0),
-                    "percentage": round(u.get("percentage", 0), 2),
-                })
-            uniques.sort(key=lambda x: x["count"], reverse=True)
-            uniques = uniques[:cap]
-
-            # --- Keystones ---
-            keystones = []
-            for k in data.get("keystones", []):
-                keystones.append({
-                    "name": k.get("name", "Unknown"),
-                    "count": k.get("count", 0),
-                    "percentage": round(k.get("percentage", 0), 2),
-                })
-            keystones.sort(key=lambda x: x["count"], reverse=True)
-            keystones = keystones[:cap]
+            uniques = _ranked_list(data.get("uniqueItems", []), cap)
+            keystones = _ranked_list(data.get("keystones", []), cap)
 
             result = {
                 "league": league,

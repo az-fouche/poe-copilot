@@ -72,6 +72,26 @@ def _annotate_timeline(
     return "\n\n".join(annotated_lines), current_league, next_league
 
 
+def resolve_league(settings: dict) -> str:
+    """Resolve the display league name from settings.
+
+    - "standard" → "Standard"
+    - "challenge" → current league name from timeline.md, fallback "Standard"
+    """
+    raw = settings.get("league", "standard")
+    if raw == "standard":
+        return "Standard"
+    if raw == "challenge":
+        entries = _parse_timeline()
+        if entries:
+            _, current_league, _ = _annotate_timeline(entries, date.today())
+            if current_league:
+                return current_league
+        return "Standard"
+    # Legacy: treat any other value as a literal league name
+    return raw
+
+
 IDENTITY = (
     "You are a knowledgeable Path of Exile (PoE 1) companion. You help players "
     "with builds, game mechanics, economy, and strategy."
@@ -132,7 +152,7 @@ EXP_CONTEXT = {
 
 def build_player_context(settings: dict) -> str:
     """Build the dynamic player profile context appended to every agent primer."""
-    league = settings.get("league", "Standard")
+    league = resolve_league(settings)
     mode = settings.get("mode", "softcore_trade")
     experience = settings.get("experience", "intermediate")
 
@@ -154,8 +174,7 @@ def build_player_context(settings: dict) -> str:
             "Path of Exile. Your training data about PoE league dates, names, and content "
             "is WRONG and outdated — do NOT use it. When answering ANY question about "
             "past, current, or upcoming leagues, rely ONLY on this timeline. If a league "
-            "is not listed here, you do not know about it — say so and search instead.\n\n"
-            + annotated_text
+            "is not listed here, you do not know about it — say so and search instead.\n\n" + annotated_text
         )
     else:
         current_league = None
@@ -163,19 +182,13 @@ def build_player_context(settings: dict) -> str:
 
     # Player profile
     parts.append("\n## Player Profile")
-    parts.append(
-        f"- Active league: **{league}** (this is the CURRENT league)"
-    )
+    parts.append(f"- Active league: **{league}** (this is the CURRENT league)")
     if next_league:
         name, version, launch_date = next_league
         friendly_date = launch_date.strftime("%B %d, %Y").replace(" 0", " ")
-        parts.append(
-            f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE."
-        )
+        parts.append(f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE.")
     else:
-        parts.append(
-            "- Next league: not yet announced — search for news."
-        )
+        parts.append("- Next league: not yet announced — search for news.")
     parts.append(f"- When using poe.ninja tools, ALWAYS default to league: {league}")
     parts.append(
         "\n### League Rules (NEVER violate these)\n"
@@ -202,8 +215,10 @@ def load_prompt(name: str) -> str:
 
 def build_primer(agent_name: str, settings: dict) -> str:
     """Compose the full system primer: IDENTITY + agent prompt + player context."""
-    return "\n\n".join([
-        IDENTITY,
-        load_prompt(agent_name),
-        build_player_context(settings),
-    ])
+    return "\n\n".join(
+        [
+            IDENTITY,
+            load_prompt(agent_name),
+            build_player_context(settings),
+        ]
+    )
