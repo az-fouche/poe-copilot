@@ -1,8 +1,7 @@
 """Web search and page-reading tool handlers."""
 
-from __future__ import annotations
-
 import os
+
 import httpx
 from bs4 import BeautifulSoup, Tag
 from ddgs import DDGS

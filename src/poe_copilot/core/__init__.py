@@ -8,7 +8,8 @@ from .cli import (
     truncate,
 )
 from .context import resolve_league
-from .orchestrator import ClarifyingQuestion, Orchestrator
+from .agent import ClarifyingQuestion
+from .orchestrator import Orchestrator
 
 __all__ = [
     "Orchestrator",

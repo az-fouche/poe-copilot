@@ -1,7 +1,5 @@
 """Agent step abstractions for the orchestrator pipeline."""
 
-from __future__ import annotations
-
 import json
 import logging
 from dataclasses import dataclass
@@ -34,6 +32,22 @@ class NextStep:
 
     type: str  # "answer" | "call"
     input: dict[str, Any]
+
+
+@dataclass
+class ClarifyingQuestion:
+    """A question posed to the user before routing to a specialist agent.
+
+    Attributes
+    ----------
+    question : str
+        The clarifying question text.
+    options : list[str]
+        Suggested answer choices presented to the user.
+    """
+
+    question: str
+    options: list[str]
 
 
 # ---------------------------------------------------------------------------
@@ -86,7 +100,7 @@ class AgentStep:
         self.client = client or anthropic.Anthropic()
         self._thread: list[dict] = []
 
-    def reset(self):
+    def reset(self) -> None:
         """Clear the message thread so the step can be reused for a new run."""
         self._thread.clear()
 

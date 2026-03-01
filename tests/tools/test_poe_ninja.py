@@ -1,7 +1,5 @@
 """Tests for poe_copilot/tools/poe_ninja.py — 18 tests."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock, patch
 
 import httpx
@@ -11,7 +9,6 @@ from poe_copilot.tools.poe_ninja import (
     _league_slug,
     handle_poe_ninja_tool,
 )
-
 
 # ── _league_slug ──────────────────────────────────────────────────────────
 

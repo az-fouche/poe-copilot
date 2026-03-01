@@ -1,7 +1,5 @@
 """Tests for poe_copilot/agent.py — 14 tests."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock
 
 # Import helpers from conftest

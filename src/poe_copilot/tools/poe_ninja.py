@@ -131,7 +131,12 @@ def _fetch(endpoint: str, params: dict) -> dict:
     with httpx.Client(timeout=10, follow_redirects=True) as client:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
-        return resp.json()
+        data = resp.json()
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Unexpected response format from poe.ninja: {data}"
+            )
+        return data
 
 
 def _ranked_list(items: list[dict], cap: int) -> list[dict]:
@@ -171,7 +176,7 @@ def _extract_sparkline(spark_data: dict | None) -> dict | None:
     return result or None
 
 
-def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
+def handle_poe_ninja_tool(name: str, params: dict, settings: dict) -> dict:
     """Dispatch a poe.ninja tool call and return structured price or meta data.
 
     Parameters

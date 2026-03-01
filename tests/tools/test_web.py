@@ -1,7 +1,5 @@
 """Tests for poe_copilot/tools/web.py — 16 tests."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock, patch
 
 import httpx
@@ -15,7 +13,6 @@ from poe_copilot.tools.web import (
     _search,
     handle_web_tool,
 )
-
 
 # ── _search ───────────────────────────────────────────────────────────────
 

@@ -1,7 +1,5 @@
 """Tests for poe_copilot/context.py — 12 tests."""
 
-from __future__ import annotations
-
 from datetime import date
 from unittest.mock import patch
 
