@@ -132,7 +132,7 @@ def main():
                     result = agent.run(
                         enriched_input,
                         on_status=update_status_2,
-                        start_agent="researcher",
+                        start_agent="router",
                     )
 
             # At this point result should be a string

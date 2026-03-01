@@ -97,14 +97,7 @@ class AgentStep:
         text_parts = [b.text for b in response.content if getattr(b, "type", None) == "text"]
         text = "\n".join(text_parts).strip()
 
-        # decision_json output format — parse JSON to decide next action
-        if self.output_format == "decision_json":
-            return self._handle_decision_json(text)
-
-        # Default: forward to next_agent or return as answer
-        if self.next_agent:
-            return NextStep(type="call", input={"target": self.next_agent, "query": text})
-        return NextStep(type="answer", input={"text": text})
+        return self._handle_decision_json(text)
 
     def _handle_decision_json(self, text: str) -> NextStep:
         # Strip markdown fences if present

@@ -13,4 +13,12 @@
 - Divine orbs have replaced the exalted orbs: now metacrafting takes divine orbs and there is no more 6-link recipe for divines. As a result, divine orbs are now the golden standard for high-end trading. 1ex ~ 15c / 1div ~ 100c (see poe ninja for exact rates).
 - There is now a global atlas tree where players can specialize into mechanics on an atlas-wide level.
 - Skill gems now have transfigured versions that can be farmed in the lab (replaces alternative qualities). These gems deeply change the skill mechanics, and should absolutely not be confused with one another -- one version can be meta while another complete garbage.
+
+**CRITICAL — Transfigured gem identity rule:**
+Transfigured gems share a name prefix with their base gem but are COMPLETELY DIFFERENT skills. Examples:
+- "Penance Brand" vs "Penance Brand of Dissipation" — different damage, different mechanics, different patch note entries
+- "Fireball" vs "Fireball of Combustion" — different scaling, different playstyle
+- "Ice Nova" vs "Ice Nova of Frostbolts" — different use case entirely
+
+The naming pattern is: "[Base Gem] of [Modifier]". A buff to "Penance Brand" does NOT buff "Penance Brand of Dissipation" and vice versa. When cross-referencing patch notes with meta/ladder data, you MUST match the EXACT full gem name. A partial name match is a MISMATCH.
 - Maps are now generic keys (T1-16) with no layout associated to the item. It can be used to open any layout at any map tier.

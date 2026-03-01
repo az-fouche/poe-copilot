@@ -53,9 +53,7 @@ class Orchestrator:
         self.settings = settings
         self.messages: list[dict] = []
         self.api_calls = 0
-        self.tool_calls = 0
         self.max_api_calls = 20
-        self.max_tool_calls = 15
 
         client = anthropic.Anthropic()
         registry = load_registry()
@@ -89,7 +87,6 @@ class Orchestrator:
     ) -> str | ClarificationRequest:
         self.messages.append({"role": "user", "content": user_message})
         self.api_calls = 0
-        self.tool_calls = 0
 
         # Reset all agent threads
         for step in self.steps.values():
@@ -98,6 +95,7 @@ class Orchestrator:
 
         query = self._build_context(user_message)
         self._conversation_context = query
+        self._accumulated_research: list[str] = []
         decision = self._call_agent(start_agent, {"query": query})
 
         # Generic loop
@@ -111,8 +109,6 @@ class Orchestrator:
                 # Tool request — execute all, feed results back
                 results = []
                 for tool_call in inp["tools"]:
-                    self.tool_calls += 1
-                    self._check_cap("tool")
                     if on_status:
                         on_status(
                             _STATUS_LABELS.get(
@@ -120,13 +116,19 @@ class Orchestrator:
                             )
                         )
                     tool_result = self.steps[tool_call["name"]].call(tool_call["input"])
+                    result_content = (
+                        json.dumps(tool_result.input["result"])
+                        if isinstance(tool_result.input["result"], (dict, list))
+                        else str(tool_result.input["result"])
+                    )
                     results.append(
                         {
                             "tool_use_id": tool_call["id"],
-                            "content": json.dumps(tool_result.input["result"])
-                            if isinstance(tool_result.input["result"], (dict, list))
-                            else str(tool_result.input["result"]),
+                            "content": result_content,
                         }
+                    )
+                    self._accumulated_research.append(
+                        f"[{tool_call['name']}] {result_content[:2000]}"
                     )
                 decision = self._call_agent(inp["return_to"], {"tool_results": results})
 
@@ -151,17 +153,35 @@ class Orchestrator:
         self.api_calls += 1
         if self.api_calls > self.max_api_calls:
             logger.warning("API cap reached (%d), forcing answerer", self.max_api_calls)
-            query = input.get("query", json.dumps(input))
-            return self.steps["answerer"].call(
-                {
-                    "query": f"IMPORTANT: Max API calls reached. Answer as best you can with what we have.\n\n{query}"
-                }
-            )
-        return self.steps[name].call(input)
 
-    def _check_cap(self, kind: str):
-        if kind == "tool" and self.tool_calls > self.max_tool_calls:
-            raise RuntimeError(f"Tool call limit ({self.max_tool_calls}) exceeded")
+            # Build a rich context for the forced answerer
+            research_summary = "\n".join(self._accumulated_research[-20:]) if self._accumulated_research else "(no research collected)"
+            forced_query = (
+                f"## User Question\n{self._conversation_context}\n\n"
+                f"## Research Gathered So Far\n{research_summary}\n\n"
+                f"## Instructions\n"
+                f"IMPORTANT: You MUST write a final, helpful answer in markdown for the user. "
+                f"Do NOT output JSON or routing instructions. Synthesize the research above "
+                f"into a clear answer. If the research is insufficient, say so honestly and "
+                f"provide what you can."
+            )
+            result = self.steps["answerer"].call({"query": forced_query})
+
+            # Circuit breaker: if the answerer still didn't produce a terminal answer,
+            # force it into one so we never loop back into research.
+            if result.type != "answer" or "text" not in result.input:
+                logger.warning("Force-answerer returned non-answer (%s), applying circuit breaker", result.type)
+                return NextStep(
+                    type="answer",
+                    input={
+                        "text": (
+                            "I wasn't able to gather enough information to fully answer your question. "
+                            "Could you try rephrasing or asking something more specific?"
+                        )
+                    },
+                )
+            return result
+        return self.steps[name].call(input)
 
     def _build_context(self, user_message: str) -> str:
         context_parts = []
