@@ -6,6 +6,42 @@ from poe_copilot.constants import DATABASE_DIR
 
 MAX_ENTRIES = 10
 MAX_PATCH_MATCHES = 15
+_MIN_KEYWORD_LEN = 3
+_STOPWORDS = frozenset(
+    {
+        "the",
+        "and",
+        "for",
+        "that",
+        "with",
+        "this",
+        "from",
+        "are",
+        "was",
+        "were",
+        "has",
+        "have",
+        "had",
+        "not",
+        "but",
+        "all",
+        "can",
+        "her",
+        "his",
+        "its",
+        "our",
+        "you",
+        "does",
+        "what",
+        "which",
+        "how",
+        "who",
+        "give",
+        "gives",
+        "gets",
+        "get",
+    }
+)
 
 _STRUCTURED_FILES: dict[str, str] = {
     "ascendancy": "ascendancies.txt",
@@ -138,6 +174,52 @@ def _grep_structured(query: str, filepath: Path) -> list[dict]:
             )
 
     results = [{"name": n, "sections": hits[n]} for n in hit_order]
+    if len(results) > MAX_ENTRIES:
+        return results[:MAX_ENTRIES] + [{"note": "Truncated — narrow query"}]
+    if results:
+        return results
+
+    # Phase 4: keyword AND match across entire entity
+    keywords = [
+        w
+        for w in q.split()
+        if len(w) >= _MIN_KEYWORD_LEN and w not in _STOPWORDS
+    ]
+    if len(keywords) < 2:
+        return []
+
+    # Group all text by entity name
+    entity_blobs: dict[str, str] = {}
+    entity_order: list[str] = []
+    for name, _, text in parsed:
+        if name not in entity_blobs:
+            entity_order.append(name)
+            entity_blobs[name] = ""
+        entity_blobs[name] += " " + text.lower()
+
+    matched_entities: list[str] = []
+    for name in entity_order:
+        blob = entity_blobs[name]
+        if all(kw in blob for kw in keywords):
+            matched_entities.append(name)
+
+    if not matched_entities:
+        return []
+
+    # Return full entries for matching entities
+    kw_entities: dict[str, list[dict]] = {}
+    matched_set = set(matched_entities)
+    for name, heading, text in parsed:
+        if name in matched_set:
+            kw_entities.setdefault(name, []).append(
+                {"heading": heading, "text": text}
+            )
+
+    results = [
+        {"name": n, "sections": kw_entities[n]}
+        for n in matched_entities
+        if n in kw_entities
+    ]
     if len(results) > MAX_ENTRIES:
         return results[:MAX_ENTRIES] + [{"note": "Truncated — narrow query"}]
     return results

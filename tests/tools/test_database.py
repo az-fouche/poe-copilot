@@ -101,6 +101,87 @@ def test_no_match():
     assert results == []
 
 
+# --- Phase 4: keyword AND matching ---
+
+UNIQUES = DATABASE_DIR / "unique_items.txt"
+
+
+def test_keyword_match_finds_scattered_terms():
+    """Multi-keyword query finds entity with words scattered across content."""
+    results = _grep_structured("strength dexterity intelligence", UNIQUES)
+    names = {r["name"] for r in results if "name" in r}
+    assert "Black Sun Crest" in names
+    # Should return all sections for the matched entity
+    entry = next(r for r in results if r["name"] == "Black Sun Crest")
+    assert len(entry["sections"]) > 1
+
+
+def test_keyword_match_skipped_when_earlier_phase_hits(tmp_path):
+    """Exact substring match takes priority over keyword AND matching."""
+    f = tmp_path / "test.txt"
+    f.write_text(
+        "Alpha | Info | contains foo and bar here\n"
+        "Beta | Info | has foo bar as substring\n",
+        encoding="utf-8",
+    )
+    # "foo bar" is an exact substring in Beta's content
+    results = _grep_structured("foo bar", f)
+    names = [r["name"] for r in results]
+    # Phase 2/3 content match should find both
+    assert "Beta" in names
+
+
+def test_keyword_match_filters_stopwords(tmp_path):
+    """Stopwords and short tokens are filtered from keywords."""
+    f = tmp_path / "test.txt"
+    f.write_text(
+        "Item | Info | increases strength and dexterity\n"
+        "Other | Info | unrelated content here\n",
+        encoding="utf-8",
+    )
+    # "the" and "and" are stopwords, "of" is < 3 chars
+    results = _grep_structured("the strength and dexterity", f)
+    assert len(results) == 1
+    assert results[0]["name"] == "Item"
+
+
+def test_keyword_match_needs_all_keywords(tmp_path):
+    """All keywords must appear — partial overlap is not enough."""
+    f = tmp_path / "test.txt"
+    f.write_text(
+        "Item | Info | has strength but not the other\n",
+        encoding="utf-8",
+    )
+    results = _grep_structured("strength dexterity intelligence", f)
+    assert results == []
+
+
+def test_keyword_match_single_keyword_skipped(tmp_path):
+    """Single keyword after filtering does not trigger Phase 4."""
+    f = tmp_path / "test.txt"
+    f.write_text(
+        "Item | Info | has strength modifier\n",
+        encoding="utf-8",
+    )
+    # "the" is a stopword → only "strength" remains → < 2 keywords
+    results = _grep_structured("the strength", f)
+    assert results == []
+
+
+def test_keyword_match_truncation(tmp_path):
+    """Keyword match respects MAX_ENTRIES truncation."""
+    lines = [
+        f"Entity{i} | Info | has alpha beta gamma\n"
+        for i in range(MAX_ENTRIES + 5)
+    ]
+    f = tmp_path / "big.txt"
+    f.write_text("".join(lines), encoding="utf-8")
+
+    results = _grep_structured("alpha beta gamma", f)
+    assert len(results) == MAX_ENTRIES + 1
+    assert results[-1] == {"note": "Truncated — narrow query"}
+
+
 def test_malformed_lines_skipped(tmp_path):
     """Lines without 3 pipe parts don't crash."""
     bad_file = tmp_path / "bad.txt"
