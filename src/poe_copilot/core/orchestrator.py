@@ -255,6 +255,8 @@ class Orchestrator:
         on_message: Optional[Callable[[str], None]] = None,
     ) -> NextStep:
         """Execute the decision-tool-route loop until a terminal answer."""
+        max_analyst_routes = 2  # initial + 1 re-route
+        analyst_routes = 0
         while decision.type != "answer":
             if decision.input.get("user_msg") and on_message:
                 on_message(decision.input["user_msg"])
@@ -286,6 +288,15 @@ class Orchestrator:
             elif "target" in inp:
                 query = inp["query"]
                 target = inp["target"]
+                # Cap answerer→analyst research loops
+                if target == "analyst":
+                    analyst_routes += 1
+                    if analyst_routes > max_analyst_routes:
+                        logger.warning(
+                            "Research loop cap reached, forcing answerer",
+                        )
+                        decision = self._force_answerer()
+                        continue
                 # Inject conversation context for analyst and answerer
                 if target in ("analyst", "answerer"):
                     query = (

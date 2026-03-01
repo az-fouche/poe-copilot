@@ -467,6 +467,62 @@ def test_run_answerer_requests_more_research(settings):
     assert result == "complete answer"
 
 
+def test_research_loop_capped_after_one_reroute(settings):
+    """Second answerer→analyst re-route is blocked; answerer is forced."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "analyst", "query": "q"},
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "report 1",
+                    },
+                ),
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "report 2",
+                    },
+                ),
+            ],
+            "answerer": [
+                # 1st call: requests more research
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "need more",
+                    },
+                ),
+                # 2nd call: tries to loop again (blocked)
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "still not enough",
+                    },
+                ),
+                # 3rd call: from _force_answerer
+                NextStep(
+                    type="answer",
+                    input={"text": "best effort answer"},
+                ),
+            ],
+        },
+    )
+    result = orch.run("complex question")
+    assert result == "best effort answer"
+
+
 # ---------------------------------------------------------------------------
 # Status labels
 # ---------------------------------------------------------------------------
