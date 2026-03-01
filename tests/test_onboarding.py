@@ -5,10 +5,8 @@ from __future__ import annotations
 import json
 from unittest.mock import patch
 
-
-from poe_copilot.onboarding import load_settings, save_settings, run_onboarding
-from poe_copilot.agent import NextStep
-
+from poe_copilot.core.agent import NextStep
+from poe_copilot.onboarding import load_settings, run_onboarding, save_settings
 
 # ── load_settings ─────────────────────────────────────────────────────────
 
@@ -75,7 +73,7 @@ def test_run_onboarding_preserves_existing_key(mock_console_cls, mock_ask, mock_
 
 
 def test_status_label_target():
-    from poe_copilot.orchestrator import Orchestrator
+    from poe_copilot.core.orchestrator import Orchestrator
 
     # Test the _status_label method using a minimal instance
     ns = NextStep(type="call", input={"target": "researcher"})

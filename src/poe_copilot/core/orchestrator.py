@@ -1,3 +1,5 @@
+"""Central orchestrator that routes queries through the agent pipeline."""
+
 from __future__ import annotations
 
 import json
@@ -7,10 +9,11 @@ from typing import Callable, Optional
 
 import anthropic
 
-from .agent import AgentStep, NextStep, ToolStep, load_registry
-from .context import build_primer
-from .delegation import DELEGATION_TOOL_NAMES, DELEGATION_TOOLS
-from .tools import _HANDLERS, TOOL_DEFINITIONS
+from ..constants import REGISTRY_FILE
+from ..context import build_primer
+from ..delegation import DELEGATION_TOOL_NAMES, DELEGATION_TOOLS
+from ..tools import _HANDLERS, TOOL_DEFINITIONS
+from .agent import AgentStep, NextStep, ToolStep
 
 logger = logging.getLogger(__name__)
 
@@ -28,73 +31,37 @@ _STATUS_LABELS: dict[str, str] = {
 }
 
 
-def _truncate(text: str, max_len: int = 50) -> str:
-    if len(text) <= max_len:
-        return text
-    return text[: max_len - 1] + "\u2026"
-
-
-def _tool_status_label(name: str, tool_input: dict) -> str:
-    """Build a dynamic spinner label based on tool name and its inputs."""
-    if name == "read_webpage":
-        url = tool_input.get("url", "")
-        section = tool_input.get("section", "")
-        # Strip protocol for brevity
-        short_url = url.replace("https://", "").replace("http://", "")
-        if section:
-            return f'Reading "{_truncate(section, 25)}" from {_truncate(short_url, 30)}'
-        return f"Reading {_truncate(short_url, 45)}"
-
-    if name == "poe_web_search":
-        query = tool_input.get("query", "")
-        if query:
-            return f"Searching: {_truncate(query, 45)}"
-        return "Searching the web..."
-
-    if name == "get_item_prices":
-        name_filter = tool_input.get("name", "")
-        item_type = tool_input.get("type", "")
-        if name_filter:
-            return f'Looking up "{_truncate(name_filter, 30)}" prices...'
-        if item_type:
-            return f"Looking up {_truncate(item_type, 30)} prices..."
-        return "Looking up item prices..."
-
-    if name == "get_build_meta":
-        class_filter = tool_input.get("class_filter", "")
-        if class_filter:
-            return f"Checking {class_filter} build meta..."
-        return "Checking build meta..."
-
-    if name == "get_currency_prices":
-        return "Checking currency prices..."
-
-    return f"Using {name}..."
-
-
-# ---------------------------------------------------------------------------
-# Routing dataclasses (used by main.py UI)
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class ClarifyingQuestion:
+    """A question posed to the user before routing to a specialist agent.
+
+    Attributes
+    ----------
+    question : str
+        The clarifying question text.
+    options : list[str]
+        Suggested answer choices presented to the user.
+    """
+
     question: str
     options: list[str]
 
 
-@dataclass
-class ClarificationRequest:
-    questions: list[ClarifyingQuestion]
-
-
-# ---------------------------------------------------------------------------
-# Orchestrator — generic step loop
-# ---------------------------------------------------------------------------
-
-
 class Orchestrator:
+    """Central controller that routes user queries through the agent pipeline.
+
+    Manages agent and tool steps, conversation history, API budget, and
+    the run-loop that chains routing decisions until a terminal answer is
+    produced.
+
+    Parameters
+    ----------
+    settings : dict
+        User settings used to build agent primers and configure tools.
+    """
+
     def __init__(self, settings: dict):
+        """Initialize agents, tools, and conversation state from *settings*."""
         self.settings = settings
         self.messages: list[dict] = []
         self.api_calls = 0
@@ -104,7 +71,7 @@ class Orchestrator:
         self._on_status: Optional[Callable[[str], None]] = None
 
         client = anthropic.Anthropic()
-        registry = load_registry()
+        registry = _load_registry()
 
         self.steps: dict[str, AgentStep | ToolStep] = {}
 
@@ -139,7 +106,28 @@ class Orchestrator:
         on_message: Optional[Callable[[str], None]] = None,
         start_agent: str = "router",
         clarification_round: int = 0,
-    ) -> str | ClarificationRequest:
+    ) -> str | list[ClarifyingQuestion]:
+        """Run the orchestrator pipeline for a single user message.
+
+        Parameters
+        ----------
+        user_message : str
+            The user's input text.
+        on_status : callable or None, optional
+            Callback invoked with spinner-label strings during processing.
+        on_message : callable or None, optional
+            Callback invoked with intermediate user-facing messages.
+        start_agent : str, optional
+            Name of the entry-point agent (default ``"router"``).
+        clarification_round : int, optional
+            Current clarification iteration (``0`` on first pass).
+
+        Returns
+        -------
+        str or list[ClarifyingQuestion]
+            Final answer text, or a list of clarifying questions when the
+            router requests more information from the user.
+        """
         logger.info("USER: %s", user_message)
         self.messages.append({"role": "user", "content": user_message})
         self.api_calls = 0
@@ -179,7 +167,7 @@ class Orchestrator:
             else:
                 logger.info("CLARIFY: %s", decision.input["clarification"])
                 self.messages.pop()  # remove user message — will re-send with answers
-                return ClarificationRequest(questions=self._parse_clarification(decision.input["clarification"]))
+                return self._parse_clarification(decision.input["clarification"])
 
         answer_text = decision.input["text"]
         logger.info("ANSWER: %s", answer_text[:500])
@@ -189,7 +177,17 @@ class Orchestrator:
     def force_answer(self, extra_context: str = "") -> str:
         """Force the answerer to produce a response from accumulated research.
 
-        Used after KeyboardInterrupt to salvage partial results.
+        Used after ``KeyboardInterrupt`` to salvage partial results.
+
+        Parameters
+        ----------
+        extra_context : str, optional
+            Additional context supplied by the user at the interrupt prompt.
+
+        Returns
+        -------
+        str
+            The generated answer text.
         """
         result = self._force_answerer(extra_context)
         answer_text = result.input["text"]
@@ -242,6 +240,7 @@ class Orchestrator:
         return result
 
     def _call_agent(self, name: str, input: dict) -> NextStep:
+        """Invoke a named agent step, enforcing the API-call budget."""
         self.api_calls += 1
         if self.api_calls > self.max_api_calls:
             logger.warning("API cap reached (%d), forcing answerer", self.max_api_calls)
@@ -256,12 +255,7 @@ class Orchestrator:
         on_message: Optional[Callable[[str], None]] = None,
         intercept_routing: bool = False,
     ) -> NextStep | str:
-        """Core agent step loop.
-
-        Runs the cycle: process decision -> execute tools -> route until terminal.
-        When intercept_routing is True, routing decisions return the query text
-        instead of continuing to the target agent (used for delegation).
-        """
+        """Execute the decision-tool-route loop until a terminal answer is reached."""
         while decision.type != "answer":
             if decision.input.get("user_msg") and on_message:
                 on_message(decision.input["user_msg"])
@@ -367,11 +361,7 @@ class Orchestrator:
             return f"Unknown delegation tool: {tool_name}"
 
     def _run_agent_to_completion(self, agent_name: str, task: str) -> str:
-        """Run a sub-agent through its full tool-call loop, returning its final output.
-
-        When the sub-agent tries to route to its next agent (e.g. researcher -> answerer),
-        we intercept that routing and capture the query text as the output instead.
-        """
+        """Run a sub-agent to completion, intercepting its terminal routing decision."""
         agent_step = self.steps[agent_name]
         assert isinstance(agent_step, AgentStep)
 
@@ -385,6 +375,7 @@ class Orchestrator:
         return self._step_loop(decision, on_status=self._on_status, intercept_routing=True)
 
     def _build_context(self, user_message: str) -> str:
+        """Assemble recent conversation history into a context string for the router."""
         context_parts = []
         for msg in self.messages[-7:-1]:
             role = msg.get("role", "")
@@ -405,6 +396,7 @@ class Orchestrator:
         return f"Recent conversation:\n{context_str}\n\nCurrent user message: {user_message}"
 
     def _status_label(self, decision: NextStep) -> str:
+        """Derive a human-friendly spinner label from a routing decision."""
         inp = decision.input
         if "target" in inp:
             return _STATUS_LABELS.get(inp["target"], f"Running {inp['target']}...")
@@ -416,6 +408,7 @@ class Orchestrator:
         return "Working..."
 
     def _parse_clarification(self, data: dict) -> list[ClarifyingQuestion]:
+        """Convert raw clarification JSON into a list of ClarifyingQuestion objects."""
         questions = []
         for q in data.get("clarifying_questions", []):
             questions.append(
@@ -425,3 +418,52 @@ class Orchestrator:
                 )
             )
         return questions
+
+
+def _truncate(text: str, max_len: int) -> str:
+    """Truncate text to a maximum length, adding an ellipsis if truncated."""
+    if len(text) <= max_len:
+        return text
+    return text[: max_len - 1] + "\u2026"
+
+
+def _tool_status_label(name: str, tool_input: dict) -> str:
+    """Build a dynamic spinner label based on tool name and its inputs."""
+    if name == "read_webpage":
+        url = tool_input.get("url", "")
+        section = tool_input.get("section", "")
+        short_url = url.replace("https://", "").replace("http://", "")
+        if section:
+            return f'Reading "{_truncate(section, 25)}" from {_truncate(short_url, 30)}'
+        return f"Reading {_truncate(short_url, 45)}"
+
+    if name == "poe_web_search":
+        query = tool_input.get("query", "")
+        if query:
+            return f"Searching: {_truncate(query, 45)}"
+        return "Searching the web..."
+
+    if name == "get_item_prices":
+        name_filter = tool_input.get("name", "")
+        item_type = tool_input.get("type", "")
+        if name_filter:
+            return f'Looking up "{_truncate(name_filter, 30)}" prices...'
+        if item_type:
+            return f"Looking up {_truncate(item_type, 30)} prices..."
+        return "Looking up item prices..."
+
+    if name == "get_build_meta":
+        class_filter = tool_input.get("class_filter", "")
+        if class_filter:
+            return f"Checking {class_filter} build meta..."
+        return "Checking build meta..."
+
+    if name == "get_currency_prices":
+        return "Checking currency prices..."
+
+    return f"Using {name}..."
+
+
+def _load_registry() -> dict:
+    """Load the agent registry from the bundled JSON configuration."""
+    return json.loads(REGISTRY_FILE.read_text(encoding="utf-8"))

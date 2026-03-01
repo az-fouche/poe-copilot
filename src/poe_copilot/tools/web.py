@@ -1,3 +1,5 @@
+"""Web search and page-reading tool handlers."""
+
 from __future__ import annotations
 
 import os
@@ -127,11 +129,7 @@ def _extract_toc(soup: BeautifulSoup) -> list[dict]:
 
 
 def _extract_section(soup: BeautifulSoup, section_query: str) -> str | None:
-    """Extract content under a heading matching section_query (case-insensitive substring).
-
-    Collects all content from the matched heading until the next heading of the same
-    or higher level. Returns None if no matching heading is found.
-    """
+    """Extract text under the first heading matching *section_query*."""
     query_lower = section_query.lower()
 
     # Find the first heading whose text contains the query
@@ -174,11 +172,7 @@ def _get_body_text(soup: BeautifulSoup) -> str:
 
 
 def _read_page(url: str, section: str | None = None) -> dict:
-    """Fetch a webpage and return its content.
-
-    Without section: returns page outline (TOC + intro).
-    With section: returns targeted section content.
-    """
+    """Fetch a webpage and return its outline or a targeted section."""
     try:
         with httpx.Client(
             timeout=15,
@@ -241,6 +235,23 @@ def _read_page(url: str, section: str | None = None) -> dict:
 
 
 def handle_web_tool(name: str, params: dict, settings: dict) -> dict:
+    """Dispatch a web tool call and return search results or page content.
+
+    Parameters
+    ----------
+    name : str
+        Tool name — ``"poe_web_search"`` or ``"read_webpage"``.
+    params : dict
+        Tool-specific parameters from the API request.
+    settings : dict
+        User settings (currently unused, reserved for future use).
+
+    Returns
+    -------
+    dict
+        Search results or page content.  Contains an ``"error"`` key
+        on failure.
+    """
     if name == "poe_web_search":
         query = params.get("query", "")
         if not query:

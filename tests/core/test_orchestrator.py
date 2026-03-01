@@ -4,16 +4,14 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-
-from poe_copilot.agent import AgentStep, NextStep, ToolStep
-from poe_copilot.orchestrator import (
-    ClarificationRequest,
-    Orchestrator,
+from poe_copilot.core.agent import AgentStep, NextStep, ToolStep
+from poe_copilot.core.orchestrator import (
     _STATUS_LABELS,
+    ClarifyingQuestion,
+    Orchestrator,
     _tool_status_label,
     _truncate,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock registry shared by all tests
@@ -46,9 +44,9 @@ def _make_orchestrator(settings, agent_responses: dict[str, list] | None = None)
     agent_responses = agent_responses or {}
 
     with (
-        patch("poe_copilot.orchestrator.load_registry") as mock_reg,
-        patch("poe_copilot.orchestrator.build_primer", return_value="primer"),
-        patch("poe_copilot.orchestrator.anthropic.Anthropic"),
+        patch("poe_copilot.core.orchestrator._load_registry") as mock_reg,
+        patch("poe_copilot.core.orchestrator.build_primer", return_value="primer"),
+        patch("poe_copilot.core.orchestrator.anthropic.Anthropic"),
     ):
         mock_reg.return_value = _MOCK_REGISTRY
         orch = Orchestrator(settings)
@@ -177,9 +175,9 @@ def test_run_clarification_flow(settings):
         },
     )
     result = orch.run("hello")
-    assert isinstance(result, ClarificationRequest)
-    assert len(result.questions) == 1
-    assert result.questions[0].question == "Q?"
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert result[0].question == "Q?"
     # User message should have been popped
     assert len(orch.messages) == 0
 
@@ -286,7 +284,7 @@ def test_run_level1_router_to_answerer_direct(settings):
     assert (
         "researcher"
         not in {name for name, step in orch.steps.items() if isinstance(step, MagicMock) and step.call.called}
-        or not orch.steps.get("researcher", MagicMock()).call.called
+        or not orch.steps.get("researcher", MagicMock()).call.called  # type: ignore
     )
 
 
@@ -553,7 +551,7 @@ def test_planner_receives_budget_info(settings):
 
     # Verify planner was called with budget info in the query
     planner_step = orch.steps["planner"]
-    call_args = planner_step.call.call_args
+    call_args = planner_step.call.call_args  # type: ignore
     query = call_args[0][0]["query"]
     assert "Budget" in query
     assert "API calls remaining" in query
@@ -690,7 +688,7 @@ def test_force_answer_with_extra_context(settings):
     result = orch.force_answer(extra_context="I prefer ranged builds")
     assert result == "Enriched answer"
     # Verify extra context was passed to the answerer
-    call_args = orch.steps["answerer"].call.call_args[0][0]
+    call_args = orch.steps["answerer"].call.call_args[0][0]  # type: ignore
     assert "I prefer ranged builds" in call_args["query"]
 
 
@@ -708,5 +706,5 @@ def test_force_answer_empty_research(settings):
     result = orch.force_answer()
     assert result == "Best effort answer"
     # Verify it mentions no research collected
-    call_args = orch.steps["answerer"].call.call_args[0][0]
+    call_args = orch.steps["answerer"].call.call_args[0][0]  # type: ignore
     assert "no research collected" in call_args["query"]

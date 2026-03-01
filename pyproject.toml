@@ -30,4 +30,4 @@ src = ["src"]
 line-length = 120
 
 [project.scripts]
-poechat = "poe_copilot.main:main"
+poechat = "poe_copilot.__main__:main"

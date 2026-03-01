@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from poe_copilot.agent import AgentStep, ToolStep
-
 # Import helpers from conftest
 from conftest import make_text_response, make_tool_response
 
+from poe_copilot.core.agent import AgentStep, ToolStep
 
 # ── AgentStep.call — query input ──────────────────────────────────────────
 

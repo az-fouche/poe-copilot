@@ -1,13 +1,12 @@
+"""User onboarding flow and settings persistence."""
+
 import json
-from pathlib import Path
 
 from rich.console import Console
 from rich.prompt import Prompt
 
+from .constants import SETTINGS_DIR, SETTINGS_FILE
 from .context import resolve_league
-
-SETTINGS_DIR = Path.home() / ".poechat"
-SETTINGS_FILE = SETTINGS_DIR / "settings.usr"
 
 MODES = {
     "1": ("softcore_trade", "Softcore Trade"),
@@ -25,17 +24,46 @@ EXPERIENCE = {
 
 
 def load_settings() -> dict | None:
+    """Load user settings from the configuration file.
+
+    Returns
+    -------
+    dict or None
+        Parsed settings dictionary, or ``None`` if the file does not exist.
+    """
     if SETTINGS_FILE.exists():
         return json.loads(SETTINGS_FILE.read_text())
     return None
 
 
 def save_settings(settings: dict):
+    """Persist user settings to the configuration file.
+
+    Parameters
+    ----------
+    settings : dict
+        Settings dictionary to serialize as JSON.
+    """
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     SETTINGS_FILE.write_text(json.dumps(settings, indent=2))
 
 
 def run_onboarding(existing: dict | None = None) -> dict:
+    """Run the interactive onboarding wizard and save the resulting settings.
+
+    Prompts the user for API key, league preference, game mode, and
+    experience level via Rich console menus.
+
+    Parameters
+    ----------
+    existing : dict or None, optional
+        Previously saved settings used as defaults.
+
+    Returns
+    -------
+    dict
+        Completed settings dictionary (also persisted to disk).
+    """
     console = Console()
 
     console.print("\n[bold cyan]Welcome to PoE Chat![/bold cyan] Let's set up your profile.\n")

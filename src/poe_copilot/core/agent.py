@@ -1,3 +1,5 @@
+"""Agent step abstractions for the orchestrator pipeline."""
+
 from __future__ import annotations
 
 import json
@@ -10,12 +12,6 @@ import anthropic
 
 logger = logging.getLogger(__name__)
 
-_REGISTRY_PATH = Path(__file__).resolve().parent / "agents" / "registry.json"
-
-
-def load_registry() -> dict:
-    return json.loads(_REGISTRY_PATH.read_text(encoding="utf-8"))
-
 
 # ---------------------------------------------------------------------------
 # NextStep — the only return type from any step
@@ -24,6 +20,19 @@ def load_registry() -> dict:
 
 @dataclass
 class NextStep:
+    """Uniform return type produced by every pipeline step.
+
+    Attributes
+    ----------
+    type : str
+        Step outcome kind — ``"answer"`` for a terminal response or
+        ``"call"`` to invoke another step.
+    input : dict[str, Any]
+        Payload forwarded to the next consumer.  Keys vary by *type*:
+        ``"text"`` for answers, ``"target"``/``"query"`` for routing,
+        ``"tools"`` for tool-use requests.
+    """
+
     type: str  # "answer" | "call"
     input: dict[str, Any]
 
@@ -34,6 +43,30 @@ class NextStep:
 
 
 class AgentStep:
+    """Pipeline step that wraps a single Claude conversational agent.
+
+    Maintains a per-run message thread and delegates to the Anthropic
+    Messages API.  Tool-use blocks are surfaced as ``NextStep(type="call")``;
+    plain text is parsed for JSON routing instructions.
+
+    Parameters
+    ----------
+    name : str
+        Identifier used for logging and routing (e.g. ``"router"``).
+    primer : str
+        System prompt sent with every API request.
+    model : str
+        Anthropic model identifier (e.g. ``"claude-sonnet-4-20250514"``).
+    tools : list or None, optional
+        Tool definitions passed to the API.  ``None`` disables tool use.
+    next_agent : str or None, optional
+        Default routing target when the response contains no explicit target.
+    max_tokens : int, optional
+        Maximum completion tokens (default ``4096``).
+    client : anthropic.Anthropic or None, optional
+        Shared API client.  A new one is created when ``None``.
+    """
+
     def __init__(
         self,
         name: str,
@@ -44,6 +77,7 @@ class AgentStep:
         max_tokens: int = 4096,
         client: anthropic.Anthropic | None = None,
     ):
+        """Initialize the agent step and create an empty message thread."""
         self.name = name
         self.primer = primer
         self.model = model
@@ -54,9 +88,24 @@ class AgentStep:
         self._thread: list[dict] = []
 
     def reset(self):
+        """Clear the message thread so the step can be reused for a new run."""
         self._thread.clear()
 
     def call(self, input: dict[str, Any]) -> NextStep:
+        """Execute one API round-trip and return the next routing decision.
+
+        Parameters
+        ----------
+        input : dict[str, Any]
+            Must contain either ``"query"`` (start a new turn) or
+            ``"tool_results"`` (continue after tool execution).
+
+        Returns
+        -------
+        NextStep
+            A routing decision: tool calls to execute, another agent to
+            invoke, a clarification request, or a terminal answer.
+        """
         # Build thread
         if "query" in input:
             self._thread = [{"role": "user", "content": input["query"]}]
@@ -129,6 +178,7 @@ class AgentStep:
         return None
 
     def _handle_decision_json(self, text: str) -> NextStep:
+        """Parse a text response for JSON routing instructions and return a NextStep."""
         # Strip markdown fences if present
         cleaned = text
         if cleaned.startswith("```"):
@@ -169,12 +219,42 @@ class AgentStep:
 
 
 class ToolStep:
+    """Pipeline step that executes an external tool handler.
+
+    Wraps a callable tool handler so it conforms to the same ``call``
+    interface as `AgentStep`, letting the orchestrator treat agents and
+    tools uniformly.
+
+    Parameters
+    ----------
+    name : str
+        Tool name matching the API tool-use block (e.g. ``"get_item_prices"``).
+    handler : Callable
+        Function with signature ``(name, params, settings) -> dict``.
+    settings : dict
+        User settings forwarded to the handler on every call.
+    """
+
     def __init__(self, name: str, handler: Callable, settings: dict):
+        """Store the handler reference and user settings."""
         self.name = name
         self.handler = handler
         self.settings = settings
 
     def call(self, input: dict[str, Any]) -> NextStep:
+        """Run the tool handler and wrap its output in a NextStep.
+
+        Parameters
+        ----------
+        input : dict[str, Any]
+            Tool-specific parameters forwarded to the handler.
+
+        Returns
+        -------
+        NextStep
+            Always ``type="answer"`` with the handler's result dict under
+            ``input["result"]``.
+        """
         try:
             result = self.handler(self.name, input, self.settings)
         except Exception as e:

@@ -1,3 +1,5 @@
+"""poe.ninja API client and tool handlers."""
+
 import httpx
 
 BASE_URL = "https://poe.ninja/api/data"
@@ -123,6 +125,7 @@ MAX_BUILD_META_RESULTS = 15
 
 
 def _fetch(endpoint: str, params: dict) -> dict:
+    """Send a GET request to the poe.ninja API and return the JSON response."""
     with httpx.Client(timeout=10, follow_redirects=True) as client:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
@@ -144,7 +147,7 @@ def _ranked_list(items: list[dict], cap: int) -> list[dict]:
 
 
 def _league_slug(league: str) -> str:
-    """Convert display league name to URL slug (e.g. 'Settlers of Kalguur' -> 'settlers-of-kalguur')."""
+    """Convert a display league name to a lowercase URL slug."""
     return league.lower().replace(" ", "-")
 
 
@@ -165,6 +168,24 @@ def _extract_sparkline(spark_data: dict | None) -> dict | None:
 
 
 def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
+    """Dispatch a poe.ninja tool call and return structured price or meta data.
+
+    Parameters
+    ----------
+    name : str
+        Tool name — one of ``"get_currency_prices"``,
+        ``"get_item_prices"``, or ``"get_build_meta"``.
+    params : dict
+        Tool-specific parameters from the API request.
+    settings : dict
+        User settings used to resolve the default league.
+
+    Returns
+    -------
+    dict
+        Result payload with prices, items, or build meta statistics.
+        Contains an ``"error"`` key on failure.
+    """
     from poe_copilot.context import resolve_league
 
     league = params.get("league") or resolve_league(settings)
