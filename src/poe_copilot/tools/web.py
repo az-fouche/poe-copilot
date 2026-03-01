@@ -1,6 +1,7 @@
-from __future__ import annotations
+"""Web search and page-reading tool handlers."""
 
 import os
+
 import httpx
 from bs4 import BeautifulSoup, Tag
 from ddgs import DDGS
@@ -127,11 +128,7 @@ def _extract_toc(soup: BeautifulSoup) -> list[dict]:
 
 
 def _extract_section(soup: BeautifulSoup, section_query: str) -> str | None:
-    """Extract content under a heading matching section_query (case-insensitive substring).
-
-    Collects all content from the matched heading until the next heading of the same
-    or higher level. Returns None if no matching heading is found.
-    """
+    """Extract text under the first heading matching *section_query*."""
     query_lower = section_query.lower()
 
     # Find the first heading whose text contains the query
@@ -154,9 +151,15 @@ def _extract_section(soup: BeautifulSoup, section_query: str) -> str | None:
             if sibling_level <= target_level:
                 break
             # Sub-heading within the section — include it
-            parts.append(f"\n{'#' * sibling_level} {sibling.get_text(strip=True)}")
+            parts.append(
+                f"\n{'#' * sibling_level} {sibling.get_text(strip=True)}"
+            )
             continue
-        text = sibling.get_text(separator="\n", strip=True) if isinstance(sibling, Tag) else str(sibling).strip()
+        text = (
+            sibling.get_text(separator="\n", strip=True)
+            if isinstance(sibling, Tag)
+            else str(sibling).strip()
+        )
         if text:
             parts.append(text)
 
@@ -174,11 +177,7 @@ def _get_body_text(soup: BeautifulSoup) -> str:
 
 
 def _read_page(url: str, section: str | None = None) -> dict:
-    """Fetch a webpage and return its content.
-
-    Without section: returns page outline (TOC + intro).
-    With section: returns targeted section content.
-    """
+    """Fetch a webpage and return its outline or a targeted section."""
     try:
         with httpx.Client(
             timeout=15,
@@ -195,7 +194,9 @@ def _read_page(url: str, section: str | None = None) -> dict:
             resp.raise_for_status()
 
         soup = BeautifulSoup(resp.text, "html.parser")
-        title = soup.title.string.strip() if soup.title and soup.title.string else ""
+        title = (
+            soup.title.string.strip() if soup.title and soup.title.string else ""
+        )
         _clean_soup(soup)
 
         if section:
@@ -225,7 +226,9 @@ def _read_page(url: str, section: str | None = None) -> dict:
             body = _get_body_text(soup)
             intro = body[:MAX_INTRO_CHARS]
             if len(body) > MAX_INTRO_CHARS:
-                intro += "\n\n[... use section parameter to read specific sections]"
+                intro += (
+                    "\n\n[... use section parameter to read specific sections]"
+                )
 
             return {
                 "url": url,
@@ -241,6 +244,23 @@ def _read_page(url: str, section: str | None = None) -> dict:
 
 
 def handle_web_tool(name: str, params: dict, settings: dict) -> dict:
+    """Dispatch a web tool call and return search results or page content.
+
+    Parameters
+    ----------
+    name : str
+        Tool name — ``"poe_web_search"`` or ``"read_webpage"``.
+    params : dict
+        Tool-specific parameters from the API request.
+    settings : dict
+        User settings (currently unused, reserved for future use).
+
+    Returns
+    -------
+    dict
+        Search results or page content.  Contains an ``"error"`` key
+        on failure.
+    """
     if name == "poe_web_search":
         query = params.get("query", "")
         if not query:

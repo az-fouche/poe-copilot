@@ -1,17 +1,15 @@
-from __future__ import annotations
+"""Context and primer construction for agent system prompts."""
 
 import re
 from datetime import date
-from pathlib import Path
 
-_AGENTS_DIR = Path(__file__).resolve().parent / "agents"
-_TIMELINE_FILE = _AGENTS_DIR / "timeline.md"
+from ..constants import AGENTS_DIR, TIMELINE_FILE
 
 
 def _load_timeline() -> str:
     """Read agents/timeline.md and return its contents, or empty string if missing."""
-    if _TIMELINE_FILE.exists():
-        text = _TIMELINE_FILE.read_text(encoding="utf-8").strip()
+    if TIMELINE_FILE.exists():
+        text = TIMELINE_FILE.read_text(encoding="utf-8").strip()
         if text:
             return text
     return ""
@@ -45,11 +43,7 @@ def _parse_timeline() -> list[tuple[date, str | None, str]]:
 def _annotate_timeline(
     entries: list[tuple[date, str | None, str]], today: date
 ) -> tuple[str, str | None, tuple[str, str, date] | None]:
-    """Annotate timeline entries and derive current/next league.
-
-    Returns (annotated_text, current_league_name, next_league_info).
-    next_league_info is (name, version, date) or None.
-    """
+    """Annotate timeline entries with temporal markers and derive current/next league."""
     annotated_lines: list[str] = []
     current_league: str | None = None
     next_league: tuple[str, str, date] | None = None
@@ -61,11 +55,15 @@ def _annotate_timeline(
                 current_league = league_name
         else:
             # Rewrite past-tense "launched" to future-tense "launches"
-            fixed = raw_line.replace(" launched.", " launches.").replace(" launched ", " launches ")
+            fixed = raw_line.replace(" launched.", " launches.").replace(
+                " launched ", " launches "
+            )
             annotated_lines.append(f"{fixed} \u26a0\ufe0f NOT YET LIVE")
             if league_name and next_league is None:
                 # Extract version string like "3.28"
-                m_ver = re.search(r"(\d+\.\d+)\s+" + re.escape(league_name), raw_line)
+                m_ver = re.search(
+                    r"(\d+\.\d+)\s+" + re.escape(league_name), raw_line
+                )
                 version = m_ver.group(1) if m_ver else ""
                 next_league = (league_name, version, entry_date)
 
@@ -73,10 +71,22 @@ def _annotate_timeline(
 
 
 def resolve_league(settings: dict) -> str:
-    """Resolve the display league name from settings.
+    """Resolve the display league name from user settings.
 
-    - "standard" → "Standard"
-    - "challenge" → current league name from timeline.md, fallback "Standard"
+    Maps the ``"league"`` setting to a display-ready name: ``"standard"``
+    becomes ``"Standard"``, ``"challenge"`` is resolved to the current
+    league name from ``timeline.md`` (falling back to ``"Standard"``).
+
+    Parameters
+    ----------
+    settings : dict
+        User settings containing a ``"league"`` key with value
+        ``"standard"``, ``"challenge"``, or a literal league name.
+
+    Returns
+    -------
+    str
+        Display-ready league name (e.g. ``"Standard"`` or ``"Mirage"``).
     """
     raw = settings.get("league", "standard")
     if raw == "standard":
@@ -89,7 +99,7 @@ def resolve_league(settings: dict) -> str:
                 return current_league
         return "Standard"
     # Legacy: treat any other value as a literal league name
-    return raw
+    return str(raw)
 
 
 IDENTITY = (
@@ -151,7 +161,22 @@ EXP_CONTEXT = {
 
 
 def build_player_context(settings: dict) -> str:
-    """Build the dynamic player profile context appended to every agent primer."""
+    """Build the dynamic player-profile context appended to every agent primer.
+
+    Assembles temporal grounding, game timeline, player profile, league
+    rules, game mode, and communication style into a multi-section
+    markdown string.
+
+    Parameters
+    ----------
+    settings : dict
+        User settings with ``"league"``, ``"mode"``, and ``"experience"`` keys.
+
+    Returns
+    -------
+    str
+        Multi-section markdown context string.
+    """
     league = resolve_league(settings)
     mode = settings.get("mode", "softcore_trade")
     experience = settings.get("experience", "intermediate")
@@ -160,11 +185,15 @@ def build_player_context(settings: dict) -> str:
 
     # Temporal grounding
     today = date.today()
-    parts.append(f"\nToday's date: **{today.strftime('%B %d, %Y').replace(' 0', ' ')}**")
+    parts.append(
+        f"\nToday's date: **{today.strftime('%B %d, %Y').replace(' 0', ' ')}**"
+    )
 
     entries = _parse_timeline()
     if entries:
-        annotated_text, current_league, next_league = _annotate_timeline(entries, today)
+        annotated_text, current_league, next_league = _annotate_timeline(
+            entries, today
+        )
         # Use the derived current league if available, fall back to settings
         if current_league:
             league = current_league
@@ -174,7 +203,8 @@ def build_player_context(settings: dict) -> str:
             "Path of Exile. Your training data about PoE league dates, names, and content "
             "is WRONG and outdated — do NOT use it. When answering ANY question about "
             "past, current, or upcoming leagues, rely ONLY on this timeline. If a league "
-            "is not listed here, you do not know about it — say so and search instead.\n\n" + annotated_text
+            "is not listed here, you do not know about it — say so and search instead.\n\n"
+            + annotated_text
         )
     else:
         current_league = None
@@ -186,10 +216,14 @@ def build_player_context(settings: dict) -> str:
     if next_league:
         name, version, launch_date = next_league
         friendly_date = launch_date.strftime("%B %d, %Y").replace(" 0", " ")
-        parts.append(f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE.")
+        parts.append(
+            f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE."
+        )
     else:
         parts.append("- Next league: not yet announced — search for news.")
-    parts.append(f"- When using poe.ninja tools, ALWAYS default to league: {league}")
+    parts.append(
+        f"- When using poe.ninja tools, ALWAYS default to league: {league}"
+    )
     parts.append(
         "\n### League Rules (NEVER violate these)\n"
         "- Challenge leagues are ALWAYS fresh starts — NO items, currency, or gear "
@@ -208,13 +242,45 @@ def build_player_context(settings: dict) -> str:
 
 
 def load_prompt(name: str) -> str:
-    """Read agents/{name}.md and return its contents."""
-    path = _AGENTS_DIR / f"{name}.md"
+    """Load an agent prompt template from disk.
+
+    Parameters
+    ----------
+    name : str
+        Agent name corresponding to a markdown file in ``agents/``.
+
+    Returns
+    -------
+    str
+        Raw prompt text from ``agents/{name}.md``.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the prompt file does not exist.
+    """
+    path = AGENTS_DIR / f"{name}.md"
     return path.read_text(encoding="utf-8")
 
 
 def build_primer(agent_name: str, settings: dict) -> str:
-    """Compose the full system primer: IDENTITY + agent prompt + player context."""
+    """Compose the full system primer for an agent.
+
+    Concatenates the global identity, the agent-specific prompt template,
+    and the dynamic player context.
+
+    Parameters
+    ----------
+    agent_name : str
+        Agent name used to look up the prompt template.
+    settings : dict
+        User settings forwarded to `build_player_context`.
+
+    Returns
+    -------
+    str
+        Complete system prompt ready for the API.
+    """
     return "\n\n".join(
         [
             IDENTITY,

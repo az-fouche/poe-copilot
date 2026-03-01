@@ -1,8 +1,6 @@
 """Tests for poe_copilot/tools/__init__.py."""
 
-from __future__ import annotations
-
-from poe_copilot.tools import TOOL_DEFINITIONS, _HANDLERS
+from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
 
 
 def test_handlers_cover_all_tool_definitions():

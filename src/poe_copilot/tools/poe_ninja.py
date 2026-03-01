@@ -1,3 +1,5 @@
+"""poe.ninja API client and tool handlers."""
+
 import httpx
 
 BASE_URL = "https://poe.ninja/api/data"
@@ -110,7 +112,9 @@ POE_NINJA_TOOLS = [
                 },
                 "class_filter": {
                     "type": "string",
-                    "description": ("Optional ascendancy name to filter results (e.g. 'Juggernaut', 'Necromancer')."),
+                    "description": (
+                        "Optional ascendancy name to filter results (e.g. 'Juggernaut', 'Necromancer')."
+                    ),
                 },
             },
         },
@@ -123,10 +127,16 @@ MAX_BUILD_META_RESULTS = 15
 
 
 def _fetch(endpoint: str, params: dict) -> dict:
+    """Send a GET request to the poe.ninja API and return the JSON response."""
     with httpx.Client(timeout=10, follow_redirects=True) as client:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
-        return resp.json()
+        data = resp.json()
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Unexpected response format from poe.ninja: {data}"
+            )
+        return data
 
 
 def _ranked_list(items: list[dict], cap: int) -> list[dict]:
@@ -144,7 +154,7 @@ def _ranked_list(items: list[dict], cap: int) -> list[dict]:
 
 
 def _league_slug(league: str) -> str:
-    """Convert display league name to URL slug (e.g. 'Settlers of Kalguur' -> 'settlers-of-kalguur')."""
+    """Convert a display league name to a lowercase URL slug."""
     return league.lower().replace(" ", "-")
 
 
@@ -160,12 +170,32 @@ def _extract_sparkline(spark_data: dict | None) -> dict | None:
     if change is not None:
         result["total_change_pct"] = round(change, 2)
     if points:
-        result["sparkline"] = [round(p, 2) if p is not None else 0.0 for p in points]
+        result["sparkline"] = [
+            round(p, 2) if p is not None else 0.0 for p in points
+        ]
     return result or None
 
 
-def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
-    from poe_copilot.context import resolve_league
+def handle_poe_ninja_tool(name: str, params: dict, settings: dict) -> dict:
+    """Dispatch a poe.ninja tool call and return structured price or meta data.
+
+    Parameters
+    ----------
+    name : str
+        Tool name — one of ``"get_currency_prices"``,
+        ``"get_item_prices"``, or ``"get_build_meta"``.
+    params : dict
+        Tool-specific parameters from the API request.
+    settings : dict
+        User settings used to resolve the default league.
+
+    Returns
+    -------
+    dict
+        Result payload with prices, items, or build meta statistics.
+        Contains an ``"error"`` key on failure.
+    """
+    from poe_copilot.core.context import resolve_league
 
     league = params.get("league") or resolve_league(settings)
     include_trends = params.get("include_trends", False)
@@ -173,7 +203,9 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
     try:
         if name == "get_currency_prices":
             item_type = params["type"]
-            data = _fetch("currencyoverview", {"league": league, "type": item_type})
+            data = _fetch(
+                "currencyoverview", {"league": league, "type": item_type}
+            )
             lines = data.get("lines", [])
             results = []
             for line in lines[:MAX_RESULTS]:
@@ -200,7 +232,11 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
 
             name_filter = params.get("name_filter", "").lower()
             if name_filter:
-                lines = [line for line in lines if name_filter in line.get("name", "").lower()]
+                lines = [
+                    line
+                    for line in lines
+                    if name_filter in line.get("name", "").lower()
+                ]
 
             results = []
             for line in lines[:MAX_RESULTS]:
@@ -247,7 +283,10 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict):
                 skills_raw = [
                     s
                     for s in skills_raw
-                    if any(class_filter in n.get("name", "").lower() for n in s.get("classes", []))
+                    if any(
+                        class_filter in n.get("name", "").lower()
+                        for n in s.get("classes", [])
+                    )
                 ]
             active_skills = _ranked_list(skills_raw, cap)
 

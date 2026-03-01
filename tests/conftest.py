@@ -1,13 +1,10 @@
 """Shared fixtures and mock factories for poe-copilot tests."""
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Settings fixture
@@ -16,7 +13,11 @@ import pytest
 
 @pytest.fixture
 def settings() -> dict:
-    return {"league": "Keepers", "mode": "softcore_trade", "experience": "intermediate"}
+    return {
+        "league": "Keepers",
+        "mode": "softcore_trade",
+        "experience": "intermediate",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -54,14 +55,24 @@ def make_tool_response(tool_calls: list[dict]) -> _Message:
 
     Each dict should have keys: id, name, input.
     """
-    blocks = [_ToolUseBlock(type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]) for tc in tool_calls]
+    blocks = [
+        _ToolUseBlock(
+            type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]
+        )
+        for tc in tool_calls
+    ]
     return _Message(content=blocks, stop_reason="tool_use")
 
 
 def make_mixed_response(text: str, tool_calls: list[dict]) -> _Message:
     """Build a mock Anthropic Message with both text and tool_use blocks."""
     blocks: list[Any] = [_TextBlock(type="text", text=text)]
-    blocks.extend(_ToolUseBlock(type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]) for tc in tool_calls)
+    blocks.extend(
+        _ToolUseBlock(
+            type="tool_use", id=tc["id"], name=tc["name"], input=tc["input"]
+        )
+        for tc in tool_calls
+    )
     return _Message(content=blocks, stop_reason="tool_use")
 
 

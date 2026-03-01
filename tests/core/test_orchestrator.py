@@ -1,19 +1,12 @@
 """Tests for poe_copilot/orchestrator.py — routing, delegation, and budget tests."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock, patch
 
-
-from poe_copilot.agent import AgentStep, NextStep, ToolStep
-from poe_copilot.orchestrator import (
-    ClarificationRequest,
+from poe_copilot.core.agent import AgentStep, NextStep, ToolStep
+from poe_copilot.core.cli import STATUS_LABELS, tool_status_label, truncate
+from poe_copilot.core.orchestrator import (
     Orchestrator,
-    _STATUS_LABELS,
-    _tool_status_label,
-    _truncate,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock registry shared by all tests
@@ -21,12 +14,37 @@ from poe_copilot.orchestrator import (
 
 _MOCK_REGISTRY = {
     "agents": {
-        "router": {"model": "m", "tools": False, "output_format": "decision_json", "max_tokens": 1024},
-        "planner": {"model": "m", "tools": "delegation", "next": "answerer", "max_tokens": 4096},
-        "researcher": {"model": "m", "tools": True, "next": "answerer", "max_tokens": 4096},
-        "build_agent": {"model": "m", "tools": True, "next": "answerer", "max_tokens": 4096},
+        "router": {
+            "model": "m",
+            "tools": False,
+            "output_format": "decision_json",
+            "max_tokens": 1024,
+        },
+        "planner": {
+            "model": "m",
+            "tools": "delegation",
+            "next": "answerer",
+            "max_tokens": 4096,
+        },
+        "researcher": {
+            "model": "m",
+            "tools": True,
+            "next": "answerer",
+            "max_tokens": 4096,
+        },
+        "build_agent": {
+            "model": "m",
+            "tools": True,
+            "next": "answerer",
+            "max_tokens": 4096,
+        },
         "fact_checker": {"model": "m", "tools": False, "max_tokens": 4096},
-        "answerer": {"model": "m", "tools": False, "output_format": "decision_json", "max_tokens": 4096},
+        "answerer": {
+            "model": "m",
+            "tools": False,
+            "output_format": "decision_json",
+            "max_tokens": 4096,
+        },
     },
     "tools": {},
 }
@@ -46,9 +64,11 @@ def _make_orchestrator(settings, agent_responses: dict[str, list] | None = None)
     agent_responses = agent_responses or {}
 
     with (
-        patch("poe_copilot.orchestrator.load_registry") as mock_reg,
-        patch("poe_copilot.orchestrator.build_primer", return_value="primer"),
-        patch("poe_copilot.orchestrator.anthropic.Anthropic"),
+        patch("poe_copilot.core.orchestrator._load_registry") as mock_reg,
+        patch(
+            "poe_copilot.core.orchestrator.build_primer", return_value="primer"
+        ),
+        patch("poe_copilot.core.orchestrator.anthropic.Anthropic"),
     ):
         mock_reg.return_value = _MOCK_REGISTRY
         orch = Orchestrator(settings)
@@ -77,7 +97,7 @@ def test_build_context_empty_history(settings):
     assert "Current user message: hello" in result
 
 
-def test_build_context_truncates_assistant_at_1500(settings):
+def test_build_contexttruncates_assistant_at_1500(settings):
     orch = _make_orchestrator(settings)
     long_content = "a" * 2000
     orch.messages = [
@@ -96,7 +116,7 @@ def test_build_context_truncates_assistant_at_1500(settings):
             break
 
 
-def test_build_context_truncates_user_at_300(settings):
+def test_build_contexttruncates_user_at_300(settings):
     orch = _make_orchestrator(settings)
     long_user = "b" * 500
     orch.messages = [
@@ -153,9 +173,20 @@ def test_run_router_to_researcher_to_answerer(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "researcher", "query": "q"})],
-            "researcher": [NextStep(type="call", input={"target": "answerer", "query": "research done"})],
-            "answerer": [NextStep(type="answer", input={"text": "final answer"})],
+            "router": [
+                NextStep(
+                    type="call", input={"target": "researcher", "query": "q"}
+                )
+            ],
+            "researcher": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "research done"},
+                )
+            ],
+            "answerer": [
+                NextStep(type="answer", input={"text": "final answer"})
+            ],
         },
     )
     result = orch.run("hello")
@@ -173,13 +204,15 @@ def test_run_clarification_flow(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="answer", input={"clarification": clarify_data})],
+            "router": [
+                NextStep(type="answer", input={"clarification": clarify_data})
+            ],
         },
     )
     result = orch.run("hello")
-    assert isinstance(result, ClarificationRequest)
-    assert len(result.questions) == 1
-    assert result.questions[0].question == "Q?"
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert result[0].question == "Q?"
     # User message should have been popped
     assert len(orch.messages) == 0
 
@@ -188,16 +221,28 @@ def test_run_tool_execution_loop(settings):
     tool_call_step = NextStep(
         type="call",
         input={
-            "tools": [{"id": "tu_1", "name": "get_currency_prices", "input": {"type": "Currency"}}],
+            "tools": [
+                {
+                    "id": "tu_1",
+                    "name": "get_currency_prices",
+                    "input": {"type": "Currency"},
+                }
+            ],
             "return_to": "researcher",
         },
     )
-    after_tool_step = NextStep(type="call", input={"target": "answerer", "query": "done"})
+    after_tool_step = NextStep(
+        type="call", input={"target": "answerer", "query": "done"}
+    )
 
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "researcher", "query": "q"})],
+            "router": [
+                NextStep(
+                    type="call", input={"target": "researcher", "query": "q"}
+                )
+            ],
             "researcher": [tool_call_step, after_tool_step],
             "answerer": [NextStep(type="answer", input={"text": "final"})],
         },
@@ -205,7 +250,9 @@ def test_run_tool_execution_loop(settings):
 
     # Mock the tool step
     mock_tool = MagicMock(spec=ToolStep)
-    mock_tool.call.return_value = NextStep(type="answer", input={"result": {"prices": []}})
+    mock_tool.call.return_value = NextStep(
+        type="answer", input={"result": {"prices": []}}
+    )
     orch.steps["get_currency_prices"] = mock_tool
 
     result = orch.run("check prices")
@@ -217,9 +264,19 @@ def test_run_api_cap_forces_answerer(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "researcher", "query": "q"})],
-            "researcher": [NextStep(type="call", input={"target": "answerer", "query": "done"})],
-            "answerer": [NextStep(type="answer", input={"text": "forced answer"})],
+            "router": [
+                NextStep(
+                    type="call", input={"target": "researcher", "query": "q"}
+                )
+            ],
+            "researcher": [
+                NextStep(
+                    type="call", input={"target": "answerer", "query": "done"}
+                )
+            ],
+            "answerer": [
+                NextStep(type="answer", input={"text": "forced answer"})
+            ],
         },
     )
     orch.max_api_calls = 2
@@ -231,7 +288,11 @@ def test_run_circuit_breaker(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "researcher", "query": "q"})],
+            "router": [
+                NextStep(
+                    type="call", input={"target": "researcher", "query": "q"}
+                )
+            ],
         },
     )
     orch.max_api_calls = 1
@@ -240,7 +301,11 @@ def test_run_circuit_breaker(settings):
     mock_answerer = MagicMock(spec=AgentStep)
     mock_answerer.name = "answerer"
     mock_answerer.reset = MagicMock()
-    mock_answerer.call = MagicMock(return_value=NextStep(type="call", input={"target": "researcher", "query": "loop"}))
+    mock_answerer.call = MagicMock(
+        return_value=NextStep(
+            type="call", input={"target": "researcher", "query": "loop"}
+        )
+    )
     orch.steps["answerer"] = mock_answerer
 
     result = orch.run("hello")
@@ -276,8 +341,15 @@ def test_run_level1_router_to_answerer_direct(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "answerer", "query": "Just a greeting"})],
-            "answerer": [NextStep(type="answer", input={"text": "Hey there, exile!"})],
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "Just a greeting"},
+                )
+            ],
+            "answerer": [
+                NextStep(type="answer", input={"text": "Hey there, exile!"})
+            ],
         },
     )
     result = orch.run("hi")
@@ -285,8 +357,12 @@ def test_run_level1_router_to_answerer_direct(settings):
     # Researcher should not have been called
     assert (
         "researcher"
-        not in {name for name, step in orch.steps.items() if isinstance(step, MagicMock) and step.call.called}
-        or not orch.steps.get("researcher", MagicMock()).call.called
+        not in {
+            name
+            for name, step in orch.steps.items()
+            if isinstance(step, MagicMock) and step.call.called
+        }
+        or not orch.steps.get("researcher", MagicMock()).call.called  # type: ignore
     )
 
 
@@ -301,7 +377,13 @@ def test_run_level3_planner_delegation_flow(settings):
     delegation_tool_call = NextStep(
         type="call",
         input={
-            "tools": [{"id": "du_1", "name": "delegate_research", "input": {"task": "look up build meta"}}],
+            "tools": [
+                {
+                    "id": "du_1",
+                    "name": "delegate_research",
+                    "input": {"task": "look up build meta"},
+                }
+            ],
             "return_to": "planner",
         },
     )
@@ -316,11 +398,26 @@ def test_run_level3_planner_delegation_flow(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "planner", "query": "what to play?"})],
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "planner", "query": "what to play?"},
+                )
+            ],
             "planner": [delegation_tool_call, planner_synthesis],
             # researcher is run inside _run_agent_to_completion
-            "researcher": [NextStep(type="call", input={"target": "answerer", "query": "research report here"})],
-            "answerer": [NextStep(type="answer", input={"text": "Play Lightning Arrow!"})],
+            "researcher": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "research report here",
+                    },
+                )
+            ],
+            "answerer": [
+                NextStep(type="answer", input={"text": "Play Lightning Arrow!"})
+            ],
         },
     )
 
@@ -333,7 +430,13 @@ def test_run_level3_planner_multiple_delegations(settings):
     research_call = NextStep(
         type="call",
         input={
-            "tools": [{"id": "du_1", "name": "delegate_research", "input": {"task": "check meta"}}],
+            "tools": [
+                {
+                    "id": "du_1",
+                    "name": "delegate_research",
+                    "input": {"task": "check meta"},
+                }
+            ],
             "return_to": "planner",
         },
     )
@@ -341,7 +444,14 @@ def test_run_level3_planner_multiple_delegations(settings):
         type="call",
         input={
             "tools": [
-                {"id": "du_2", "name": "delegate_build", "input": {"task": "compose LA build", "context": "meta data"}}
+                {
+                    "id": "du_2",
+                    "name": "delegate_build",
+                    "input": {
+                        "task": "compose LA build",
+                        "context": "meta data",
+                    },
+                }
             ],
             "return_to": "planner",
         },
@@ -357,11 +467,30 @@ def test_run_level3_planner_multiple_delegations(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "planner", "query": "recommend a build"})],
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "planner", "query": "recommend a build"},
+                )
+            ],
             "planner": [research_call, build_call, planner_done],
-            "researcher": [NextStep(type="call", input={"target": "answerer", "query": "meta report"})],
-            "build_agent": [NextStep(type="call", input={"target": "answerer", "query": "build report"})],
-            "answerer": [NextStep(type="answer", input={"text": "Here are my recommendations"})],
+            "researcher": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "meta report"},
+                )
+            ],
+            "build_agent": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "build report"},
+                )
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer", input={"text": "Here are my recommendations"}
+                )
+            ],
         },
     )
 
@@ -379,7 +508,12 @@ def test_run_agent_to_completion_intercepts_routing(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "researcher": [NextStep(type="call", input={"target": "answerer", "query": "my research report"})],
+            "researcher": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "my research report"},
+                )
+            ],
         },
     )
     orch._conversation_context = "test context"
@@ -399,7 +533,9 @@ def test_run_agent_to_completion_with_tool_calls(settings):
             "return_to": "researcher",
         },
     )
-    final_step = NextStep(type="call", input={"target": "answerer", "query": "report with data"})
+    final_step = NextStep(
+        type="call", input={"target": "answerer", "query": "report with data"}
+    )
 
     orch = _make_orchestrator(
         settings,
@@ -413,7 +549,9 @@ def test_run_agent_to_completion_with_tool_calls(settings):
 
     # Mock the tool
     mock_tool = MagicMock(spec=ToolStep)
-    mock_tool.call.return_value = NextStep(type="answer", input={"result": {"builds": []}})
+    mock_tool.call.return_value = NextStep(
+        type="answer", input={"result": {"builds": []}}
+    )
     orch.steps["get_build_meta"] = mock_tool
 
     result = orch._run_agent_to_completion("researcher", "check build meta")
@@ -426,7 +564,9 @@ def test_run_agent_to_completion_direct_answer(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "fact_checker": [NextStep(type="answer", input={"text": "Verdict: CLEAN"})],
+            "fact_checker": [
+                NextStep(type="answer", input={"text": "Verdict: CLEAN"})
+            ],
         },
     )
     orch._conversation_context = "test context"
@@ -462,11 +602,15 @@ def test_delegation_budget_exceeded_returns_partial(settings):
     orch._accumulated_research = []
     orch._on_status = None
     orch.max_api_calls = 2
-    orch.api_calls = 1  # only 1 call left — will be used by _call_agent for researcher
+    orch.api_calls = (
+        1  # only 1 call left — will be used by _call_agent for researcher
+    )
 
     # Mock the tool
     mock_tool = MagicMock(spec=ToolStep)
-    mock_tool.call.return_value = NextStep(type="answer", input={"result": {"data": "partial"}})
+    mock_tool.call.return_value = NextStep(
+        type="answer", input={"result": {"data": "partial"}}
+    )
     orch.steps["get_build_meta"] = mock_tool
 
     result = orch._run_agent_to_completion("researcher", "check meta")
@@ -483,14 +627,21 @@ def test_handle_delegation_research(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "researcher": [NextStep(type="call", input={"target": "answerer", "query": "research done"})],
+            "researcher": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "research done"},
+                )
+            ],
         },
     )
     orch._conversation_context = "context"
     orch._accumulated_research = []
     orch._on_status = None
 
-    result = orch._handle_delegation("delegate_research", {"task": "look up meta"})
+    result = orch._handle_delegation(
+        "delegate_research", {"task": "look up meta"}
+    )
     assert result == "research done"
 
 
@@ -499,7 +650,12 @@ def test_handle_delegation_build_with_context(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "build_agent": [NextStep(type="call", input={"target": "answerer", "query": "build report"})],
+            "build_agent": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "build report"},
+                )
+            ],
         },
     )
     orch._conversation_context = "context"
@@ -518,7 +674,9 @@ def test_handle_delegation_fact_check(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "fact_checker": [NextStep(type="answer", input={"text": "Verdict: CAUTION"})],
+            "fact_checker": [
+                NextStep(type="answer", input={"text": "Verdict: CAUTION"})
+            ],
         },
     )
     orch._conversation_context = "context"
@@ -542,8 +700,18 @@ def test_planner_receives_budget_info(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "router": [NextStep(type="call", input={"target": "planner", "query": "complex question"})],
-            "planner": [NextStep(type="call", input={"target": "answerer", "query": "synthesis"})],
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "planner", "query": "complex question"},
+                )
+            ],
+            "planner": [
+                NextStep(
+                    type="call",
+                    input={"target": "answerer", "query": "synthesis"},
+                )
+            ],
             "answerer": [NextStep(type="answer", input={"text": "answer"})],
         },
     )
@@ -553,7 +721,7 @@ def test_planner_receives_budget_info(settings):
 
     # Verify planner was called with budget info in the query
     planner_step = orch.steps["planner"]
-    call_args = planner_step.call.call_args
+    call_args = planner_step.call.call_args  # type: ignore
     query = call_args[0][0]["query"]
     assert "Budget" in query
     assert "API calls remaining" in query
@@ -566,8 +734,8 @@ def test_planner_receives_budget_info(settings):
 
 def test_status_labels_include_new_agents(settings):
     """Status labels include planner and fact_checker."""
-    assert "planner" in _STATUS_LABELS
-    assert "fact_checker" in _STATUS_LABELS
+    assert "planner" in STATUS_LABELS
+    assert "fact_checker" in STATUS_LABELS
 
 
 def test_status_label_delegation_tools(settings):
@@ -576,7 +744,13 @@ def test_status_label_delegation_tools(settings):
     decision = NextStep(
         type="call",
         input={
-            "tools": [{"id": "d1", "name": "delegate_research", "input": {"task": "test"}}],
+            "tools": [
+                {
+                    "id": "d1",
+                    "name": "delegate_research",
+                    "input": {"task": "test"},
+                }
+            ],
             "return_to": "planner",
         },
     )
@@ -596,34 +770,37 @@ def test_max_api_calls_is_25(settings):
 
 
 # ---------------------------------------------------------------------------
-# _truncate
+# truncate
 # ---------------------------------------------------------------------------
 
 
-def test_truncate_short_text():
-    assert _truncate("hello", 50) == "hello"
+def testtruncate_short_text():
+    assert truncate("hello", 50) == "hello"
 
 
-def test_truncate_long_text():
+def testtruncate_long_text():
     long = "a" * 60
-    result = _truncate(long, 50)
+    result = truncate(long, 50)
     assert len(result) == 50
     assert result.endswith("\u2026")
 
 
 # ---------------------------------------------------------------------------
-# _tool_status_label
+# tool_status_label
 # ---------------------------------------------------------------------------
 
 
-def test_tool_status_label_read_webpage():
-    label = _tool_status_label("read_webpage", {"url": "https://maxroll.gg/guides/lightning-arrow-deadeye"})
+def testtool_status_label_read_webpage():
+    label = tool_status_label(
+        "read_webpage",
+        {"url": "https://maxroll.gg/guides/lightning-arrow-deadeye"},
+    )
     assert "maxroll.gg" in label
     assert label.startswith("Reading ")
 
 
-def test_tool_status_label_read_webpage_with_section():
-    label = _tool_status_label(
+def testtool_status_label_read_webpage_with_section():
+    label = tool_status_label(
         "read_webpage",
         {
             "url": "https://maxroll.gg/guides/la-build",
@@ -634,24 +811,28 @@ def test_tool_status_label_read_webpage_with_section():
     assert "maxroll.gg" in label
 
 
-def test_tool_status_label_web_search():
-    label = _tool_status_label("poe_web_search", {"query": "Lightning Arrow build guide"})
+def testtool_status_label_web_search():
+    label = tool_status_label(
+        "poe_web_search", {"query": "Lightning Arrow build guide"}
+    )
     assert label.startswith("Searching: ")
     assert "Lightning Arrow" in label
 
 
-def test_tool_status_label_item_prices_with_filter():
-    label = _tool_status_label("get_item_prices", {"type": "UniqueArmour", "name": "Mageblood"})
+def testtool_status_label_item_prices_with_filter():
+    label = tool_status_label(
+        "get_item_prices", {"type": "UniqueArmour", "name": "Mageblood"}
+    )
     assert '"Mageblood"' in label
 
 
-def test_tool_status_label_build_meta_with_class():
-    label = _tool_status_label("get_build_meta", {"class_filter": "Deadeye"})
+def testtool_status_label_build_meta_with_class():
+    label = tool_status_label("get_build_meta", {"class_filter": "Deadeye"})
     assert "Deadeye" in label
 
 
-def test_tool_status_label_fallback():
-    label = _tool_status_label("get_currency_prices", {})
+def testtool_status_label_fallback():
+    label = tool_status_label("get_currency_prices", {})
     assert label == "Checking currency prices..."
 
 
@@ -664,7 +845,9 @@ def test_force_answer_with_research(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "answerer": [NextStep(type="answer", input={"text": "Synthesized answer"})],
+            "answerer": [
+                NextStep(type="answer", input={"text": "Synthesized answer"})
+            ],
         },
     )
     orch._conversation_context = "How much is a Mageblood?"
@@ -680,7 +863,9 @@ def test_force_answer_with_extra_context(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "answerer": [NextStep(type="answer", input={"text": "Enriched answer"})],
+            "answerer": [
+                NextStep(type="answer", input={"text": "Enriched answer"})
+            ],
         },
     )
     orch._conversation_context = "What build for league start?"
@@ -690,7 +875,7 @@ def test_force_answer_with_extra_context(settings):
     result = orch.force_answer(extra_context="I prefer ranged builds")
     assert result == "Enriched answer"
     # Verify extra context was passed to the answerer
-    call_args = orch.steps["answerer"].call.call_args[0][0]
+    call_args = orch.steps["answerer"].call.call_args[0][0]  # type: ignore
     assert "I prefer ranged builds" in call_args["query"]
 
 
@@ -698,7 +883,9 @@ def test_force_answer_empty_research(settings):
     orch = _make_orchestrator(
         settings,
         agent_responses={
-            "answerer": [NextStep(type="answer", input={"text": "Best effort answer"})],
+            "answerer": [
+                NextStep(type="answer", input={"text": "Best effort answer"})
+            ],
         },
     )
     orch._conversation_context = "Some question"
@@ -708,5 +895,5 @@ def test_force_answer_empty_research(settings):
     result = orch.force_answer()
     assert result == "Best effort answer"
     # Verify it mentions no research collected
-    call_args = orch.steps["answerer"].call.call_args[0][0]
+    call_args = orch.steps["answerer"].call.call_args[0][0]  # type: ignore
     assert "no research collected" in call_args["query"]

@@ -1,13 +1,12 @@
+"""User onboarding flow and settings persistence."""
+
 import json
-from pathlib import Path
 
 from rich.console import Console
 from rich.prompt import Prompt
 
-from .context import resolve_league
-
-SETTINGS_DIR = Path.home() / ".poechat"
-SETTINGS_FILE = SETTINGS_DIR / "settings.usr"
+from .constants import SETTINGS_DIR, SETTINGS_FILE
+from .core.context import resolve_league
 
 MODES = {
     "1": ("softcore_trade", "Softcore Trade"),
@@ -25,27 +24,63 @@ EXPERIENCE = {
 
 
 def load_settings() -> dict | None:
+    """Load user settings from the configuration file.
+
+    Returns
+    -------
+    dict or None
+        Parsed settings dictionary, or ``None`` if the file does not exist.
+    """
     if SETTINGS_FILE.exists():
-        return json.loads(SETTINGS_FILE.read_text())
+        data: dict = json.loads(SETTINGS_FILE.read_text())
+        return data
     return None
 
 
-def save_settings(settings: dict):
+def save_settings(settings: dict) -> None:
+    """Persist user settings to the configuration file.
+
+    Parameters
+    ----------
+    settings : dict
+        Settings dictionary to serialize as JSON.
+    """
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     SETTINGS_FILE.write_text(json.dumps(settings, indent=2))
 
 
 def run_onboarding(existing: dict | None = None) -> dict:
+    """Run the interactive onboarding wizard and save the resulting settings.
+
+    Prompts the user for API key, league preference, game mode, and
+    experience level via Rich console menus.
+
+    Parameters
+    ----------
+    existing : dict or None, optional
+        Previously saved settings used as defaults.
+
+    Returns
+    -------
+    dict
+        Completed settings dictionary (also persisted to disk).
+    """
     console = Console()
 
-    console.print("\n[bold cyan]Welcome to PoE Chat![/bold cyan] Let's set up your profile.\n")
+    console.print(
+        "\n[bold cyan]Welcome to PoE Chat![/bold cyan] Let's set up your profile.\n"
+    )
 
     # --- API Key ---
     default_key = (existing or {}).get("api_key", "")
     if default_key:
         masked = default_key[:10] + "..." + default_key[-4:]
-        console.print(f"[bold]1. Anthropic API key[/bold]  [dim](current: {masked})[/dim]")
-        console.print("   [dim]Press Enter to keep the current key, or paste a new one[/dim]")
+        console.print(
+            f"[bold]1. Anthropic API key[/bold]  [dim](current: {masked})[/dim]"
+        )
+        console.print(
+            "   [dim]Press Enter to keep the current key, or paste a new one[/dim]"
+        )
         console.print("   [dim](input is hidden for security)[/dim]")
         new_key = Prompt.ask("   API key", default="***", password=True)
         api_key = new_key if new_key != "***" else default_key
@@ -73,7 +108,9 @@ def run_onboarding(existing: dict | None = None) -> dict:
     console.print("\n[bold]4. How experienced are you with PoE?[/bold]")
     for key, (_, label) in EXPERIENCE.items():
         console.print(f"   [{key}] {label}")
-    exp_key = Prompt.ask("   Choice", choices=list(EXPERIENCE.keys()), default="3")
+    exp_key = Prompt.ask(
+        "   Choice", choices=list(EXPERIENCE.keys()), default="3"
+    )
     exp_id, exp_label = EXPERIENCE[exp_key]
 
     settings = {

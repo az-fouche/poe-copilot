@@ -1,7 +1,5 @@
 """Tests for poe_copilot/tools/web.py — 16 tests."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock, patch
 
 import httpx
@@ -16,7 +14,6 @@ from poe_copilot.tools.web import (
     handle_web_tool,
 )
 
-
 # ── _search ───────────────────────────────────────────────────────────────
 
 
@@ -25,7 +22,9 @@ from poe_copilot.tools.web import (
 @patch("poe_copilot.tools.web.os.dup")
 @patch("poe_copilot.tools.web.os.open", return_value=99)
 @patch("poe_copilot.tools.web.DDGS")
-def test_search_prepends_poe(mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close):
+def test_search_prepends_poe(
+    mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close
+):
     ctx = MagicMock()
     ctx.__enter__ = MagicMock(return_value=ctx)
     ctx.__exit__ = MagicMock(return_value=False)
@@ -44,7 +43,9 @@ def test_search_prepends_poe(mock_ddgs, mock_open, mock_dup, mock_dup2, mock_clo
 @patch("poe_copilot.tools.web.os.dup")
 @patch("poe_copilot.tools.web.os.open", return_value=99)
 @patch("poe_copilot.tools.web.DDGS")
-def test_search_no_prepend_if_poe_present(mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close):
+def test_search_no_prepend_if_poe_present(
+    mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close
+):
     ctx = MagicMock()
     ctx.__enter__ = MagicMock(return_value=ctx)
     ctx.__exit__ = MagicMock(return_value=False)
@@ -62,7 +63,9 @@ def test_search_no_prepend_if_poe_present(mock_ddgs, mock_open, mock_dup, mock_d
 @patch("poe_copilot.tools.web.os.dup")
 @patch("poe_copilot.tools.web.os.open", return_value=99)
 @patch("poe_copilot.tools.web.DDGS")
-def test_search_returns_formatted_results(mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close):
+def test_search_returns_formatted_results(
+    mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close
+):
     ctx = MagicMock()
     ctx.__enter__ = MagicMock(return_value=ctx)
     ctx.__exit__ = MagicMock(return_value=False)
@@ -79,7 +82,9 @@ def test_search_returns_formatted_results(mock_ddgs, mock_open, mock_dup, mock_d
 @patch("poe_copilot.tools.web.os.dup")
 @patch("poe_copilot.tools.web.os.open", return_value=99)
 @patch("poe_copilot.tools.web.DDGS")
-def test_search_exception_returns_error(mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close):
+def test_search_exception_returns_error(
+    mock_ddgs, mock_open, mock_dup, mock_dup2, mock_close
+):
     mock_ddgs.side_effect = RuntimeError("timeout")
 
     results = _search("poe test")
@@ -206,7 +211,9 @@ def test_read_page_http_error(mock_client_cls):
     ctx = MagicMock()
     ctx.__enter__ = MagicMock(return_value=ctx)
     ctx.__exit__ = MagicMock(return_value=False)
-    ctx.get.side_effect = httpx.HTTPStatusError("Forbidden", request=MagicMock(), response=resp)
+    ctx.get.side_effect = httpx.HTTPStatusError(
+        "Forbidden", request=MagicMock(), response=resp
+    )
     mock_client_cls.return_value = ctx
 
     result = _read_page("http://x.com")
