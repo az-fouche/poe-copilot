@@ -12,25 +12,7 @@ from .backend import ContentBlock, ToolUseBlock
 
 
 def _serialize_content(content: Any) -> Any:
-    """Convert assistant content blocks to Anthropic-compatible dicts.
-
-    When ``AgentStep`` appends ``response.content`` (a list of our
-    dataclasses) to the thread, subsequent API calls need those blocks
-    as plain dicts so the Anthropic SDK can serialize them.
-
-    Parameters
-    ----------
-    content : Any
-        The ``content`` value from an assistant message dict.  May be a
-        list of ``str`` / ``ToolUseBlock`` / raw dicts, or a non-list
-        value that is returned unchanged.
-
-    Returns
-    -------
-    Any
-        A list of Anthropic-compatible dicts, or the original value
-        when *content* is not a list.
-    """
+    """Convert assistant content blocks to Anthropic-compatible dicts."""
     if not isinstance(content, list):
         return content
 

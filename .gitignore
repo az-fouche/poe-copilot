@@ -7,3 +7,4 @@ dist/
 logs/
 uv.lock
 .claude/
+CLAUDE.md

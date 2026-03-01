@@ -29,11 +29,6 @@ class ToolUseBlock:
 
 
 ContentBlock = str | ToolUseBlock
-"""Union of possible content blocks returned by ``LLMBackend.complete``.
-
-Plain ``str`` represents text output; ``ToolUseBlock`` represents a
-tool-call request.
-"""
 
 
 class LLMBackend(Protocol):
