@@ -1,22 +1,19 @@
 """Centralized CLI utilities — spinners, logging, prompts, and status labels."""
 
-from __future__ import annotations
-
 import logging
 import time
+from collections.abc import Generator
 from datetime import datetime
-from typing import TYPE_CHECKING, Callable
+from typing import Any, Callable
 
 from InquirerPy import inquirer
-from rich.console import Console
+from rich.console import Console, ConsoleOptions
 from rich.live import Live
 from rich.prompt import Prompt
 from rich.spinner import Spinner
 
 from poe_copilot.constants import LOGS_DIR
-
-if TYPE_CHECKING:
-    from poe_copilot.core.orchestrator import ClarifyingQuestion
+from poe_copilot.core.agent import ClarifyingQuestion
 
 logger = logging.getLogger(__name__)
 
@@ -97,13 +94,13 @@ class TimedSpinner:
         (default ``"Working..."``).
     """
 
-    def __init__(self, text="Working..."):
+    def __init__(self, text: str = "Working...") -> None:
         """Initialize the spinner with the given status text."""
         self._spinner = Spinner("dots")
         self._text = text
         self._start = time.monotonic()
 
-    def update(self, text):
+    def update(self, text: str) -> None:
         """Replace the current status message.
 
         Parameters
@@ -113,7 +110,9 @@ class TimedSpinner:
         """
         self._text = text
 
-    def __rich_console__(self, console, options):
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> Generator[Any, None, None]:
         """Yield renderables for the Rich Live display.
 
         Parameters
@@ -140,7 +139,7 @@ class TimedSpinner:
 # ── Logging ───────────────────────────────────────────────────────────────
 
 
-def setup_logging():
+def setup_logging() -> None:
     """Configure file-based logging for the current conversation session.
 
     Creates a timestamped log file under the ``logs/`` directory at the

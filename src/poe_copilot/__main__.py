@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+from typing import Callable
 
 from rich.console import Console
 from rich.live import Live
@@ -10,6 +11,7 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 
 from .core import Orchestrator, resolve_league
+from .core.agent import ClarifyingQuestion
 from .core.cli import (
     TimedSpinner,
     ask_clarifying_questions,
@@ -21,7 +23,7 @@ from .onboarding import load_settings, run_onboarding
 logger = logging.getLogger(__name__)
 
 
-def main():
+def main() -> None:
     """Run the interactive PoE Chat REPL.
 
     Handles onboarding, settings loading, and the main input loop
@@ -82,7 +84,7 @@ def main():
 
         try:
 
-            def show_message(text: str):
+            def show_message(text: str) -> None:
                 console.print(f"\n[dim]{text}[/dim]\n")
 
             # First pass — may return clarification or answer
@@ -90,13 +92,15 @@ def main():
             try:
                 with Live(spinner, console=console, transient=True):
 
-                    def update_status(text: str):
+                    def update_status(text: str) -> None:
                         spinner.update(text)
 
-                    result = orchestrator.run(
-                        user_input,
-                        on_status=update_status,
-                        on_message=show_message,
+                    result: str | list[ClarifyingQuestion] | None = (
+                        orchestrator.run(
+                            user_input,
+                            on_status=update_status,
+                            on_message=show_message,
+                        )
                     )
             except KeyboardInterrupt:
                 result = handle_interrupt(
@@ -127,7 +131,9 @@ def main():
                 try:
                     with Live(spinner, console=console, transient=True):
 
-                        def _make_status_cb(s):
+                        def _make_status_cb(
+                            s: TimedSpinner,
+                        ) -> Callable[[str], None]:
                             return lambda text: s.update(text)
 
                         result = orchestrator.run(

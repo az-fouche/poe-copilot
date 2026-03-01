@@ -1,7 +1,5 @@
 """Tests for poe_copilot/orchestrator.py — routing, delegation, and budget tests."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock, patch
 
 from poe_copilot.core.agent import AgentStep, NextStep, ToolStep

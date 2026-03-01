@@ -1,7 +1,5 @@
 """Context and primer construction for agent system prompts."""
 
-from __future__ import annotations
-
 import re
 from datetime import date
 
@@ -101,7 +99,7 @@ def resolve_league(settings: dict) -> str:
                 return current_league
         return "Standard"
     # Legacy: treat any other value as a literal league name
-    return raw
+    return str(raw)
 
 
 IDENTITY = (

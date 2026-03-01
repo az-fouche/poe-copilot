@@ -32,11 +32,12 @@ def load_settings() -> dict | None:
         Parsed settings dictionary, or ``None`` if the file does not exist.
     """
     if SETTINGS_FILE.exists():
-        return json.loads(SETTINGS_FILE.read_text())
+        data: dict = json.loads(SETTINGS_FILE.read_text())
+        return data
     return None
 
 
-def save_settings(settings: dict):
+def save_settings(settings: dict) -> None:
     """Persist user settings to the configuration file.
 
     Parameters

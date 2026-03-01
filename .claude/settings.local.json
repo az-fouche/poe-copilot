@@ -12,7 +12,8 @@
       "Bash(wc:*)",
       "Bash(rm:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(uv sync:*)"
     ]
   }
 }

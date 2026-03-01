@@ -1,10 +1,7 @@
 """Central orchestrator that routes queries through the agent pipeline."""
 
-from __future__ import annotations
-
 import json
 import logging
-from dataclasses import dataclass
 from typing import Callable, Optional
 
 import anthropic
@@ -12,28 +9,12 @@ import anthropic
 from poe_copilot.constants import REGISTRY_FILE
 from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
 
-from .agent import AgentStep, NextStep, ToolStep
+from .agent import AgentStep, ClarifyingQuestion, NextStep, ToolStep
 from .cli import STATUS_LABELS, tool_status_label
 from .context import build_primer
 from .delegation import DELEGATION_TOOL_NAMES, DELEGATION_TOOLS
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ClarifyingQuestion:
-    """A question posed to the user before routing to a specialist agent.
-
-    Attributes
-    ----------
-    question : str
-        The clarifying question text.
-    options : list[str]
-        Suggested answer choices presented to the user.
-    """
-
-    question: str
-    options: list[str]
 
 
 class Orchestrator:
@@ -136,7 +117,7 @@ class Orchestrator:
                 + query
             )
         self._conversation_context = query
-        self._accumulated_research: list[str] = []
+        self._accumulated_research = []
         self._on_status = on_status
         logger.info("CALL %s <- query", start_agent)
         decision = self._call_agent(start_agent, {"query": query})
@@ -147,9 +128,14 @@ class Orchestrator:
             list(decision.input.keys()),
         )
 
-        decision = self._step_loop(
+        step_result = self._step_loop(
             decision, on_status=on_status, on_message=on_message
         )
+        if not isinstance(step_result, NextStep):
+            raise ValueError(
+                f"Expected NextStep from step loop, got: {step_result}"
+            )
+        decision = step_result
 
         # Terminal answer handling
         if "clarification" in decision.input:  # type: ignore
@@ -170,7 +156,7 @@ class Orchestrator:
                 self.messages.pop()  # remove user message — will re-send with answers
                 return self._parse_clarification(decision.input["clarification"])  # type: ignore
 
-        answer_text = decision.input["text"]  # type: ignore
+        answer_text: str = decision.input["text"]  # type: ignore
         logger.info("ANSWER: %s", answer_text[:500])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
@@ -191,7 +177,7 @@ class Orchestrator:
             The generated answer text.
         """
         result = self._force_answerer(extra_context)
-        answer_text = result.input["text"]
+        answer_text: str = result.input["text"]
         logger.info("FORCE_ANSWER: %s", answer_text[:500])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
@@ -340,7 +326,7 @@ class Orchestrator:
                         "DELEGATION_INTERCEPT -> %s (capturing output)",
                         inp["target"],
                     )
-                    return inp["query"]
+                    return str(inp["query"])
 
                 query = inp["query"]
                 target = inp["target"]
@@ -371,7 +357,7 @@ class Orchestrator:
                 )
 
         if intercept_routing:
-            return decision.input.get("text", str(decision.input))
+            return str(decision.input.get("text", str(decision.input)))
         return decision
 
     def _execute_tool_calls(self, tool_calls: list[dict]) -> list[dict]:
@@ -415,7 +401,7 @@ class Orchestrator:
                 f"## Research to Verify\n{tool_input['research']}"
             )
             result = self._call_agent("fact_checker", {"query": query})
-            return result.input.get("text", str(result.input))
+            return str(result.input.get("text", str(result.input)))
         else:
             return f"Unknown delegation tool: {tool_name}"
 
@@ -487,4 +473,7 @@ class Orchestrator:
 
 def _load_registry() -> dict:
     """Load the agent registry from the bundled JSON configuration."""
-    return json.loads(REGISTRY_FILE.read_text(encoding="utf-8"))
+    data = json.loads(REGISTRY_FILE.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"Unexpected registry format: {data}")
+    return data

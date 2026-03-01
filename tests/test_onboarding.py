@@ -1,7 +1,5 @@
 """Tests for poe_copilot/onboarding.py — 4 tests."""
 
-from __future__ import annotations
-
 import json
 from unittest.mock import patch
 
