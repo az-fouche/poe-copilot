@@ -3,7 +3,13 @@
 import re
 from datetime import date
 
-from ..constants import AGENTS_DIR, TIMELINE_FILE, Experience, GameMode, League
+from poe_copilot.constants import (
+    AGENTS_DIR,
+    TIMELINE_FILE,
+    Experience,
+    GameMode,
+    League,
+)
 
 
 def _load_timeline() -> str:
