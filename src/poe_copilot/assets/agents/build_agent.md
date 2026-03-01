@@ -90,6 +90,7 @@ If you find yourself writing specifics about any of the above without having cal
 ## Tool Usage
 
 You have the same tools as the researcher:
+- **query_game_data** — local knowledge base for ascendancy passives, currency mechanics, gem info, and patch changes. Use before web search.
 - **get_build_meta** — ladder data, ascendancy popularity, top skills, popular uniques
 - **get_currency_prices / get_item_prices** — prices and economy data
 - **poe_web_search** — web search for guides, wiki pages, community discussion
