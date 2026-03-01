@@ -29,6 +29,13 @@ target-version = "py311"
 src = ["src"]
 line-length = 81
 
+[tool.ruff.lint]
+select = ["D"]
+ignore = ["D1"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
 [tool.mypy]
 python_version = "3.11"
 warn_return_any = true
