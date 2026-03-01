@@ -5,21 +5,21 @@ import json
 from rich.console import Console
 from rich.prompt import Prompt
 
-from .constants import SETTINGS_DIR, SETTINGS_FILE
+from .constants import SETTINGS_DIR, SETTINGS_FILE, Experience, GameMode, League
 from .core.context import resolve_league
 
 MODES = {
-    "1": ("softcore_trade", "Softcore Trade"),
-    "2": ("hardcore_trade", "Hardcore Trade"),
-    "3": ("ssf", "Solo Self-Found (SSF)"),
-    "4": ("hc_ssf", "Hardcore SSF"),
+    "1": (GameMode.SOFTCORE_TRADE, "Softcore Trade"),
+    "2": (GameMode.HARDCORE_TRADE, "Hardcore Trade"),
+    "3": (GameMode.SSF, "Solo Self-Found (SSF)"),
+    "4": (GameMode.HC_SSF, "Hardcore SSF"),
 }
 
 EXPERIENCE = {
-    "1": ("newbie", "New player — still learning the ropes"),
-    "2": ("casual", "Casual — know the basics, played a few leagues"),
-    "3": ("intermediate", "Intermediate — comfortable with endgame"),
-    "4": ("veteran", "Veteran — deep knowledge, min-maxing"),
+    "1": (Experience.NEWBIE, "New player — still learning the ropes"),
+    "2": (Experience.CASUAL, "Casual — know the basics, played a few leagues"),
+    "3": (Experience.INTERMEDIATE, "Intermediate — comfortable with endgame"),
+    "4": (Experience.VETERAN, "Veteran — deep knowledge, min-maxing"),
 }
 
 
@@ -95,7 +95,7 @@ def run_onboarding(existing: dict | None = None) -> dict:
     console.print("   [1] League (current challenge league)")
     console.print("   [2] Standard")
     league_key = Prompt.ask("   Choice [1/2]", choices=["1", "2"], default="1")
-    league = "challenge" if league_key == "1" else "standard"
+    league = League.CHALLENGE if league_key == "1" else League.STANDARD
 
     # --- Mode ---
     console.print("\n[bold]3. Game mode?[/bold]")

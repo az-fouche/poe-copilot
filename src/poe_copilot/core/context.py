@@ -3,7 +3,7 @@
 import re
 from datetime import date
 
-from ..constants import AGENTS_DIR, TIMELINE_FILE
+from ..constants import AGENTS_DIR, TIMELINE_FILE, Experience, GameMode, League
 
 
 def _load_timeline() -> str:
@@ -88,10 +88,10 @@ def resolve_league(settings: dict) -> str:
     str
         Display-ready league name (e.g. ``"Standard"`` or ``"Mirage"``).
     """
-    raw = settings.get("league", "standard")
-    if raw == "standard":
+    raw = settings.get("league", League.STANDARD)
+    if raw == League.STANDARD:
         return "Standard"
-    if raw == "challenge":
+    if raw == League.CHALLENGE:
         entries = _parse_timeline()
         if entries:
             _, current_league, _ = _annotate_timeline(entries, date.today())
@@ -108,22 +108,22 @@ IDENTITY = (
 )
 
 MODE_CONTEXT = {
-    "softcore_trade": (
+    GameMode.SOFTCORE_TRADE: (
         "The player is in softcore trade league. Deaths are not permanent. "
         "They can trade freely, so gear recommendations can include trade purchases."
     ),
-    "hardcore_trade": (
+    GameMode.HARDCORE_TRADE: (
         "The player is in HARDCORE trade league. Death is permanent (character moves "
         "to Standard). ALWAYS prioritize survivability and defensive layers. Avoid "
         "recommending glass cannon builds. EHP and max hit taken matter enormously."
     ),
-    "ssf": (
+    GameMode.SSF: (
         "The player is in SSF (Solo Self-Found). They CANNOT trade with other players. "
         "All gear must be self-found or crafted. Avoid recommending builds that depend "
         "on specific unique items unless they are common drops or target-farmable. "
         "Favour builds that function well with rare gear and deterministic crafting."
     ),
-    "hc_ssf": (
+    GameMode.HC_SSF: (
         "The player is in HARDCORE SSF — the hardest mode. No trading AND permadeath. "
         "Only recommend extremely tanky, self-sufficient builds. Prioritize defenses "
         "above all else. Gear must be self-crafted. Avoid anything reliant on rare "
@@ -132,25 +132,25 @@ MODE_CONTEXT = {
 }
 
 EXP_CONTEXT = {
-    "newbie": (
+    Experience.NEWBIE: (
         "The player is NEW to Path of Exile. Explain concepts clearly and avoid "
         "unexplained jargon. When using PoE-specific terms, briefly define them. "
         "Suggest straightforward, beginner-friendly builds. Walk them through "
         "gearing and progression step by step. When they ask vague questions, "
         "guide them with 1-2 clarifying questions before diving in."
     ),
-    "casual": (
+    Experience.CASUAL: (
         "The player is a casual player with basic knowledge. They know core mechanics "
         "but may not be familiar with advanced crafting, atlas strategies, or "
         "min-maxing. Use common PoE terminology but clarify niche concepts. "
         "Ask for context when it would change your recommendation, but keep it brief."
     ),
-    "intermediate": (
+    Experience.INTERMEDIATE: (
         "The player is an intermediate player comfortable with endgame content. "
         "You can use standard PoE terminology freely. They understand atlas "
         "strategies, crafting basics, and build planning."
     ),
-    "veteran": (
+    Experience.VETERAN: (
         "The player is a veteran min-maxer. Skip basic explanations. Focus on "
         "optimization, edge cases, niche interactions, and advanced strategies. "
         "They appreciate precise numbers, breakpoints, and deep mechanical analysis. "
@@ -178,8 +178,8 @@ def build_player_context(settings: dict) -> str:
         Multi-section markdown context string.
     """
     league = resolve_league(settings)
-    mode = settings.get("mode", "softcore_trade")
-    experience = settings.get("experience", "intermediate")
+    mode = settings.get("mode", GameMode.SOFTCORE_TRADE)
+    experience = settings.get("experience", Experience.INTERMEDIATE)
 
     parts: list[str] = []
 

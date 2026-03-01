@@ -1,6 +1,27 @@
-"""Centralized path constants for the poe_copilot package."""
+"""Centralized path and enum constants for the poe_copilot package."""
 
+from enum import StrEnum
 from pathlib import Path
+
+
+class League(StrEnum):
+    CHALLENGE = "challenge"
+    STANDARD = "standard"
+
+
+class GameMode(StrEnum):
+    SOFTCORE_TRADE = "softcore_trade"
+    HARDCORE_TRADE = "hardcore_trade"
+    SSF = "ssf"
+    HC_SSF = "hc_ssf"
+
+
+class Experience(StrEnum):
+    NEWBIE = "newbie"
+    CASUAL = "casual"
+    INTERMEDIATE = "intermediate"
+    VETERAN = "veteran"
+
 
 # Package root: src/poe_copilot/
 PACKAGE_DIR = Path(__file__).resolve().parent
