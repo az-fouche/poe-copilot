@@ -1,43 +1,20 @@
 {
   "agents": {
     "router": {
-      "description": "Classifies user questions and decides what research is needed before answering",
+      "description": "Classifies user questions and routes to analyst or answerer",
       "model": "claude-haiku-4-5-20251001",
       "primer": "router.md",
       "max_tokens": 1024,
       "tools": false,
       "output_format": "decision_json"
     },
-    "planner": {
-      "description": "Decomposes complex questions and delegates to specialist agents",
+    "analyst": {
+      "description": "Researches, analyzes, and composes expert reports using all data tools",
       "model": "claude-sonnet-4-20250514",
-      "primer": "planner.md",
-      "max_tokens": 4096,
-      "tools": "delegation",
-      "next": "answerer"
-    },
-    "researcher": {
-      "description": "Investigates questions using tools and produces research reports",
-      "model": "claude-sonnet-4-20250514",
-      "primer": "researcher.md",
+      "primer": "analyst.md",
       "max_tokens": 4096,
       "tools": true,
       "next": "answerer"
-    },
-    "build_agent": {
-      "description": "Composes PoE builds from guides, meta data, and mechanics knowledge",
-      "model": "claude-sonnet-4-20250514",
-      "primer": "build_agent.md",
-      "max_tokens": 4096,
-      "tools": true,
-      "next": "answerer"
-    },
-    "fact_checker": {
-      "description": "Verifies research accuracy — catches gem confusion, outdated info, contradictions",
-      "model": "claude-sonnet-4-20250514",
-      "primer": "fact_checker.md",
-      "max_tokens": 4096,
-      "tools": false
     },
     "answerer": {
       "description": "Formats research into clear, well-cited responses for the player",
@@ -53,6 +30,7 @@
     "get_item_prices": "Item prices from poe.ninja (supports include_trends)",
     "get_build_meta": "Build meta statistics from poe.ninja (ascendancies, skills, uniques)",
     "poe_web_search": "Search the web for PoE information",
-    "read_webpage": "Fetch and read webpage content"
+    "read_webpage": "Fetch and read webpage content",
+    "query_game_data": "Query the PoE knowledge base (currencies, ascendancies, game mechanics, gems, unique items, passives tree, patch notes) — supports multi-query"
   }
 }

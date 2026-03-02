@@ -1,10 +1,15 @@
-"""Tests for poe_copilot/onboarding.py — 4 tests."""
+"""Tests for poe_copilot/onboarding.py."""
 
 import json
 from unittest.mock import patch
 
 from poe_copilot.core.agent import NextStep
-from poe_copilot.onboarding import load_settings, run_onboarding, save_settings
+from poe_copilot.onboarding import (
+    load_settings,
+    needs_setup,
+    run_onboarding,
+    save_settings,
+)
 
 # ── load_settings ─────────────────────────────────────────────────────────
 
@@ -57,9 +62,10 @@ def test_save_settings_creates_file(mock_dir, mock_file):
 def test_run_onboarding_collects_api_key(
     mock_console_cls, mock_ask, mock_save, mock_resolve
 ):
-    # Prompt.ask is called 4 times: api_key, league_choice, mode, experience
-    mock_ask.side_effect = ["sk-ant-test-key", "1", "1", "3"]
+    # backend, api_key, league, mode, experience
+    mock_ask.side_effect = ["1", "sk-ant-test-key", "1", "1", "3"]
     result = run_onboarding()
+    assert result["backend"] == "anthropic"
     assert result["api_key"] == "sk-ant-test-key"
     assert result["league"] == "challenge"
     assert result["mode"] == "softcore_trade"
@@ -75,15 +81,65 @@ def test_run_onboarding_preserves_existing_key(
     mock_console_cls, mock_ask, mock_save, mock_resolve
 ):
     existing = {
+        "backend": "anthropic",
         "api_key": "sk-ant-existing",
         "league": "standard",
         "mode": "ssf",
         "experience": "veteran",
     }
-    # When existing key is present, pressing Enter keeps it (returned as default)
-    mock_ask.side_effect = ["sk-ant-existing", "2", "1", "3"]
+    # backend, api_key (keep), league, mode, experience
+    mock_ask.side_effect = ["1", "sk-ant-existing", "2", "1", "3"]
     result = run_onboarding(existing=existing)
     assert result["api_key"] == "sk-ant-existing"
+
+
+@patch("poe_copilot.onboarding.resolve_league", return_value="Mirage")
+@patch("poe_copilot.onboarding.save_settings")
+@patch("poe_copilot.onboarding.Prompt.ask")
+@patch("poe_copilot.onboarding.Console")
+def test_run_onboarding_ollama_backend(
+    mock_console_cls, mock_ask, mock_save, mock_resolve
+):
+    # backend=2 (Ollama), url, model, league, mode, experience
+    mock_ask.side_effect = [
+        "2",
+        "http://myhost:11434",
+        "qwen2.5:14b",
+        "1",
+        "1",
+        "3",
+    ]
+    result = run_onboarding()
+    assert result["backend"] == "ollama"
+    assert result["ollama_url"] == "http://myhost:11434"
+    assert result["ollama_model"] == "qwen2.5:14b"
+    assert "api_key" not in result
+    mock_save.assert_called_once_with(result)
+
+
+# ── needs_setup ──────────────────────────────────────────────────────────
+
+
+def test_needs_setup_true_when_no_settings():
+    assert needs_setup(None) is True
+
+
+def test_needs_setup_true_when_ollama_missing_model():
+    assert needs_setup({"backend": "ollama"}) is True
+
+
+def test_needs_setup_false_when_ollama_has_model():
+    settings = {"backend": "ollama", "ollama_model": "qwen2.5:14b"}
+    assert needs_setup(settings) is False
+
+
+def test_needs_setup_true_when_anthropic_missing_key():
+    assert needs_setup({"backend": "anthropic"}) is True
+
+
+def test_needs_setup_false_when_anthropic_has_key():
+    settings = {"backend": "anthropic", "api_key": "sk-test"}
+    assert needs_setup(settings) is False
 
 
 # ── _status_label (orchestrator) ──────────────────────────────────────────
@@ -93,7 +149,7 @@ def test_status_label_target():
     from poe_copilot.core.orchestrator import Orchestrator
 
     # Test the _status_label method using a minimal instance
-    ns = NextStep(type="call", input={"target": "researcher"})
+    ns = NextStep(type="call", input={"target": "analyst"})
     # Call the method directly — it doesn't need self state
     label = Orchestrator._status_label(None, ns)
     assert label == "Researching..."

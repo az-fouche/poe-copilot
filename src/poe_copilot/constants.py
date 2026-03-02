@@ -16,6 +16,11 @@ class GameMode(StrEnum):
     HC_SSF = "hc_ssf"
 
 
+class Backend(StrEnum):
+    ANTHROPIC = "anthropic"
+    OLLAMA = "ollama"
+
+
 class Experience(StrEnum):
     NEWBIE = "newbie"
     CASUAL = "casual"
@@ -29,6 +34,8 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 # Asset directories
 ASSETS_DIR = PACKAGE_DIR / "assets"
 AGENTS_DIR = ASSETS_DIR / "agents"
+LOADOUTS_DIR = AGENTS_DIR / "loadouts"
+DATABASE_DIR = ASSETS_DIR / "database"
 
 # Specific asset files
 TIMELINE_FILE = ASSETS_DIR / "timeline.md"

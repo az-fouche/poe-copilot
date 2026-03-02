@@ -5,6 +5,7 @@ from datetime import date
 
 from poe_copilot.constants import (
     AGENTS_DIR,
+    LOADOUTS_DIR,
     TIMELINE_FILE,
     Experience,
     GameMode,
@@ -245,6 +246,25 @@ def build_player_context(settings: dict) -> str:
     parts.append(f"\n### Communication Style\n{EXP_CONTEXT.get(experience, '')}")
 
     return "\n".join(parts)
+
+
+def load_loadout(name: str) -> str:
+    """Load a loadout prompt fragment by name.
+
+    Parameters
+    ----------
+    name : str
+        Loadout name corresponding to a file in ``agents/loadouts/``.
+
+    Returns
+    -------
+    str
+        Loadout prompt text, or empty string if the file is missing.
+    """
+    path = LOADOUTS_DIR / f"{name}.md"
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8")
 
 
 def load_prompt(name: str) -> str:
