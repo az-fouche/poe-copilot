@@ -146,17 +146,24 @@ def setup_logging() -> None:
     log_file = LOGS_DIR / f"{timestamp}.log"
 
     handler = logging.FileHandler(log_file, encoding="utf-8")
-    handler.setLevel(logging.INFO) #Changed to INFO from DEBUG
+    handler.setLevel(logging.INFO)  # Changed to INFO from DEBUG
     handler.setFormatter(
         logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
     )
 
     root = logging.getLogger()
-    root.setLevel(logging.INFO) #Changed to INFO from DEBUG
+    root.setLevel(logging.INFO)  # Changed to INFO from DEBUG
     root.addHandler(handler)
 
     # Reduce noise from common third-party libraries
-    for noisy in ["urllib3", "httpx", "openai", "anthropic", "rich", "InquirerPy"]:
+    for noisy in [
+        "urllib3",
+        "httpx",
+        "openai",
+        "anthropic",
+        "rich",
+        "InquirerPy",
+    ]:
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
     logger.info("Session started — log file: %s", log_file)
