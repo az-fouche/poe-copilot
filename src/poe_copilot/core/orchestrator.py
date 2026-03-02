@@ -198,7 +198,9 @@ class Orchestrator:
             self._on_status("Writing response...")
 
         research_summary = (
-            "\n".join(self._accumulated_research[-MAX_RESEARCH_ITEMS_FOR_ANSWER:])
+            "\n".join(
+                self._accumulated_research[-MAX_RESEARCH_ITEMS_FOR_ANSWER:]
+            )
             if self._accumulated_research
             else "(no research collected)"
         )
@@ -310,7 +312,9 @@ class Orchestrator:
                     logger.warning(
                         "Budget exceeded during delegation, returning partial results"
                     )
-                    partial = "\n".join(r["content"][:MAX_PARTIAL_RESULT_CHARS] for r in results)
+                    partial = "\n".join(
+                        r["content"][:MAX_PARTIAL_RESULT_CHARS] for r in results
+                    )
                     return f"(partial results — budget exceeded)\n{partial}"
 
                 if on_status:
@@ -446,7 +450,11 @@ class Orchestrator:
                         text_parts.append(block.text)  # type: ignore
                 content = " ".join(text_parts)
             if content and isinstance(content, str):
-                limit = ASSISTANT_MESSAGE_CHAR_LIMIT if role == "assistant" else USER_MESSAGE_CHAR_LIMIT
+                limit = (
+                    ASSISTANT_MESSAGE_CHAR_LIMIT
+                    if role == "assistant"
+                    else USER_MESSAGE_CHAR_LIMIT
+                )
                 context_parts.append(f"{role}: {content[:limit]}")
 
         context_str = (

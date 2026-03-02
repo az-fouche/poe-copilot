@@ -134,7 +134,9 @@ MAX_BUILD_META_RESULTS = POE_NINJA_MAX_BUILD_META_RESULTS
 
 def _fetch(endpoint: str, params: dict) -> dict:
     """Send a GET request to the poe.ninja API and return the JSON response."""
-    with httpx.Client(timeout=POE_NINJA_TIMEOUT, follow_redirects=True) as client:
+    with httpx.Client(
+        timeout=POE_NINJA_TIMEOUT, follow_redirects=True
+    ) as client:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
         data = resp.json()
