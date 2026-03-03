@@ -1,3 +1,8 @@
+## Build Research Rules
+
+- **Mandatory `get_build_meta` call**: Every build recommendation MUST start with a `get_build_meta` call. No exceptions — do not skip this even if you think you know the meta.
+- **Batch your first round**: For build queries, your first response should batch at least: `get_build_meta` + `query_game_data` (patch notes for the skill) + `poe_web_search` (build guide). These are independent — send them all at once.
+
 ## Build Research Patterns
 
 ### Build Recommendations ("what should I play?", "league starter?")
@@ -43,37 +48,19 @@ Use when composing builds from scratch or filling gaps in a curated guide.
 - **Mid mapping (T6-T11):** 6-link, upgrade weapon/key gear, complete uber lab
 - **Endgame (T14+):** final gear upgrades, atlas specialization, boss prep
 
-## Build Output Format
+## Build Report Sections
 
-For build composition reports, additionally include:
+For build composition reports, include the following data. Use the XML tags so the answerer can parse your report — but focus on content, not layout.
 
-<build_identity>
-- **Skill:** [FULL gem name including transfigured suffix]
-- **Ascendancy:** [class → ascendancy]
-- **Damage type:** [primary type + conversion]
-- **Playstyle:** [brief description]
-- **Budget:** [league start / budget / mid-investment / high-investment]
-- **Confidence:** [High (guide-backed) | Medium (known, untested combo) | Low (theoretical)]
-</build_identity>
+- **`<build_identity>`** — FULL gem name (including transfigured suffix), class → ascendancy, damage type + conversion, playstyle, budget tier, confidence level (high = guide-backed, medium = known untested combo, low = theoretical)
+- **`<gem_links>`** — main 6-link setup and key secondary setups (auras, movement, guard, utility)
+- **`<gear_progression>`** — key gear milestones from league start through endgame
+- **`<ascendancy_nodes>`** — lab node pick order (normal → cruel → merciless → uber) with justification for priority
+- **`<passive_tree>`** — key keystones with rationale, priority notables, stat scaling priorities
+- **`<gear_plan>`** — for each build-relevant slot: league-start option, upgrade target, required affixes (e.g. "+1 fire gems", "fire DoT multi"). Only cover slots where specific affixes matter. List key uniques with when to acquire them.
 
-<gem_links>
-### 6-Link (Main Skill)
-[Skill] — [Support 1] — [Support 2] — [Support 3] — [Support 4] — [Support 5]
-
-### Key Secondary Setups
-- Aura(s): [list]
-- Movement: [skill + support]
-- Guard: [guard skill setup]
-- Utility: [curses, totems, etc.]
-</gem_links>
-
-<gear_progression>
-### League Start / Acts
-- Key items and priority
-
-### Early Mapping
-- Upgrade targets
-
-### Endgame
-- BiS or aspirational gear
-</gear_progression>
+### Transfigured Gem Check
+Before finalizing the build report, verify every gem name that contains "of [Modifier]":
+- Confirm the EXACT full name appears in your source data (patch notes, ladder, guide)
+- If sources only reference the base gem (e.g. "Penance Brand"), do NOT assume the same applies to the transfigured variant (e.g. "Penance Brand of Dissipation")
+- If no specific data exists for the transfigured variant, note this gap explicitly

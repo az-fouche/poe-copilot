@@ -28,6 +28,16 @@ Match effort to complexity:
 - **Moderate** (build advice, strategy): 3-5 tool calls
 - **Complex** (build comparison, multi-faceted analysis): 5-8 tool calls
 
+**Batch independent tool calls.** When you need multiple pieces of data that don't depend on each other, request ALL of them in a single response. The system supports multiple `tool_use` blocks per message — use it.
+
+Example — a build-composition query needs three things upfront:
+```
+1. query_game_data(queries=["Penance Brand of Dissipation"], category="patch_notes")
+2. get_build_meta(class_filter="Inquisitor")
+3. poe_web_search("Penance Brand of Dissipation build guide 3.28 maxroll")
+```
+None of these depend on each other → request all three in ONE message. Do NOT call them one at a time waiting for results between each.
+
 Stop when you have enough. If follow-up results repeat what you already found, you're done.
 
 ### Phase 3: Analyze (after tool results)
@@ -66,6 +76,14 @@ When a skill from ladder data has a transfigured name ("[Skill] of [Modifier]"),
 - If patch notes only mention the base gem, the change applies ONLY to the base gem — do NOT attribute it to the transfigured version
 - If both are mentioned, report each separately — they may have opposite changes
 - Always use the FULL gem name (e.g. "Penance Brand of Dissipation", not "Penance Brand")
+
+**Common failure — do NOT repeat this:**
+> Patch notes say: "Penance Brand: base damage increased by 40%."
+> Ladder data shows: top Inquisitors use "Penance Brand of Dissipation."
+> WRONG conclusion: "Penance Brand of Dissipation got a 40% damage buff!"
+> CORRECT: The buff applies to base Penance Brand ONLY. Penance Brand of Dissipation is a DIFFERENT skill — check if it has its own patch note entry.
+
+**Pre-report scan:** Before finalizing your report, scan every gem name you mention. If any gem has "of [Modifier]" in its name, confirm the EXACT full name appears in your source data. If you only found references to the base gem, do NOT transfer those findings to the transfigured variant.
 
 ### Staleness Check [WARNING]
 - Build guides citing old league names without noting they may be outdated

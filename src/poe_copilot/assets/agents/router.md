@@ -62,6 +62,12 @@ If the context is too thin, return action `"clarify"` with 1-2 targeted question
 - "Should I play LA Deadeye or Boneshatter Jugg for league start?" → needs research → **route** (analyst, loadout: builds)
 - "What unique helmet gives +% to str, dex and int?" → needs lookup → **route** (analyst, loadout: null)
 
+## League Context Inference
+
+The player profile includes the current date and the league timeline. When today's date is within 7 days before an upcoming league launch, assume that build queries, league-start questions, and meta questions refer to the **upcoming league** unless the player explicitly names a different league. Include the upcoming league name in `enriched_query` so the analyst has the right context.
+
+Example: if today is 2026-03-03 and 3.28 Mirage launches 2026-03-06, a question like "what's a good league starter?" means "what's a good league starter for 3.28 Mirage?"
+
 ## Output Format
 
 Return ONLY valid JSON, no markdown fences, no extra text:
