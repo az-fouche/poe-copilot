@@ -5,11 +5,9 @@ import os
 import sys
 import tomllib
 from pathlib import Path
-from typing import Callable
 
 import anthropic
 from rich.console import Console
-from rich.live import Live
 from rich.markdown import Markdown
 from rich.prompt import Prompt
 
@@ -20,10 +18,11 @@ from .constants import Backend
 from .core import Orchestrator, resolve_league
 from .core.agent import ClarifyingQuestion
 from .core.cli import (
-    TimedSpinner,
     ask_clarifying_questions,
+    check_esc,
     handle_interrupt,
     setup_logging,
+    tool_status_label,
 )
 from .onboarding import load_settings, needs_setup, run_onboarding
 
@@ -86,7 +85,10 @@ def main() -> None:
     console.print(
         "Type [bold]/quit[/bold] to exit, [bold]/clear[/bold] to clear history, [bold]/setup[/bold] to reconfigure"
     )
-    console.print("Press [bold]Ctrl+C[/bold] to interrupt and take control\n")
+    console.print(
+        "Press [bold]ESC[/bold] or [bold]Ctrl+C[/bold]"
+        " to interrupt and take control\n"
+    )
 
     orchestrator = Orchestrator(
         settings=settings,
@@ -127,21 +129,26 @@ def main() -> None:
             def show_message(text: str) -> None:
                 console.print(f"\n[dim]{text}[/dim]\n")
 
+            def on_status(text: str) -> None:
+                console.print(f"[dim]{text}[/dim]")
+
+            def on_tool_start(name: str, tool_input: dict) -> None:
+                label = tool_status_label(name, tool_input)
+                console.print(f"  [dim]\u2022 {label}[/dim]", end="")
+
+            def on_tool_end() -> None:
+                console.print(" [green]\u2713[/green]")
+
             # First pass — may return clarification or answer
-            spinner = TimedSpinner("Analyzing your question...")
             try:
-                with Live(spinner, console=console, transient=True):
-
-                    def update_status(text: str) -> None:
-                        spinner.update(text)
-
-                    result: str | list[ClarifyingQuestion] | None = (
-                        orchestrator.run(
-                            user_input,
-                            on_status=update_status,
-                            on_message=show_message,
-                        )
-                    )
+                result: str | list[ClarifyingQuestion] | None = orchestrator.run(
+                    user_input,
+                    on_status=on_status,
+                    on_message=show_message,
+                    on_tool_start=on_tool_start,
+                    on_tool_end=on_tool_end,
+                    check_interrupt=check_esc,
+                )
             except KeyboardInterrupt:
                 result = handle_interrupt(
                     console,
@@ -167,22 +174,17 @@ def main() -> None:
                 clarification_round += 1
                 answers_text = ask_clarifying_questions(console, result)
                 enriched_input = f"{user_input}\n\n(My answers: {answers_text})"
-                spinner = TimedSpinner("Researching...")
                 try:
-                    with Live(spinner, console=console, transient=True):
-
-                        def _make_status_cb(
-                            s: TimedSpinner,
-                        ) -> Callable[[str], None]:
-                            return lambda text: s.update(text)
-
-                        result = orchestrator.run(
-                            enriched_input,
-                            on_status=_make_status_cb(spinner),
-                            on_message=show_message,
-                            start_agent="router",
-                            clarification_round=clarification_round,
-                        )
+                    result = orchestrator.run(
+                        enriched_input,
+                        on_status=on_status,
+                        on_message=show_message,
+                        on_tool_start=on_tool_start,
+                        on_tool_end=on_tool_end,
+                        check_interrupt=check_esc,
+                        start_agent="router",
+                        clarification_round=clarification_round,
+                    )
                 except KeyboardInterrupt:
                     result = handle_interrupt(
                         console,

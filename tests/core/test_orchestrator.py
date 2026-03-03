@@ -553,7 +553,7 @@ def test_status_label_for_tool_call(settings):
         },
     )
     label = orch._status_label(decision)
-    assert label == "Checking build meta..."
+    assert label == "Checking build meta"
 
 
 # ---------------------------------------------------------------------------

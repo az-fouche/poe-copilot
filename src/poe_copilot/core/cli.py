@@ -1,6 +1,7 @@
 """Centralized CLI utilities — spinners, logging, prompts, and status labels."""
 
 import logging
+import os
 import time
 from collections.abc import Generator
 from datetime import datetime
@@ -63,14 +64,36 @@ def tool_status_label(name: str, tool_input: dict) -> str:
 
     if name == "get_build_meta":
         class_filter = tool_input.get("class_filter", "")
+        league = tool_input.get("league", "")
+        if class_filter and league:
+            return f"Checking {class_filter} builds ({league})"
         if class_filter:
-            return f"Checking {class_filter} build meta..."
-        return "Checking build meta..."
+            return f"Checking {class_filter} builds"
+        if league:
+            return f"Checking build meta ({league})"
+        return "Checking build meta"
 
     if name == "get_currency_prices":
         return "Checking currency prices..."
 
+    if name == "query_game_data":
+        queries = tool_input.get("queries", [])
+        if queries:
+            return f"Querying game data: {truncate(', '.join(queries), 40)}"
+        return "Querying game data..."
+
     return f"Using {name}..."
+
+
+def check_esc() -> bool:
+    """Non-blocking ESC key detection (Windows only, no-op elsewhere)."""
+    if os.name != "nt":
+        return False
+    import msvcrt
+
+    if msvcrt.kbhit() and msvcrt.getch() == b"\x1b":
+        return True
+    return False
 
 
 # ── TimedSpinner ──────────────────────────────────────────────────────────

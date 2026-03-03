@@ -36,6 +36,9 @@ class Orchestrator:
         self.max_api_calls = 25
         self._conversation_context: str = ""
         self._on_status: Optional[Callable[[str], None]] = None
+        self._on_tool_start: Optional[Callable[[str, dict], None]] = None
+        self._on_tool_end: Optional[Callable[[], None]] = None
+        self._check_interrupt: Optional[Callable[[], bool]] = None
 
         registry = _load_registry()
 
@@ -72,6 +75,9 @@ class Orchestrator:
         user_message: str,
         on_status: Optional[Callable[[str], None]] = None,
         on_message: Optional[Callable[[str], None]] = None,
+        on_tool_start: Optional[Callable[[str, dict], None]] = None,
+        on_tool_end: Optional[Callable[[], None]] = None,
+        check_interrupt: Optional[Callable[[], bool]] = None,
         start_agent: str = "router",
         clarification_round: int = 0,
     ) -> str | list[ClarifyingQuestion]:
@@ -82,9 +88,17 @@ class Orchestrator:
         user_message : str
             The user's input text.
         on_status : callable or None, optional
-            Callback invoked with spinner-label strings during processing.
+            Callback invoked with status-label strings during processing.
         on_message : callable or None, optional
             Callback invoked with intermediate user-facing messages.
+        on_tool_start : callable or None, optional
+            Callback invoked with ``(tool_name, tool_input)`` before
+            each tool execution.
+        on_tool_end : callable or None, optional
+            Callback invoked after each tool execution completes.
+        check_interrupt : callable or None, optional
+            Polled each loop iteration; raises ``KeyboardInterrupt``
+            when it returns ``True``.
         start_agent : str, optional
             Name of the entry-point agent (default ``"router"``).
         clarification_round : int, optional
@@ -100,6 +114,12 @@ class Orchestrator:
         self.messages.append({"role": "user", "content": user_message})
         self.api_calls = 0
 
+        # Store all callbacks on self for use by helper methods
+        self._on_status = on_status
+        self._on_tool_start = on_tool_start
+        self._on_tool_end = on_tool_end
+        self._check_interrupt = check_interrupt
+
         # Reset all agent threads
         for step in self.steps.values():
             if isinstance(step, AgentStep):
@@ -113,7 +133,6 @@ class Orchestrator:
                 "Classify and route to the appropriate agent.\n\n" + query
             )
         self._conversation_context = query
-        self._on_status = on_status
         logger.info("CALL %s <- query", start_agent)
         decision = self._call_agent(start_agent, {"query": query})
         logger.info(
@@ -123,9 +142,7 @@ class Orchestrator:
             list(decision.input.keys()),
         )
 
-        decision = self._step_loop(
-            decision, on_status=on_status, on_message=on_message
-        )
+        decision = self._step_loop(decision, on_message=on_message)
 
         # Terminal answer handling
         if "clarification" in decision.input:
@@ -251,25 +268,28 @@ class Orchestrator:
         self,
         decision: NextStep,
         *,
-        on_status: Optional[Callable[[str], None]] = None,
         on_message: Optional[Callable[[str], None]] = None,
     ) -> NextStep:
         """Execute the decision-tool-route loop until a terminal answer."""
         max_analyst_routes = 2  # initial + 1 re-route
         analyst_routes = 0
         while decision.type != "answer":
-            if decision.input.get("user_msg") and on_message:
+            if self._check_interrupt and self._check_interrupt():
+                raise KeyboardInterrupt
+            has_user_msg = bool(decision.input.get("user_msg"))
+            if has_user_msg and on_message:
                 on_message(decision.input["user_msg"])
-            if on_status:
-                on_status(self._status_label(decision))
+            # Only show generic status when routing to a target
+            # with no user_msg — tool bullets are self-explanatory
+            if not has_user_msg and "target" in decision.input:
+                if self._on_status:
+                    self._on_status(self._status_label(decision))
 
             inp = decision.input
 
             if "tools" in inp:
                 results = self._execute_tool_calls(inp["tools"])
 
-                if on_status:
-                    on_status("Analyzing results...")
                 logger.info(
                     "CALL %s <- tool_results (%d)",
                     inp["return_to"],
@@ -326,8 +346,10 @@ class Orchestrator:
         """Execute tool calls and serialize results."""
         results = []
         for tc in tool_calls:
-            if self._on_status:
-                self._on_status(tool_status_label(tc["name"], tc["input"]))
+            if self._check_interrupt and self._check_interrupt():
+                raise KeyboardInterrupt
+            if self._on_tool_start:
+                self._on_tool_start(tc["name"], tc["input"])
             logger.info("TOOL %s input=%s", tc["name"], tc["input"])
             tool_result = self.steps[tc["name"]].call(tc["input"])
             result_content = (
@@ -341,6 +363,8 @@ class Orchestrator:
                 len(result_content),
             )
             results.append({"tool_use_id": tc["id"], "content": result_content})
+            if self._on_tool_end:
+                self._on_tool_end()
         return results
 
     def _build_context(self, user_message: str) -> str:

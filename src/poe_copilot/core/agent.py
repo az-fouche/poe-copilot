@@ -162,16 +162,19 @@ class AgentStep:
                 self.name,
                 [t.name for t in tool_calls],
             )
-            return NextStep(
-                type="call",
-                input={
-                    "tools": [
-                        {"id": t.id, "name": t.name, "input": t.input}
-                        for t in tool_calls
-                    ],
-                    "return_to": self.name,
-                },
-            )
+            # Extract any accompanying text for user-facing status
+            text_parts = [b for b in blocks if isinstance(b, str)]
+            text = "\n".join(text_parts).strip()
+            inp: dict[str, Any] = {
+                "tools": [
+                    {"id": t.id, "name": t.name, "input": t.input}
+                    for t in tool_calls
+                ],
+                "return_to": self.name,
+            }
+            if text:
+                inp["user_msg"] = text
+            return NextStep(type="call", input=inp)
 
         # Text response
         text_parts = [b for b in blocks if isinstance(b, str)]
