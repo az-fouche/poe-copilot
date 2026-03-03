@@ -2,13 +2,17 @@
 
 import logging
 import os
+import random
 import sys
 import tomllib
 from pathlib import Path
+from typing import Any
 
 import anthropic
 from rich.console import Console
+from rich.live import Live
 from rich.markdown import Markdown
+from rich.padding import Padding
 from rich.prompt import Prompt
 
 from .backends.anthropic import AnthropicBackend
@@ -18,6 +22,8 @@ from .constants import Backend
 from .core import Orchestrator, resolve_league
 from .core.agent import ClarifyingQuestion
 from .core.cli import (
+    POE_SPINNER_LABELS,
+    TimedSpinner,
     ask_clarifying_questions,
     check_esc,
     handle_interrupt,
@@ -53,6 +59,48 @@ def _build_backend(settings: dict) -> LLMBackend:
     return AnthropicBackend(anthropic.Anthropic(api_key=settings["api_key"]))
 
 
+def _run_with_spinner(
+    console: Console,
+    orchestrator: Orchestrator,
+    user_input: str,
+    **kwargs: Any,
+) -> str | list[ClarifyingQuestion] | None:
+    """Run the orchestrator with an animated POE spinner."""
+    spinner = TimedSpinner(random.choice(POE_SPINNER_LABELS))
+    padded = Padding(spinner, (2, 0, 0, 0))
+    current_tool_label = ""
+
+    with Live(padded, console=console, transient=True):
+
+        def on_status(text: str) -> None:
+            console.print(f"[dim]{text}[/dim]")
+            spinner.update(random.choice(POE_SPINNER_LABELS))
+
+        def on_tool_start(name: str, tool_input: dict) -> None:
+            nonlocal current_tool_label
+            current_tool_label = tool_status_label(name, tool_input)
+            spinner.update(random.choice(POE_SPINNER_LABELS))
+
+        def on_tool_end() -> None:
+            console.print(
+                f"  [dim]\u2022 {current_tool_label}[/dim] [green]\u2713[/green]"
+            )
+            spinner.update(random.choice(POE_SPINNER_LABELS))
+
+        def show_message(text: str) -> None:
+            console.print(f"\n[dim]{text}[/dim]\n")
+
+        return orchestrator.run(
+            user_input,
+            on_status=on_status,
+            on_message=show_message,
+            on_tool_start=on_tool_start,
+            on_tool_end=on_tool_end,
+            check_interrupt=check_esc,
+            **kwargs,
+        )
+
+
 def main() -> None:
     """Run the interactive PoE Chat REPL.
 
@@ -77,13 +125,16 @@ def main() -> None:
     logger.info("Settings: %s", settings)
     league_display = resolve_league(settings)
     console.print(
-        "\n[bold cyan]PoE Chat[/bold cyan] — your Path of Exile companion"
+        "\n[bold cyan]PoE Chat[/bold cyan] \u2014 your Path of Exile companion"
     )
     console.print(
-        f"[dim]{league_display} · {settings['mode']} · {settings['experience']}[/dim]"
+        f"[dim]{league_display} \u00b7 {settings['mode']}"
+        f" \u00b7 {settings['experience']}[/dim]"
     )
     console.print(
-        "Type [bold]/quit[/bold] to exit, [bold]/clear[/bold] to clear history, [bold]/setup[/bold] to reconfigure"
+        "Type [bold]/quit[/bold] to exit,"
+        " [bold]/clear[/bold] to clear history,"
+        " [bold]/setup[/bold] to reconfigure"
     )
     console.print(
         "Press [bold]ESC[/bold] or [bold]Ctrl+C[/bold]"
@@ -125,29 +176,10 @@ def main() -> None:
         console.print()
 
         try:
-
-            def show_message(text: str) -> None:
-                console.print(f"\n[dim]{text}[/dim]\n")
-
-            def on_status(text: str) -> None:
-                console.print(f"[dim]{text}[/dim]")
-
-            def on_tool_start(name: str, tool_input: dict) -> None:
-                label = tool_status_label(name, tool_input)
-                console.print(f"  [dim]\u2022 {label}[/dim]", end="")
-
-            def on_tool_end() -> None:
-                console.print(" [green]\u2713[/green]")
-
             # First pass — may return clarification or answer
             try:
-                result: str | list[ClarifyingQuestion] | None = orchestrator.run(
-                    user_input,
-                    on_status=on_status,
-                    on_message=show_message,
-                    on_tool_start=on_tool_start,
-                    on_tool_end=on_tool_end,
-                    check_interrupt=check_esc,
+                result: str | list[ClarifyingQuestion] | None = (
+                    _run_with_spinner(console, orchestrator, user_input)
                 )
             except KeyboardInterrupt:
                 result = handle_interrupt(
@@ -175,13 +207,10 @@ def main() -> None:
                 answers_text = ask_clarifying_questions(console, result)
                 enriched_input = f"{user_input}\n\n(My answers: {answers_text})"
                 try:
-                    result = orchestrator.run(
+                    result = _run_with_spinner(
+                        console,
+                        orchestrator,
                         enriched_input,
-                        on_status=on_status,
-                        on_message=show_message,
-                        on_tool_start=on_tool_start,
-                        on_tool_end=on_tool_end,
-                        check_interrupt=check_esc,
                         start_agent="router",
                         clarification_round=clarification_round,
                     )
@@ -208,7 +237,8 @@ def main() -> None:
             elif result is not None:
                 # Shouldn't happen, but handle gracefully
                 console.print(
-                    "\n[dim]Could not generate a response. Please try again.[/dim]\n"
+                    "\n[dim]Could not generate a response."
+                    " Please try again.[/dim]\n"
                 )
 
         except Exception as e:

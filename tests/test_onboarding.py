@@ -95,12 +95,13 @@ def test_run_onboarding_preserves_existing_key(
 
 @patch("poe_copilot.onboarding.resolve_league", return_value="Mirage")
 @patch("poe_copilot.onboarding.save_settings")
+@patch("poe_copilot.onboarding.list_models", return_value=[])
 @patch("poe_copilot.onboarding.Prompt.ask")
 @patch("poe_copilot.onboarding.Console")
-def test_run_onboarding_ollama_backend(
-    mock_console_cls, mock_ask, mock_save, mock_resolve
+def test_run_onboarding_ollama_fallback_when_no_models(
+    mock_console_cls, mock_ask, mock_list, mock_save, mock_resolve
 ):
-    # backend=2 (Ollama), url, model, league, mode, experience
+    # backend=2, url, model (manual), league, mode, experience
     mock_ask.side_effect = [
         "2",
         "http://myhost:11434",
@@ -114,6 +115,32 @@ def test_run_onboarding_ollama_backend(
     assert result["ollama_url"] == "http://myhost:11434"
     assert result["ollama_model"] == "qwen2.5:14b"
     assert "api_key" not in result
+    mock_save.assert_called_once_with(result)
+
+
+@patch("poe_copilot.onboarding.resolve_league", return_value="Mirage")
+@patch("poe_copilot.onboarding.save_settings")
+@patch(
+    "poe_copilot.onboarding.list_models",
+    return_value=["llama3:8b", "qwen2.5:14b"],
+)
+@patch("poe_copilot.onboarding.Prompt.ask")
+@patch("poe_copilot.onboarding.Console")
+def test_run_onboarding_ollama_picks_from_detected_models(
+    mock_console_cls, mock_ask, mock_list, mock_save, mock_resolve
+):
+    # backend=2, url, model choice "2" (qwen2.5:14b), league, mode, exp
+    mock_ask.side_effect = [
+        "2",
+        "http://localhost:11434",
+        "2",
+        "1",
+        "1",
+        "3",
+    ]
+    result = run_onboarding()
+    assert result["backend"] == "ollama"
+    assert result["ollama_model"] == "qwen2.5:14b"
     mock_save.assert_called_once_with(result)
 
 

@@ -51,16 +51,30 @@ A typical question costs a few cents; complex multi-agent queries (build plans, 
 
 ### Ollama (local)
 
-Run locally for free using [Ollama](https://ollama.com). 16GB VRAM recommended for 14B models.
+Run locally for free using [Ollama](https://ollama.com).
 
 ```bash
-# Install from https://ollama.com/download, then:
-ollama pull qwen2.5:14b    # download a model (~9 GB)
+# 1. Install from https://ollama.com/download, then:
 ollama serve               # start the server (often auto-starts on install)
+
+# 2. Pull a model (see table below), e.g.:
+ollama pull qwen3:14b
+
+# 3. Connect poechat:
 poechat --setup            # select Ollama as your backend
 ```
 
-Quality varies — smaller local models may struggle with complex multi-step queries and tool use.
+#### Recommended models by GPU
+
+| GPU tier | VRAM | Model | Size | Speed | Notes |
+|----------|------|-------|------|-------|-------|
+| xx70 (12 GB) | 12 GB | `qwen3:8b` | ~5 GB | ~80 tok/s | Best fit; leaves room for context |
+| xx80 (16 GB) | 16 GB | `qwen3:14b` | ~12 GB | ~62 tok/s | Best balance of quality and speed |
+| xx90 (24 GB) | 24 GB | `qwen3:32b` | ~20 GB | ~40 tok/s | Strongest local option for tool use |
+
+> **Tip:** Tool calling requires at least 14B+ models for reliability. Smaller models tend to produce malformed tool calls.
+
+Quality varies — smaller local models may struggle with complex multi-step queries and tool use. `qwen3:14b` is the sweet spot for 16 GB setups.
 
 ## Commands
 

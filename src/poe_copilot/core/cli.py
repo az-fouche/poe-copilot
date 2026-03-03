@@ -13,12 +13,18 @@ from rich.live import Live
 from rich.prompt import Prompt
 from rich.spinner import Spinner
 
-from poe_copilot.constants import LOGS_DIR
+from poe_copilot.constants import LOGS_DIR, SPINNER_LABELS_FILE
 from poe_copilot.core.agent import ClarifyingQuestion
 
 logger = logging.getLogger(__name__)
 
 # ── Constants ─────────────────────────────────────────────────────────────
+
+POE_SPINNER_LABELS: list[str] = [
+    f"{w}..."
+    for line in SPINNER_LABELS_FILE.read_text().splitlines()
+    if (w := line.strip())
+]
 
 # Friendly spinner labels for agents and delegation tools
 STATUS_LABELS: dict[str, str] = {
@@ -92,7 +98,7 @@ def check_esc() -> bool:
         return False
     import msvcrt
 
-    if msvcrt.kbhit() and msvcrt.getch() == b"\x1b":
+    if msvcrt.kbhit() and msvcrt.getch() == b"\x1b":  # type: ignore[attr-defined]
         return True
     return False
 

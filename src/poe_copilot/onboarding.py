@@ -13,6 +13,7 @@ from .constants import (
     GameMode,
     League,
 )
+from .backends.ollama import list_models
 from .core.context import resolve_league
 
 MODES = {
@@ -107,13 +108,36 @@ def _ask_ollama_config(
     default_url = (existing or {}).get("ollama_url", "http://localhost:11434")
     console.print("\n[bold]2. Ollama server URL[/bold]")
     ollama_url = Prompt.ask("   URL", default=default_url)
+
     default_model = (existing or {}).get("ollama_model", "")
-    console.print("\n[bold]   Model name[/bold]")
-    console.print("   [dim]e.g. qwen2.5:14b, llama3:8b[/dim]")
-    ollama_model = Prompt.ask(
-        "   Model",
-        default=default_model or "qwen2.5:14b",
-    )
+    models = list_models(ollama_url)
+
+    if models:
+        console.print("\n[bold]   Model[/bold]")
+        for i, name in enumerate(models, 1):
+            console.print(f"   [{i}] {name}")
+        choices = [str(i) for i in range(1, len(models) + 1)]
+        # Pre-select the previously chosen model if it's in the list
+        default_choice = "1"
+        if default_model in models:
+            default_choice = str(models.index(default_model) + 1)
+        pick = Prompt.ask(
+            "   Choice",
+            choices=choices,
+            default=default_choice,
+        )
+        ollama_model = models[int(pick) - 1]
+    else:
+        console.print(
+            f"\n[yellow]   Could not fetch models from {ollama_url}[/yellow]"
+        )
+        console.print("\n[bold]   Model name[/bold]")
+        console.print("   [dim]e.g. qwen2.5:14b, llama3:8b[/dim]")
+        ollama_model = Prompt.ask(
+            "   Model",
+            default=default_model or "qwen2.5:14b",
+        )
+
     return ollama_url, ollama_model
 
 

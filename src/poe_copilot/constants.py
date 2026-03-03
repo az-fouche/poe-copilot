@@ -42,6 +42,7 @@ TIMELINE_FILE = ASSETS_DIR / "timeline.md"
 REGISTRY_FILE = ASSETS_DIR / "registry.json"
 IDENTITY_FILE = AGENTS_DIR / "identity.md"
 PLAYER_CONTEXT_FILE = ASSETS_DIR / "player_context.md"
+SPINNER_LABELS_FILE = ASSETS_DIR / "spinner_labels.txt"
 
 # A league becomes "the" league this many days before launch
 PRE_LAUNCH_DAYS = 14

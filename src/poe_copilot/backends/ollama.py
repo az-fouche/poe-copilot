@@ -17,6 +17,30 @@ from .backend import ContentBlock, ToolUseBlock
 logger = logging.getLogger(__name__)
 
 _TIMEOUT = 120.0  # local inference is slow
+_META_TIMEOUT = 5.0  # lightweight metadata calls
+
+
+def list_models(base_url: str) -> list[str]:
+    """Fetch available model names from an Ollama server.
+
+    Parameters
+    ----------
+    base_url : str
+        Ollama server URL (e.g. ``"http://localhost:11434"``).
+
+    Returns
+    -------
+    list[str]
+        Sorted model names, or ``[]`` on any failure.
+    """
+    url = f"{base_url.rstrip('/')}/api/tags"
+    try:
+        resp = httpx.get(url, timeout=_META_TIMEOUT)
+        resp.raise_for_status()
+        models = resp.json().get("models", [])
+        return sorted(m["name"] for m in models if "name" in m)
+    except Exception:
+        return []
 
 
 def _translate_tools(

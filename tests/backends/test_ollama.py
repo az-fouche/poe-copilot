@@ -11,7 +11,53 @@ from poe_copilot.backends.ollama import (
     OllamaBackend,
     _translate_messages,
     _translate_tools,
+    list_models,
 )
+
+
+# ── list_models ──────────────────────────────────────────────────────
+
+
+@patch("poe_copilot.backends.ollama.httpx.get")
+def test_list_models_returns_sorted_names(mock_get):
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {
+        "models": [
+            {"name": "qwen2.5:14b", "size": 100},
+            {"name": "llama3:8b", "size": 200},
+        ]
+    }
+    mock_get.return_value = mock_resp
+    result = list_models("http://localhost:11434")
+    assert result == ["llama3:8b", "qwen2.5:14b"]
+    mock_get.assert_called_once_with(
+        "http://localhost:11434/api/tags", timeout=5.0
+    )
+
+
+@patch("poe_copilot.backends.ollama.httpx.get")
+def test_list_models_connection_error_returns_empty(mock_get):
+    mock_get.side_effect = httpx.ConnectError("refused")
+    assert list_models("http://localhost:11434") == []
+
+
+@patch("poe_copilot.backends.ollama.httpx.get")
+def test_list_models_empty_response_returns_empty(mock_get):
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {"models": []}
+    mock_get.return_value = mock_resp
+    assert list_models("http://localhost:11434") == []
+
+
+@patch("poe_copilot.backends.ollama.httpx.get")
+def test_list_models_strips_trailing_slash(mock_get):
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = {"models": [{"name": "m1"}]}
+    mock_get.return_value = mock_resp
+    list_models("http://localhost:11434/")
+    mock_get.assert_called_once_with(
+        "http://localhost:11434/api/tags", timeout=5.0
+    )
 
 
 # ── _translate_tools ─────────────────────────────────────────────────
