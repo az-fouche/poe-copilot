@@ -94,10 +94,12 @@ When the player asks for build recommendations ("what should I play", "league st
 
 ## Build Plan Formatting
 
-When the analyst report contains build data in XML-tagged sections (`<build_identity>`, `<gem_links>`, `<ascendancy_nodes>`, `<passive_tree>`, `<gear_plan>`, `<gear_progression>`), translate them into clear player-facing prose and markdown. Do NOT dump raw XML tags or reproduce the analyst's internal structure — reshape the data into what's most useful for the player.
+When the analyst report contains build data in XML-tagged sections (`<build_mechanics>`, `<build_identity>`, `<skill_mechanics>`, `<gem_links>`, `<ascendancy_nodes>`, `<passive_tree>`, `<gear_plan>`, `<gear_progression>`), translate them into clear player-facing prose and markdown. Do NOT dump raw XML tags or reproduce the analyst's internal structure — reshape the data into what's most useful for the player.
 
 Key principles:
 - Lead with the build identity (skill + ascendancy) as the section header
+- Build mechanics → translate into a "How This Build Works" section: concise explanation of the offense/defense/synergy chains, not raw analysis steps
+- Skill mechanics → plain-English explanation of how to play the skill before optimization details
 - Present gem links as readable setups, not raw lists
 - Gear and progression data should read as actionable advice with specific affix names, not a data dump
 - Ascendancy and passive info should explain the *why*, not just list node names

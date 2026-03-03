@@ -85,6 +85,54 @@ def test_call_without_tools_omits_tools_kwarg(mock_backend):
     assert kwargs["tools"] is None
 
 
+# ── AgentStep.call — continuation ──────────────────────────────────────────
+
+
+def test_call_with_continuation_appends_to_thread(mock_backend):
+    """continuation=True appends to existing thread instead of replacing."""
+    resp1 = make_text_response("first")
+    resp2 = make_text_response("second")
+    backend = mock_backend(responses=[resp1, resp2])
+    agent = AgentStep(
+        name="analyst",
+        primer="prompt",
+        model="claude-haiku-4-5-20251001",
+        backend=backend,
+    )
+    # First call — sets up thread
+    agent.call({"query": "initial research"})
+    assert len(agent._thread) == 2
+
+    # Second call with continuation — appends, doesn't replace
+    agent.call({"query": "fix these issues", "continuation": True})
+    assert len(agent._thread) == 4
+    assert agent._thread[0] == {"role": "user", "content": "initial research"}
+    assert agent._thread[2] == {
+        "role": "user",
+        "content": "fix these issues",
+    }
+
+
+def test_call_without_continuation_replaces_thread(mock_backend):
+    """Default query call replaces thread even if one exists."""
+    resp1 = make_text_response("first")
+    resp2 = make_text_response("second")
+    backend = mock_backend(responses=[resp1, resp2])
+    agent = AgentStep(
+        name="analyst",
+        primer="prompt",
+        model="claude-haiku-4-5-20251001",
+        backend=backend,
+    )
+    agent.call({"query": "initial research"})
+    assert len(agent._thread) == 2
+
+    # Without continuation — replaces thread
+    agent.call({"query": "new query"})
+    assert len(agent._thread) == 2
+    assert agent._thread[0] == {"role": "user", "content": "new query"}
+
+
 # ── AgentStep.call — tool_results input ───────────────────────────────────
 
 

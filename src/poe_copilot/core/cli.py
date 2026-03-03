@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 STATUS_LABELS: dict[str, str] = {
     "router": "Analyzing your question...",
     "analyst": "Researching...",
+    "fact_checker": "Checking research quality...",
     "answerer": "Writing response...",
 }
 
@@ -169,14 +170,17 @@ def setup_logging() -> None:
     log_file = LOGS_DIR / f"{timestamp}.log"
 
     handler = logging.FileHandler(log_file, encoding="utf-8")
-    handler.setLevel(logging.INFO)  # Changed to INFO from DEBUG
+    handler.setLevel(logging.DEBUG)
     handler.setFormatter(
         logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
     )
 
     root = logging.getLogger()
-    root.setLevel(logging.INFO)  # Changed to INFO from DEBUG
+    root.setLevel(logging.WARNING)
     root.addHandler(handler)
+
+    # Our package logs at DEBUG; third-party stays at WARNING
+    logging.getLogger("poe_copilot").setLevel(logging.DEBUG)
 
     # Reduce noise from common third-party libraries
     for noisy in [

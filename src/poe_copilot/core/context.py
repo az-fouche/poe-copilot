@@ -5,7 +5,10 @@ from datetime import date
 
 from poe_copilot.constants import (
     AGENTS_DIR,
+    IDENTITY_FILE,
     LOADOUTS_DIR,
+    PLAYER_CONTEXT_FILE,
+    PRE_LAUNCH_DAYS,
     TIMELINE_FILE,
     Experience,
     GameMode,
@@ -109,62 +112,33 @@ def resolve_league(settings: dict) -> str:
     return str(raw)
 
 
-IDENTITY = (
-    "You are a knowledgeable Path of Exile (PoE 1) companion. You help players "
-    "with builds, game mechanics, economy, and strategy."
-)
+def _load_identity() -> str:
+    """Read the agent identity text from assets."""
+    return IDENTITY_FILE.read_text(encoding="utf-8").strip()
 
-MODE_CONTEXT = {
-    GameMode.SOFTCORE_TRADE: (
-        "The player is in softcore trade league. Deaths are not permanent. "
-        "They can trade freely, so gear recommendations can include trade purchases."
-    ),
-    GameMode.HARDCORE_TRADE: (
-        "The player is in HARDCORE trade league. Death is permanent (character moves "
-        "to Standard). ALWAYS prioritize survivability and defensive layers. Avoid "
-        "recommending glass cannon builds. EHP and max hit taken matter enormously."
-    ),
-    GameMode.SSF: (
-        "The player is in SSF (Solo Self-Found). They CANNOT trade with other players. "
-        "All gear must be self-found or crafted. Avoid recommending builds that depend "
-        "on specific unique items unless they are common drops or target-farmable. "
-        "Favour builds that function well with rare gear and deterministic crafting."
-    ),
-    GameMode.HC_SSF: (
-        "The player is in HARDCORE SSF — the hardest mode. No trading AND permadeath. "
-        "Only recommend extremely tanky, self-sufficient builds. Prioritize defenses "
-        "above all else. Gear must be self-crafted. Avoid anything reliant on rare "
-        "uniques or that can't survive rippy map mods."
-    ),
-}
 
-EXP_CONTEXT = {
-    Experience.NEWBIE: (
-        "The player is NEW to Path of Exile. Explain concepts clearly and avoid "
-        "unexplained jargon. When using PoE-specific terms, briefly define them. "
-        "Suggest straightforward, beginner-friendly builds. Walk them through "
-        "gearing and progression step by step. When they ask vague questions, "
-        "guide them with 1-2 clarifying questions before diving in."
-    ),
-    Experience.CASUAL: (
-        "The player is a casual player with basic knowledge. They know core mechanics "
-        "but may not be familiar with advanced crafting, atlas strategies, or "
-        "min-maxing. Use common PoE terminology but clarify niche concepts. "
-        "Ask for context when it would change your recommendation, but keep it brief."
-    ),
-    Experience.INTERMEDIATE: (
-        "The player is an intermediate player comfortable with endgame content. "
-        "You can use standard PoE terminology freely. They understand atlas "
-        "strategies, crafting basics, and build planning."
-    ),
-    Experience.VETERAN: (
-        "The player is a veteran min-maxer. Skip basic explanations. Focus on "
-        "optimization, edge cases, niche interactions, and advanced strategies. "
-        "They appreciate precise numbers, breakpoints, and deep mechanical analysis. "
-        "Give direct answers; only clarify when genuinely ambiguous with multiple "
-        "valid approaches."
-    ),
-}
+def _load_player_template() -> str:
+    """Read the player context template from assets."""
+    return PLAYER_CONTEXT_FILE.read_text(encoding="utf-8")
+
+
+def _select_block(template: str, prefix: str, key: str) -> str:
+    """Extract a named block from the template.
+
+    Blocks are delimited by ``<!-- PREFIX:key -->`` markers.
+    Returns text between the matching marker and the next marker
+    (or end of file), stripped.
+    """
+    marker = f"<!-- {prefix}:{key} -->"
+    start = template.find(marker)
+    if start == -1:
+        return ""
+    start += len(marker)
+    # Find next marker or end of text
+    next_marker = template.find("<!-- ", start)
+    if next_marker == -1:
+        return template[start:].strip()
+    return template[start:next_marker].strip()
 
 
 def build_player_context(settings: dict) -> str:
@@ -188,64 +162,92 @@ def build_player_context(settings: dict) -> str:
     mode = settings.get("mode", GameMode.SOFTCORE_TRADE)
     experience = settings.get("experience", Experience.INTERMEDIATE)
 
-    parts: list[str] = []
-
-    # Temporal grounding
     today = date.today()
-    parts.append(
-        f"\nToday's date: **{today.strftime('%B %d, %Y').replace(' 0', ' ')}**"
-    )
+    today_str = today.strftime("%B %d, %Y").replace(" 0", " ")
 
+    # Build timeline section
     entries = _parse_timeline()
     if entries:
         annotated_text, current_league, next_league = _annotate_timeline(
             entries, today
         )
-        # Use the derived current league if available, fall back to settings
         if current_league:
             league = current_league
-        parts.append(
-            "\n## Game Timeline (AUTHORITATIVE — overrides your training data)\n"
-            "CRITICAL: The timeline below is the ground truth for what has happened in "
-            "Path of Exile. Your training data about PoE league dates, names, and content "
-            "is WRONG and outdated — do NOT use it. When answering ANY question about "
-            "past, current, or upcoming leagues, rely ONLY on this timeline. If a league "
-            "is not listed here, you do not know about it — say so and search instead.\n\n"
-            + annotated_text
+        timeline_section = (
+            "\n## Game Timeline "
+            "(AUTHORITATIVE — overrides your training data)\n"
+            "CRITICAL: The timeline below is the ground truth "
+            "for what has happened in "
+            "Path of Exile. Your training data about PoE league "
+            "dates, names, and content "
+            "is WRONG and outdated — do NOT use it. When "
+            "answering ANY question about "
+            "past, current, or upcoming leagues, rely ONLY on "
+            "this timeline. If a league "
+            "is not listed here, you do not know about it — "
+            "say so and search instead.\n\n" + annotated_text
         )
     else:
-        current_league = None
         next_league = None
+        timeline_section = ""
 
-    # Player profile
-    parts.append("\n## Player Profile")
-    parts.append(f"- Active league: **{league}** (this is the CURRENT league)")
+    # Pre-launch promotion: upcoming league becomes "the" league
+    ninja_league = league
+    pre_launch = False
     if next_league:
+        days_until = (next_league[2] - today).days
+        if 0 < days_until <= PRE_LAUNCH_DAYS:
+            ninja_league = league
+            league = next_league[0]
+            pre_launch = True
+
+    # Build next-league line
+    if pre_launch:
+        name, version, launch_date = next_league  # type: ignore[misc]
+        friendly = launch_date.strftime("%B %d, %Y").replace(" 0", " ")
+        next_league_line = f"- Launches {friendly} — NOT YET LIVE"
+    elif next_league:
         name, version, launch_date = next_league
-        friendly_date = launch_date.strftime("%B %d, %Y").replace(" 0", " ")
-        parts.append(
-            f"- Next league: **{name}** ({version}) — launches {friendly_date}. NOT YET LIVE."
+        friendly = launch_date.strftime("%B %d, %Y").replace(" 0", " ")
+        next_league_line = (
+            f"- Next league: **{name}** ({version}) "
+            f"— launches {friendly}. NOT YET LIVE."
         )
     else:
-        parts.append("- Next league: not yet announced — search for news.")
-    parts.append(
-        f"- When using poe.ninja tools, ALWAYS default to league: {league}"
-    )
-    parts.append(
-        "\n### League Rules (NEVER violate these)\n"
-        "- Challenge leagues are ALWAYS fresh starts — NO items, currency, or gear "
-        "transfer between challenge leagues. NEVER ask about importing/reusing gear "
-        "from a previous league.\n"
-        "- When a challenge league ends, characters move to Standard — not to the "
-        "next challenge league.\n"
-        "- SSF players CANNOT trade. Never suggest trading or ask about trade budget in SSF.\n"
-        "- When asking clarifying questions about builds, ask about goals, playstyle, "
-        "and time investment — NOT about transferring resources between leagues."
-    )
-    parts.append(f"\n### Game Mode\n{MODE_CONTEXT.get(mode, '')}")
-    parts.append(f"\n### Communication Style\n{EXP_CONTEXT.get(experience, '')}")
+        next_league_line = "- Next league: not yet announced — search for news."
 
-    return "\n".join(parts)
+    # Select blocks from template
+    template = _load_player_template()
+    mode_context = _select_block(template, "MODE", mode)
+    exp_context = _select_block(template, "EXP", experience)
+    pre_launch_note = (
+        _select_block(template, "NOTE", "pre_launch") if pre_launch else ""
+    )
+
+    # The template body ends before the first marker
+    marker_start = template.find("<!-- MODE:")
+    body = template[:marker_start].rstrip() if marker_start != -1 else template
+
+    return body.format(
+        today=today_str,
+        timeline_section=timeline_section,
+        league=league,
+        ninja_league=ninja_league,
+        next_league_line=next_league_line,
+        pre_launch_note=pre_launch_note,
+        mode_context=mode_context,
+        experience_context=exp_context,
+    )
+
+
+def load_check_loadout(name: str | None) -> str:
+    """Load a fact-checker loadout fragment by name."""
+    if not name:
+        return ""
+    path = LOADOUTS_DIR / f"{name}_check.md"
+    if not path.exists():
+        return ""
+    return path.read_text(encoding="utf-8")
 
 
 def load_loadout(name: str) -> str:
@@ -309,7 +311,7 @@ def build_primer(agent_name: str, settings: dict) -> str:
     """
     return "\n\n".join(
         [
-            IDENTITY,
+            _load_identity(),
             load_prompt(agent_name),
             build_player_context(settings),
         ]

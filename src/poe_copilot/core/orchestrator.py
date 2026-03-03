@@ -10,7 +10,7 @@ from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
 
 from .agent import AgentStep, ClarifyingQuestion, NextStep, ToolStep
 from .cli import STATUS_LABELS, tool_status_label
-from .context import build_primer, load_loadout
+from .context import build_primer, load_check_loadout, load_loadout
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     """Central controller that routes user queries through the agent pipeline.
 
-    Pipeline: Router → Analyst → Answerer (3 agents).
+    Pipeline: Router → Analyst → Fact Checker → Answerer.
 
     Parameters
     ----------
@@ -32,9 +32,12 @@ class Orchestrator:
         """Initialize agents, tools, and conversation state from *settings*."""
         self.settings = settings
         self.messages: list[dict] = []
-        self.api_calls = 0
-        self.max_api_calls = 25
+        self.heavy_calls = 0
+        self.light_calls = 0
+        self.max_heavy_calls = 25
+        self.max_light_calls = 10
         self._conversation_context: str = ""
+        self._active_loadout: str | None = None
         self._on_status: Optional[Callable[[str], None]] = None
         self._on_tool_start: Optional[Callable[[str, dict], None]] = None
         self._on_tool_end: Optional[Callable[[], None]] = None
@@ -55,13 +58,18 @@ class Orchestrator:
                 tools=tools,
                 next_agent=cfg.get("next"),
                 max_tokens=cfg.get("max_tokens", 4096),
+                tier=cfg.get("tier", "heavy"),
                 backend=backend,
             )
 
-        # Cache the analyst's base primer for loadout injection
+        # Cache base primers for loadout injection
         analyst_step = self.steps.get("analyst")
         self._analyst_base_primer = (
             analyst_step.primer if isinstance(analyst_step, AgentStep) else ""
+        )
+        fc_step = self.steps.get("fact_checker")
+        self._fact_checker_base_primer = (
+            fc_step.primer if isinstance(fc_step, AgentStep) else ""
         )
 
         # Load tool steps
@@ -112,7 +120,8 @@ class Orchestrator:
         """
         logger.info("USER: %s", user_message)
         self.messages.append({"role": "user", "content": user_message})
-        self.api_calls = 0
+        self.heavy_calls = 0
+        self.light_calls = 0
 
         # Store all callbacks on self for use by helper methods
         self._on_status = on_status
@@ -130,10 +139,11 @@ class Orchestrator:
             query = (
                 "IMPORTANT: The user has already answered your clarifying "
                 'questions below. Do NOT return action "clarify". '
-                "Classify and route to the appropriate agent.\n\n" + query
+                "Proceed directly with your task.\n\n" + query
             )
         self._conversation_context = query
         logger.info("CALL %s <- query", start_agent)
+        logger.debug("QUERY_TO [%s]:\n%s", start_agent, query)
         decision = self._call_agent(start_agent, {"query": query})
         logger.info(
             "DECISION %s -> type=%s input_keys=%s",
@@ -141,27 +151,26 @@ class Orchestrator:
             decision.type,
             list(decision.input.keys()),
         )
+        logger.debug(
+            "DECISION_DETAIL [%s]: %s",
+            start_agent,
+            {
+                k: v[:500] if isinstance(v, str) else v
+                for k, v in decision.input.items()
+            },
+        )
 
         decision = self._step_loop(decision, on_message=on_message)
 
         # Terminal answer handling
         if "clarification" in decision.input:
-            # Circuit breaker: don't ask again — force-route to analyst
+            # Circuit breaker: don't ask again — force answerer
             if clarification_round >= 1:
                 logger.warning(
-                    "Router re-clarified on round %d — forcing route to analyst",
+                    "Re-clarified on round %d — forcing answerer",
                     clarification_round,
                 )
-                decision = self._call_agent(
-                    "analyst",
-                    {
-                        "query": (
-                            "## Conversation Context\n"
-                            f"{self._conversation_context}"
-                            f"\n\n## Task\n{user_message}"
-                        )
-                    },
-                )
+                decision = self._force_answerer()
             else:
                 logger.info("CLARIFY: %s", decision.input["clarification"])
                 self.messages.pop()
@@ -207,8 +216,14 @@ class Orchestrator:
                 if msg.get("role") != "assistant":
                     continue
                 content = msg.get("content", "")
-                if isinstance(content, str) and content:
-                    parts.append(content[:2000])
+                if isinstance(content, list):
+                    text = "\n".join(b for b in content if isinstance(b, str))
+                elif isinstance(content, str):
+                    text = content
+                else:
+                    continue
+                if text:
+                    parts.append(text[:2000])
             if parts:
                 analyst_context = "\n".join(parts[-10:])
 
@@ -229,10 +244,19 @@ class Orchestrator:
             "honestly and provide what you can."
         )
 
+        logger.debug("FORCE_QUERY:\n%s", forced_query[:2000])
         answerer = self.steps["answerer"]
         if isinstance(answerer, AgentStep):
             answerer.reset()
         result = answerer.call({"query": forced_query})
+        logger.debug(
+            "FORCE_RESULT: type=%s detail=%s",
+            result.type,
+            {
+                k: v[:500] if isinstance(v, str) else v
+                for k, v in result.input.items()
+            },
+        )
 
         # Circuit breaker: force into terminal answer
         if result.type != "answer" or "text" not in result.input:
@@ -253,15 +277,36 @@ class Orchestrator:
             )
         return result
 
+    @property
+    def api_calls(self) -> int:
+        """Total API calls across both tiers (for logging)."""
+        return self.heavy_calls + self.light_calls
+
     def _call_agent(self, name: str, input: dict) -> NextStep:
-        """Invoke a named agent step, enforcing the API-call budget."""
-        self.api_calls += 1
-        if self.api_calls > self.max_api_calls:
-            logger.warning(
-                "API cap reached (%d), forcing answerer",
-                self.max_api_calls,
-            )
-            return self._force_answerer()
+        """Invoke a named agent step, enforcing per-tier budgets."""
+        step = self.steps[name]
+        tier = step.tier if isinstance(step, AgentStep) else "heavy"
+        if tier == "light":
+            self.light_calls += 1
+            if self.light_calls > self.max_light_calls:
+                logger.warning("Light budget exceeded, skipping %s", name)
+                if isinstance(step, AgentStep) and step.next_agent:
+                    return NextStep(
+                        type="call",
+                        input={
+                            "target": step.next_agent,
+                            "query": input.get("query", ""),
+                        },
+                    )
+                return self._force_answerer()
+        else:
+            self.heavy_calls += 1
+            if self.heavy_calls > self.max_heavy_calls:
+                logger.warning(
+                    "Heavy budget exceeded (%d), forcing answerer",
+                    self.max_heavy_calls,
+                )
+                return self._force_answerer()
         return self.steps[name].call(input)
 
     def _step_loop(
@@ -273,6 +318,9 @@ class Orchestrator:
         """Execute the decision-tool-route loop until a terminal answer."""
         max_analyst_routes = 2  # initial + 1 re-route
         analyst_routes = 0
+        max_fact_check_retries = 1
+        fact_check_retries = 0
+        last_agent: str | None = None
         while decision.type != "answer":
             if self._check_interrupt and self._check_interrupt():
                 raise KeyboardInterrupt
@@ -295,6 +343,7 @@ class Orchestrator:
                     inp["return_to"],
                     len(results),
                 )
+                last_agent = inp["return_to"]
                 decision = self._call_agent(
                     inp["return_to"], {"tool_results": results}
                 )
@@ -304,10 +353,32 @@ class Orchestrator:
                     decision.type,
                     list(decision.input.keys()),
                 )
+                logger.debug(
+                    "DECISION_DETAIL [%s]: %s",
+                    inp["return_to"],
+                    {
+                        k: v[:500] if isinstance(v, str) else v
+                        for k, v in decision.input.items()
+                    },
+                )
 
             elif "target" in inp:
                 query = inp["query"]
                 target = inp["target"]
+
+                # Fact checker retry cap
+                continuation = False
+                if target == "analyst" and last_agent == "fact_checker":
+                    fact_check_retries += 1
+                    continuation = True
+                    if fact_check_retries > max_fact_check_retries:
+                        logger.warning(
+                            "Fact check retry cap reached, "
+                            "forcing answerer with research",
+                        )
+                        decision = self._force_answerer()
+                        continue
+
                 # Cap answerer→analyst research loops
                 if target == "analyst":
                     analyst_routes += 1
@@ -317,7 +388,16 @@ class Orchestrator:
                         )
                         decision = self._force_answerer()
                         continue
-                # Inject conversation context for analyst and answerer
+
+                # Fact checker skip logic
+                if target == "fact_checker":
+                    check_fragment = load_check_loadout(self._active_loadout)
+                    if not check_fragment:
+                        target = "answerer"
+                    else:
+                        self._apply_check_loadout(check_fragment)
+
+                # Inject conversation context
                 if target in ("analyst", "answerer"):
                     query = (
                         "## Conversation Context\n"
@@ -325,19 +405,34 @@ class Orchestrator:
                         f"\n\n## Task\n{query}"
                     )
                 if target == "analyst":
-                    self._apply_loadout(inp.get("loadout"))
-                    remaining = self.max_api_calls - self.api_calls
+                    if "loadout" in inp:
+                        self._apply_loadout(inp["loadout"])
+                    remaining = self.max_heavy_calls - self.heavy_calls
                     query += (
                         f"\n\n## Budget\n"
-                        f"You have ~{remaining} API calls remaining."
+                        f"You have ~{remaining} API calls "
+                        f"remaining."
                     )
                 logger.info("CALL %s <- query", target)
-                decision = self._call_agent(target, {"query": query})
+                logger.debug("QUERY_TO [%s]:\n%s", target, query)
+                last_agent = target
+                call_input: dict = {"query": query}
+                if continuation:
+                    call_input["continuation"] = True
+                decision = self._call_agent(target, call_input)
                 logger.info(
                     "DECISION %s -> type=%s input_keys=%s",
                     target,
                     decision.type,
                     list(decision.input.keys()),
+                )
+                logger.debug(
+                    "DECISION_DETAIL [%s]: %s",
+                    target,
+                    {
+                        k: v[:500] if isinstance(v, str) else v
+                        for k, v in decision.input.items()
+                    },
                 )
 
         return decision
@@ -361,6 +456,11 @@ class Orchestrator:
                 "TOOL_RESULT %s (%d chars)",
                 tc["name"],
                 len(result_content),
+            )
+            logger.debug(
+                "TOOL_RESULT_DETAIL %s: %s",
+                tc["name"],
+                result_content[:2000],
             )
             results.append({"tool_use_id": tc["id"], "content": result_content})
             if self._on_tool_end:
@@ -409,6 +509,7 @@ class Orchestrator:
 
     def _apply_loadout(self, loadout: str | None) -> None:
         """Swap the analyst's primer to include a loadout fragment."""
+        self._active_loadout = loadout
         analyst_step = self.steps.get("analyst")
         if not isinstance(analyst_step, AgentStep):
             return
@@ -421,6 +522,13 @@ class Orchestrator:
             analyst_step.primer = self._analyst_base_primer
             return
         analyst_step.primer = self._analyst_base_primer + "\n\n" + fragment
+
+    def _apply_check_loadout(self, fragment: str) -> None:
+        """Inject a check-loadout fragment into the fact checker's primer."""
+        fc_step = self.steps.get("fact_checker")
+        if not isinstance(fc_step, AgentStep):
+            return
+        fc_step.primer = self._fact_checker_base_primer + "\n\n" + fragment
 
     def _parse_clarification(self, data: dict) -> list[ClarifyingQuestion]:
         """Convert raw clarification JSON into ClarifyingQuestion objects."""

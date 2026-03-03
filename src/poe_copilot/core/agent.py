@@ -89,6 +89,7 @@ class AgentStep:
         tools: list | None = None,
         next_agent: str | None = None,
         max_tokens: int = 4096,
+        tier: str = "heavy",
     ):
         """Initialize the agent step and create an empty message thread."""
         self.name = name
@@ -97,6 +98,7 @@ class AgentStep:
         self.tools = tools
         self.next_agent = next_agent
         self.max_tokens = max_tokens
+        self.tier = tier
         self.backend = backend
         self._thread: list[dict] = []
 
@@ -121,7 +123,10 @@ class AgentStep:
         """
         # Build thread
         if "query" in input:
-            self._thread = [{"role": "user", "content": input["query"]}]
+            if input.get("continuation"):
+                self._thread.append({"role": "user", "content": input["query"]})
+            else:
+                self._thread = [{"role": "user", "content": input["query"]}]
         elif "tool_results" in input:
             self._thread.append(
                 {

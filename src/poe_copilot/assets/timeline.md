@@ -6,6 +6,7 @@
 
 2025-10-31 — 3.27 Keepers league launch. Fight Hiveborn (mutated Breach monsters) through stabilized rifts, Genesis Tree for passive rewards, Grafts (Breach-themed skill items), Implants, Wombgifts. Bloodline Classes introduced (secondary Ascendancies unlocked via boss kills). Spell Suppression nerfed to 40% (from 50%). HC death now sends character to softcore challenge league instead of Standard. Automatic exchange market for items added.
 
+[MIRAGE MUST BE CONSIDERED DEFAULT LEAGUE IF NOT SPECIFIED]
 2026-03-06 — 3.28 Mirage league launch. Astral-realm Mirages that replicate past league mechanics with variations. Assist Sekhema Varashta with Wishes to enhance rewards, collect tainted Maraketh uniques for restoration, use Coins to corrupt skill gems with built-in support effects. Atlas restructured: choose any map and select which area to run. Exceptional Support Gems introduced, replacing Awakened Support Gems. Keepers added to the core game. Kirac, Harbinger, Metamorph have been removed from the core game.
 
 ## Important changes from your pretraining data:

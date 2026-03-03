@@ -16,18 +16,29 @@ _MOCK_REGISTRY = {
     "agents": {
         "router": {
             "model": "m",
+            "tier": "light",
             "tools": False,
             "output_format": "decision_json",
             "max_tokens": 1024,
         },
         "analyst": {
             "model": "m",
+            "tier": "heavy",
             "tools": True,
-            "next": "answerer",
+            "next": "fact_checker",
             "max_tokens": 4096,
+        },
+        "fact_checker": {
+            "model": "m",
+            "tier": "light",
+            "tools": False,
+            "next": "answerer",
+            "output_format": "decision_json",
+            "max_tokens": 2048,
         },
         "answerer": {
             "model": "m",
+            "tier": "heavy",
             "tools": False,
             "output_format": "decision_json",
             "max_tokens": 4096,
@@ -64,6 +75,10 @@ def _make_orchestrator(settings, agent_responses: dict[str, list] | None = None)
     for name, responses in agent_responses.items():
         mock_step = MagicMock(spec=AgentStep)
         mock_step.name = name
+        mock_step.tier = (
+            _MOCK_REGISTRY["agents"].get(name, {}).get("tier", "heavy")
+        )
+        mock_step.next_agent = _MOCK_REGISTRY["agents"].get(name, {}).get("next")
         mock_step.reset = MagicMock()
         mock_step.call = MagicMock(side_effect=responses)
         mock_step._thread = []
@@ -182,21 +197,12 @@ def test_run_router_to_analyst_to_answerer(settings):
     assert orch.messages[1]["role"] == "assistant"
 
 
-def test_run_level1_router_to_answerer_direct(settings):
-    """Trivial routing: chitchat goes directly to answerer."""
+def test_run_router_handles_chitchat_directly(settings):
+    """Trivial query: router responds directly, no other agent called."""
     orch = _make_orchestrator(
         settings,
         agent_responses={
             "router": [
-                NextStep(
-                    type="call",
-                    input={
-                        "target": "answerer",
-                        "query": "Just a greeting",
-                    },
-                )
-            ],
-            "answerer": [
                 NextStep(
                     type="answer",
                     input={"text": "Hey there, exile!"},
@@ -206,13 +212,15 @@ def test_run_level1_router_to_answerer_direct(settings):
     )
     result = orch.run("hi")
     assert result == "Hey there, exile!"
-    # Analyst should not have been called
-    analyst = orch.steps.get("analyst")
-    if isinstance(analyst, MagicMock):
-        assert not analyst.call.called
+    # Neither analyst nor answerer should have been called
+    for name in ("analyst", "answerer"):
+        step = orch.steps.get(name)
+        if isinstance(step, MagicMock):
+            assert not step.call.called
 
 
 def test_run_clarification_flow(settings):
+    """Router routes to analyst → analyst returns clarification."""
     clarify_data = {
         "action": "clarify",
         "clarifying_questions": [{"question": "Q?", "options": ["A", "B"]}],
@@ -221,6 +229,16 @@ def test_run_clarification_flow(settings):
         settings,
         agent_responses={
             "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "league starter?",
+                        "loadout": "builds",
+                    },
+                )
+            ],
+            "analyst": [
                 NextStep(
                     type="answer",
                     input={"clarification": clarify_data},
@@ -367,7 +385,7 @@ def test_run_api_cap_forces_answerer(settings):
             ],
         },
     )
-    orch.max_api_calls = 2
+    orch.max_heavy_calls = 2
     result = orch.run("hello")
     assert result == "forced answer"
 
@@ -384,9 +402,10 @@ def test_run_circuit_breaker(settings):
             ],
         },
     )
-    orch.max_api_calls = 1
+    orch.max_heavy_calls = 1
     mock_answerer = MagicMock(spec=AgentStep)
     mock_answerer.name = "answerer"
+    mock_answerer.tier = "heavy"
     mock_answerer.reset = MagicMock()
     mock_answerer.call = MagicMock(
         return_value=NextStep(
@@ -412,7 +431,8 @@ def test_run_resets_agent_threads(settings):
     )
     orch.run("first question")
     orch.run("second question")
-    assert orch.api_calls == 1
+    # api_calls resets each run; router is light, answer is terminal
+    assert orch.light_calls == 1
     for step in orch.steps.values():
         if isinstance(step, MagicMock) and hasattr(step, "reset"):
             assert step.reset.call_count >= 1
@@ -538,7 +558,7 @@ def test_status_labels_exclude_old_agents(settings):
     assert "planner" not in STATUS_LABELS
     assert "researcher" not in STATUS_LABELS
     assert "build_agent" not in STATUS_LABELS
-    assert "fact_checker" not in STATUS_LABELS
+    assert "fact_checker" in STATUS_LABELS
     assert "delegate_research" not in STATUS_LABELS
 
 
@@ -561,9 +581,9 @@ def test_status_label_for_tool_call(settings):
 # ---------------------------------------------------------------------------
 
 
-def test_max_api_calls_is_25(settings):
+def test_max_heavy_calls_is_25(settings):
     orch = _make_orchestrator(settings)
-    assert orch.max_api_calls == 25
+    assert orch.max_heavy_calls == 25
 
 
 # ---------------------------------------------------------------------------
@@ -679,6 +699,44 @@ def test_force_answer_with_extra_context(settings):
     assert "I prefer ranged builds" in call_args["query"]
 
 
+def test_force_answer_extracts_research_from_list_content(settings):
+    """_force_answerer extracts text from list-content assistant messages."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "Answer with research"},
+                )
+            ],
+        },
+    )
+    orch._conversation_context = "What is a Mageblood?"
+    orch._on_status = None
+
+    # Simulate a real AgentStep thread where assistant content is
+    # list[str | ToolUseBlock], not a plain string
+    analyst = orch.steps["analyst"]
+    analyst._thread = [
+        {"role": "user", "content": "query"},
+        {
+            "role": "assistant",
+            "content": [
+                "Mageblood is a unique belt worth 150 divine orbs.",
+                "It is the most expensive unique in the game.",
+            ],
+        },
+    ]
+
+    result = orch.force_answer()
+    assert result == "Answer with research"
+    call_args = orch.steps["answerer"].call.call_args[0][0]  # type: ignore
+    query = call_args["query"]
+    assert "Mageblood is a unique belt" in query
+    assert "no research collected" not in query
+
+
 def test_force_answer_empty_research(settings):
     orch = _make_orchestrator(
         settings,
@@ -750,7 +808,7 @@ def test_loadout_injects_into_analyst_primer(settings):
     orch._analyst_base_primer = "base primer"
 
     orch.run("LA build guide")
-    assert "Composition Framework" in analyst.primer
+    assert "Build Mechanics Analysis" in analyst.primer
 
 
 def test_no_loadout_uses_base_primer(settings):
@@ -844,3 +902,420 @@ def test_unknown_loadout_falls_back_gracefully(settings):
 
     orch.run("something")
     assert analyst.primer == "base primer"
+
+
+# ---------------------------------------------------------------------------
+# Fact checker pipeline
+# ---------------------------------------------------------------------------
+
+
+def test_fact_checker_pass_routes_to_answerer(settings):
+    """Fact checker passes report → answerer gets it."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "LA build",
+                        "loadout": "builds",
+                    },
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report",
+                    },
+                )
+            ],
+            "fact_checker": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "report",
+                    },
+                )
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "final answer"},
+                )
+            ],
+        },
+    )
+    result = orch.run("LA build guide")
+    assert result == "final answer"
+    orch.steps["fact_checker"].call.assert_called_once()  # type: ignore
+
+
+def test_fact_checker_reject_routes_to_analyst(settings):
+    """Fact checker rejects → analyst retries → fact checker passes."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "build q",
+                        "loadout": "builds",
+                    },
+                )
+            ],
+            "analyst": [
+                # First attempt
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report v1",
+                    },
+                ),
+                # Retry after rejection
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report v2",
+                    },
+                ),
+            ],
+            "fact_checker": [
+                # First: reject
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "Fix issues",
+                    },
+                ),
+                # Second: pass
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "report v2",
+                    },
+                ),
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "final"},
+                )
+            ],
+        },
+    )
+    result = orch.run("build guide")
+    assert result == "final"
+    assert orch.steps["fact_checker"].call.call_count == 2  # type: ignore
+
+
+def test_fact_checker_retry_cap(settings):
+    """Second fact checker rejection → force_answerer with research context."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "q",
+                        "loadout": "builds",
+                    },
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report v1",
+                    },
+                ),
+                # After first rejection
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report v2",
+                    },
+                ),
+            ],
+            "fact_checker": [
+                # First: reject
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "Fix issues",
+                    },
+                ),
+                # Second: reject again
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "Still wrong",
+                    },
+                ),
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "best effort"},
+                )
+            ],
+        },
+    )
+    # Give analyst a thread so _force_answerer can extract research
+    analyst_step = orch.steps["analyst"]
+    analyst_step._thread = [
+        {"role": "user", "content": "query"},
+        {"role": "assistant", "content": "Research about builds"},
+    ]
+
+    result = orch.run("complex build")
+    assert result == "best effort"
+    # Answerer should receive research context, not "Still wrong"
+    call_args = orch.steps["answerer"].call.call_args[0][0]  # type: ignore
+    query = call_args["query"]
+    assert "FACT CHECK FAILED" not in query
+    assert "Still wrong" not in query
+    assert "Research" in query
+
+
+def test_fact_checker_reject_passes_continuation_to_analyst(settings):
+    """Fact checker rejection passes continuation=True to analyst."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "build q",
+                        "loadout": "builds",
+                    },
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report v1",
+                    },
+                ),
+                # Retry after rejection
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report v2",
+                    },
+                ),
+            ],
+            "fact_checker": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "Fix issues",
+                    },
+                ),
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "report v2",
+                    },
+                ),
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "final"},
+                )
+            ],
+        },
+    )
+    result = orch.run("build guide")
+    assert result == "final"
+    # Second analyst call (retry) should have continuation=True
+    analyst_calls = orch.steps["analyst"].call.call_args_list  # type: ignore
+    retry_call = analyst_calls[1][0][0]
+    assert retry_call.get("continuation") is True
+
+
+def test_fact_checker_skipped_without_check_loadout(settings):
+    """No check loadout → analyst routes directly to answerer."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "price check",
+                        # No loadout — _active_loadout stays None
+                    },
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report",
+                    },
+                )
+            ],
+            "fact_checker": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "should not happen",
+                    },
+                )
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "price answer"},
+                )
+            ],
+        },
+    )
+    result = orch.run("price check")
+    assert result == "price answer"
+    # Fact checker should never be called
+    orch.steps["fact_checker"].call.assert_not_called()  # type: ignore
+
+
+def test_split_budget_heavy_cap(settings):
+    """Heavy budget exceeded → force answerer; light calls don't count."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "analyst", "query": "q"},
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "done",
+                    },
+                )
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "forced"},
+                )
+            ],
+        },
+    )
+    orch.max_heavy_calls = 2
+    result = orch.run("hello")
+    assert result == "forced"
+    # Router is light — shouldn't count toward heavy budget
+    assert orch.light_calls >= 1
+    assert orch.heavy_calls <= orch.max_heavy_calls + 1
+
+
+def test_split_budget_light_cap(settings):
+    """Light budget exceeded → skip light agent, route to next_agent."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "analyst",
+                        "query": "q",
+                        "loadout": "builds",
+                    },
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "fact_checker",
+                        "query": "report",
+                    },
+                )
+            ],
+            # Include fact_checker so it gets a mock
+            "fact_checker": [],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "skipped fc"},
+                )
+            ],
+        },
+    )
+    # Exhaust light budget before fact_checker is called
+    orch.max_light_calls = 1
+    result = orch.run("hello")
+    assert result == "skipped fc"
+    # fact_checker was skipped — its next_agent (answerer) was used
+    orch.steps["fact_checker"].call.assert_not_called()  # type: ignore
+
+
+def test_budget_communication_shows_heavy_remaining(settings):
+    """Analyst prompt shows heavy budget only."""
+    orch = _make_orchestrator(
+        settings,
+        agent_responses={
+            "router": [
+                NextStep(
+                    type="call",
+                    input={"target": "analyst", "query": "q"},
+                )
+            ],
+            "analyst": [
+                NextStep(
+                    type="call",
+                    input={
+                        "target": "answerer",
+                        "query": "done",
+                    },
+                )
+            ],
+            "answerer": [
+                NextStep(
+                    type="answer",
+                    input={"text": "done"},
+                )
+            ],
+        },
+    )
+    orch.run("test budget")
+    # Check the query passed to analyst includes heavy budget
+    call_args = orch.steps["analyst"].call.call_args[0][0]  # type: ignore
+    query = call_args["query"]
+    assert "API calls remaining" in query
+    # Budget computed before _call_agent increments heavy_calls
+    # Router is light → heavy_calls still 0 → remaining = 25
+    assert "25" in query

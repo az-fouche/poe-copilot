@@ -40,6 +40,11 @@ DATABASE_DIR = ASSETS_DIR / "database"
 # Specific asset files
 TIMELINE_FILE = ASSETS_DIR / "timeline.md"
 REGISTRY_FILE = ASSETS_DIR / "registry.json"
+IDENTITY_FILE = AGENTS_DIR / "identity.md"
+PLAYER_CONTEXT_FILE = ASSETS_DIR / "player_context.md"
+
+# A league becomes "the" league this many days before launch
+PRE_LAUNCH_DAYS = 14
 
 # Project root (repo level)
 PROJECT_ROOT = PACKAGE_DIR.parent.parent

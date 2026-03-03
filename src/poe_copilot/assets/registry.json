@@ -3,6 +3,7 @@
     "router": {
       "description": "Classifies user questions and routes to analyst or answerer",
       "model": "claude-haiku-4-5-20251001",
+      "tier": "light",
       "primer": "router.md",
       "max_tokens": 1024,
       "tools": false,
@@ -11,14 +12,26 @@
     "analyst": {
       "description": "Researches, analyzes, and composes expert reports using all data tools",
       "model": "claude-sonnet-4-20250514",
+      "tier": "heavy",
       "primer": "analyst.md",
       "max_tokens": 4096,
       "tools": true,
-      "next": "answerer"
+      "next": "fact_checker"
+    },
+    "fact_checker": {
+      "description": "Validates analyst reports against quality rules before answering",
+      "model": "claude-haiku-4-5-20251001",
+      "tier": "light",
+      "primer": "fact_checker.md",
+      "max_tokens": 2048,
+      "tools": false,
+      "next": "answerer",
+      "output_format": "decision_json"
     },
     "answerer": {
       "description": "Formats research into clear, well-cited responses for the player",
       "model": "claude-sonnet-4-20250514",
+      "tier": "heavy",
       "primer": "answerer.md",
       "max_tokens": 4096,
       "tools": false,
