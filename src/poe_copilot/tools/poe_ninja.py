@@ -2,6 +2,12 @@
 
 import httpx
 
+from poe_copilot.config import (
+    POE_NINJA_MAX_BUILD_META_RESULTS,
+    POE_NINJA_MAX_RESULTS,
+    POE_NINJA_TIMEOUT,
+)
+
 BASE_URL = "https://poe.ninja/api/data"
 
 CURRENCY_TYPES = ["Currency", "Fragment"]
@@ -122,13 +128,15 @@ POE_NINJA_TOOLS = [
 ]
 
 # Cap results sent to the LLM to avoid blowing up context
-MAX_RESULTS = 50
-MAX_BUILD_META_RESULTS = 15
+MAX_RESULTS = POE_NINJA_MAX_RESULTS
+MAX_BUILD_META_RESULTS = POE_NINJA_MAX_BUILD_META_RESULTS
 
 
 def _fetch(endpoint: str, params: dict) -> dict:
     """Send a GET request to the poe.ninja API and return the JSON response."""
-    with httpx.Client(timeout=10, follow_redirects=True) as client:
+    with httpx.Client(
+        timeout=POE_NINJA_TIMEOUT, follow_redirects=True
+    ) as client:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
         data = resp.json()

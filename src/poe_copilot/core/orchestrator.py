@@ -3,7 +3,11 @@
 import json
 import logging
 from typing import Callable, Optional
-
+from poe_copilot.config import (
+    ASSISTANT_MESSAGE_CHAR_LIMIT,
+    USER_MESSAGE_CHAR_LIMIT,
+    MAX_LOG_PREVIEW_CHARS,
+)
 from poe_copilot.backends import LLMBackend
 from poe_copilot.constants import REGISTRY_FILE
 from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
@@ -198,7 +202,7 @@ class Orchestrator:
         """
         result = self._force_answerer(extra_context)
         answer_text: str = result.input["text"]
-        logger.info("FORCE_ANSWER: %s", answer_text[:500])
+        logger.info("FORCE_ANSWER: %s", answer_text[:MAX_LOG_PREVIEW_CHARS])
         self.messages.append({"role": "assistant", "content": answer_text})
         return answer_text
 
@@ -484,7 +488,11 @@ class Orchestrator:
                         text_parts.append(block.text)  # type: ignore
                 content = " ".join(text_parts)
             if content and isinstance(content, str):
-                limit = 1500 if role == "assistant" else 300
+                limit = (
+                    ASSISTANT_MESSAGE_CHAR_LIMIT
+                    if role == "assistant"
+                    else USER_MESSAGE_CHAR_LIMIT
+                )
                 context_parts.append(f"{role}: {content[:limit]}")
 
         context_str = (
