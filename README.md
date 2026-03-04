@@ -68,13 +68,11 @@ poechat --setup            # select Ollama as your backend
 
 | GPU tier | VRAM | Model | Size | Speed | Notes |
 |----------|------|-------|------|-------|-------|
-| xx70 (12 GB) | 12 GB | `qwen3:8b` | ~5 GB | ~80 tok/s | Best fit; leaves room for context |
-| xx80 (16 GB) | 16 GB | `qwen3:14b` | ~12 GB | ~62 tok/s | Best balance of quality and speed |
-| xx90 (24 GB) | 24 GB | `qwen3:32b` | ~20 GB | ~40 tok/s | Strongest local option for tool use |
+| xx70 (12 GB) | 12 GB | `qwen3:8b` | ~5 GB | ~80 tok/s | Very dumb |
+| xx80 (16 GB) | 16 GB | `qwen3:14b` | ~12 GB | ~62 tok/s | Dumb |
+| xx90 (24 GB) | 24 GB | `qwen3:32b` | ~20 GB | ~40 tok/s | Didn't test myself |
 
-> **Tip:** Tool calling requires at least 14B+ models for reliability. Smaller models tend to produce malformed tool calls.
-
-Quality varies — smaller local models may struggle with complex multi-step queries and tool use. `qwen3:14b` is the sweet spot for 16 GB setups.
+Quality is for now clearly inferior compared to commercial LLMs — smaller local models struggle with complex multi-step queries.
 
 ## Commands
 
