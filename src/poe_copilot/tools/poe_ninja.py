@@ -2,6 +2,12 @@
 
 import httpx
 
+from poe_copilot.config import (
+    POE_NINJA_MAX_BUILD_META_RESULTS,
+    POE_NINJA_MAX_RESULTS,
+    POE_NINJA_TIMEOUT,
+)
+
 BASE_URL = "https://poe.ninja/api/data"
 
 CURRENCY_TYPES = ["Currency", "Fragment"]
@@ -121,14 +127,12 @@ POE_NINJA_TOOLS = [
     },
 ]
 
-# Cap results sent to the LLM to avoid blowing up context
-MAX_RESULTS = 50
-MAX_BUILD_META_RESULTS = 15
-
 
 def _fetch(endpoint: str, params: dict) -> dict:
     """Send a GET request to the poe.ninja API and return the JSON response."""
-    with httpx.Client(timeout=10, follow_redirects=True) as client:
+    with httpx.Client(
+        timeout=POE_NINJA_TIMEOUT, follow_redirects=True
+    ) as client:
         resp = client.get(f"{BASE_URL}/{endpoint}", params=params)
         resp.raise_for_status()
         data = resp.json()
@@ -208,7 +212,7 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict) -> dict:
             )
             lines = data.get("lines", [])
             results = []
-            for line in lines[:MAX_RESULTS]:
+            for line in lines[:POE_NINJA_MAX_RESULTS]:
                 entry = {
                     "name": line["currencyTypeName"],
                     "chaos_equivalent": round(line.get("chaosEquivalent", 0), 2),
@@ -239,7 +243,7 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict) -> dict:
                 ]
 
             results = []
-            for line in lines[:MAX_RESULTS]:
+            for line in lines[:POE_NINJA_MAX_RESULTS]:
                 entry = {
                     "name": line.get("name", "Unknown"),
                     "chaos_value": round(line.get("chaosValue", 0), 1),
@@ -273,7 +277,7 @@ def handle_poe_ninja_tool(name: str, params: dict, settings: dict) -> dict:
             )
 
             class_filter = params.get("class_filter", "").lower()
-            cap = MAX_BUILD_META_RESULTS
+            cap = POE_NINJA_MAX_BUILD_META_RESULTS
 
             classes = _ranked_list(data.get("classes", []), cap)
 
