@@ -14,7 +14,7 @@ from poe_copilot.tools import _HANDLERS, TOOL_DEFINITIONS
 
 from .agent import AgentStep, ClarifyingQuestion, NextStep, ToolStep
 from .cli import STATUS_LABELS, tool_status_label
-from .context import build_primer, load_check_loadout, load_loadout
+from .context import build_primer, load_loadout
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     """Central controller that routes user queries through the agent pipeline.
 
-    Pipeline: Router → Analyst → Fact Checker → Answerer.
+    Pipeline: Router → Analyst → Answerer.
 
     Parameters
     ----------
@@ -71,11 +71,6 @@ class Orchestrator:
         self._analyst_base_primer = (
             analyst_step.primer if isinstance(analyst_step, AgentStep) else ""
         )
-        fc_step = self.steps.get("fact_checker")
-        self._fact_checker_base_primer = (
-            fc_step.primer if isinstance(fc_step, AgentStep) else ""
-        )
-
         # Load tool steps
         for tool_name, handler in _HANDLERS.items():
             self.steps[tool_name] = ToolStep(
@@ -322,9 +317,6 @@ class Orchestrator:
         """Execute the decision-tool-route loop until a terminal answer."""
         max_analyst_routes = 2  # initial + 1 re-route
         analyst_routes = 0
-        max_fact_check_retries = 1
-        fact_check_retries = 0
-        last_agent: str | None = None
         while decision.type != "answer":
             if self._check_interrupt and self._check_interrupt():
                 raise KeyboardInterrupt
@@ -347,7 +339,6 @@ class Orchestrator:
                     inp["return_to"],
                     len(results),
                 )
-                last_agent = inp["return_to"]
                 decision = self._call_agent(
                     inp["return_to"], {"tool_results": results}
                 )
@@ -370,19 +361,6 @@ class Orchestrator:
                 query = inp["query"]
                 target = inp["target"]
 
-                # Fact checker retry cap
-                continuation = False
-                if target == "analyst" and last_agent == "fact_checker":
-                    fact_check_retries += 1
-                    continuation = True
-                    if fact_check_retries > max_fact_check_retries:
-                        logger.warning(
-                            "Fact check retry cap reached, "
-                            "forcing answerer with research",
-                        )
-                        decision = self._force_answerer()
-                        continue
-
                 # Cap answerer→analyst research loops
                 if target == "analyst":
                     analyst_routes += 1
@@ -392,14 +370,6 @@ class Orchestrator:
                         )
                         decision = self._force_answerer()
                         continue
-
-                # Fact checker skip logic
-                if target == "fact_checker":
-                    check_fragment = load_check_loadout(self._active_loadout)
-                    if not check_fragment:
-                        target = "answerer"
-                    else:
-                        self._apply_check_loadout(check_fragment)
 
                 # Inject conversation context
                 if target in ("analyst", "answerer"):
@@ -419,11 +389,7 @@ class Orchestrator:
                     )
                 logger.info("CALL %s <- query", target)
                 logger.debug("QUERY_TO [%s]:\n%s", target, query)
-                last_agent = target
-                call_input: dict = {"query": query}
-                if continuation:
-                    call_input["continuation"] = True
-                decision = self._call_agent(target, call_input)
+                decision = self._call_agent(target, {"query": query})
                 logger.info(
                     "DECISION %s -> type=%s input_keys=%s",
                     target,
@@ -530,13 +496,6 @@ class Orchestrator:
             analyst_step.primer = self._analyst_base_primer
             return
         analyst_step.primer = self._analyst_base_primer + "\n\n" + fragment
-
-    def _apply_check_loadout(self, fragment: str) -> None:
-        """Inject a check-loadout fragment into the fact checker's primer."""
-        fc_step = self.steps.get("fact_checker")
-        if not isinstance(fc_step, AgentStep):
-            return
-        fc_step.primer = self._fact_checker_base_primer + "\n\n" + fragment
 
     def _parse_clarification(self, data: dict) -> list[ClarifyingQuestion]:
         """Convert raw clarification JSON into ClarifyingQuestion objects."""

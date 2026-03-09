@@ -16,17 +16,7 @@
       "primer": "analyst.md",
       "max_tokens": 4096,
       "tools": true,
-      "next": "fact_checker"
-    },
-    "fact_checker": {
-      "description": "Validates analyst reports against quality rules before answering",
-      "model": "claude-haiku-4-5-20251001",
-      "tier": "light",
-      "primer": "fact_checker.md",
-      "max_tokens": 2048,
-      "tools": false,
-      "next": "answerer",
-      "output_format": "decision_json"
+      "next": "answerer"
     },
     "answerer": {
       "description": "Formats research into clear, well-cited responses for the player",

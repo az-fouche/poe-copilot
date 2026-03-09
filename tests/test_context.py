@@ -9,7 +9,6 @@ from poe_copilot.core.context import (
     _parse_timeline,
     build_player_context,
     build_primer,
-    load_check_loadout,
     load_loadout,
 )
 
@@ -267,23 +266,4 @@ def test_load_loadout_returns_content():
 
 def test_load_loadout_missing_returns_empty():
     result = load_loadout("nonexistent_loadout_xyz")
-    assert result == ""
-
-
-# ── load_check_loadout ──────────────────────────────────────────────────
-
-
-def test_load_check_loadout_returns_content():
-    content = load_check_loadout("builds")
-    assert "Build-Specific Checks" in content
-    assert "Support gem tags" in content
-
-
-def test_load_check_loadout_missing_returns_empty():
-    result = load_check_loadout("nonexistent_loadout_xyz")
-    assert result == ""
-
-
-def test_load_check_loadout_none_returns_empty():
-    result = load_check_loadout(None)
     assert result == ""

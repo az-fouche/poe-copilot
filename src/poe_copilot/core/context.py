@@ -240,16 +240,6 @@ def build_player_context(settings: dict) -> str:
     )
 
 
-def load_check_loadout(name: str | None) -> str:
-    """Load a fact-checker loadout fragment by name."""
-    if not name:
-        return ""
-    path = LOADOUTS_DIR / f"{name}_check.md"
-    if not path.exists():
-        return ""
-    return path.read_text(encoding="utf-8")
-
-
 def load_loadout(name: str) -> str:
     """Load a loadout prompt fragment by name.
 

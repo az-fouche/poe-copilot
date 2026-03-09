@@ -39,7 +39,6 @@ POE_SPINNER_LABELS: list[str] = [
 STATUS_LABELS: dict[str, str] = {
     "router": "Analyzing your question...",
     "analyst": "Researching...",
-    "fact_checker": "Checking research quality...",
     "answerer": "Writing response...",
 }
 
